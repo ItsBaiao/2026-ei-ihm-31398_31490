@@ -1,7 +1,0 @@
-{
-  "name": "BuyBuyApp",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
