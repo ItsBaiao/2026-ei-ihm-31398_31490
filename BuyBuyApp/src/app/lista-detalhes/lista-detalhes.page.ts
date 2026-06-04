@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { ListasService, Lista } from '../services/listas.service';
-import { Network } from '@capacitor/network'; // O Detetor Nativo!
+import { Network } from '@capacitor/network'; 
 
 @Component({
   selector: 'app-lista-detalhes',
@@ -17,7 +17,7 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
   public marcados: number = 0;
 
   public avisoOffline: HTMLIonToastElement | null = null;
-  private networkListener: any; // O espião nativo
+  private networkListener: any; 
 
   constructor(
     private route: ActivatedRoute,
@@ -33,45 +33,54 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
       this.calcularProgresso();
     }
 
-    this.ligarDetetorDeInternet();
+    this.ligarDetetores();
   }
 
-  // Verifica a net com hardware real mal a página entra
+  // Verifica mal a página abre (Híbrido: tenta o Nativo e o Web)
   async ionViewDidEnter() {
     const status = await Network.getStatus();
-    if (!status.connected) {
+    if (!status.connected || !navigator.onLine) {
       this.mostrarAvisoOffline();
     }
   }
 
   ngOnDestroy() {
-    // Remove o espião ao sair da página
     if (this.networkListener) {
       this.networkListener.remove();
     }
+    window.removeEventListener('online', this.esconderAviso.bind(this));
+    window.removeEventListener('offline', this.mostrarAvisoOffline.bind(this));
   }
 
-  async ligarDetetorDeInternet() {
-    // Fica à escuta de mudanças na placa de rede do telemóvel
+  async ligarDetetores() {
+    // 1. Detetor Nativo (Para o telemóvel físico)
     this.networkListener = await Network.addListener('networkStatusChange', async status => {
       if (status.connected) {
-        if (this.avisoOffline) {
-          await this.avisoOffline.dismiss();
-          this.avisoOffline = null;
-
-          const toast = await this.toastCtrl.create({
-            message: 'Ligação restaurada. Sincronizado!',
-            duration: 2500,
-            color: 'success',
-            icon: 'wifi-outline',
-            position: 'bottom'
-          });
-          await toast.present();
-        }
+        this.esconderAviso();
       } else {
         this.mostrarAvisoOffline();
       }
     });
+
+    // 2. Detetor Web (Para o browser e emulador teimoso)
+    window.addEventListener('online', () => this.esconderAviso());
+    window.addEventListener('offline', () => this.mostrarAvisoOffline());
+  }
+
+  async esconderAviso() {
+    if (this.avisoOffline) {
+      await this.avisoOffline.dismiss();
+      this.avisoOffline = null;
+
+      const toast = await this.toastCtrl.create({
+        message: 'Ligação restaurada. Sincronizado!',
+        duration: 2500,
+        color: 'success',
+        icon: 'wifi-outline',
+        position: 'bottom'
+      });
+      await toast.present();
+    }
   }
 
   async mostrarAvisoOffline() {
@@ -93,9 +102,8 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
     this.calcularProgresso(); 
     await this.listasService.guardarAlteracoes(); 
 
-    // Verifica sempre pelo hardware antes de mostrar
     const status = await Network.getStatus();
-    if (!status.connected) {
+    if (!status.connected || !navigator.onLine) {
       this.mostrarAvisoOffline();
     }
   }
