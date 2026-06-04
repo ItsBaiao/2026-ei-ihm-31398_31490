@@ -24,7 +24,11 @@
 
   <div class="lists-wrapper">
     
-    <div class="list-card" [ngClass]="lista.cor" *ngFor="let lista of listasNoEcra" routerLink="/lista-detalhes" style="cursor: pointer;">
+    <div class="list-card" 
+         [ngClass]="lista.cor.startsWith('border-') ? lista.cor : ''" 
+         [style.border-left-color]="!lista.cor.startsWith('border-') ? lista.cor : null"
+         *ngFor="let lista of listasNoEcra" 
+         [routerLink]="['/lista-detalhes', lista.nome]" style="cursor: pointer;">
       <div class="list-info">
         <ion-icon [name]="lista.icone" class="list-icon"></ion-icon>
         <div class="text-group">

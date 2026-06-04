@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/tabs/tab1" text="" icon="arrow-back-outline" color="dark"></ion-back-button>
     </ion-buttons>
-    <ion-title class="header-title">Lista Semanal</ion-title>
+    <ion-title class="header-title">{{ listaAtual?.nome }}</ion-title>
     <ion-buttons slot="end">
       <ion-button color="dark"><ion-icon name="share-social-outline"></ion-icon></ion-button>
       <ion-button color="dark"><ion-icon name="ellipsis-vertical"></ion-icon></ion-button>
@@ -22,7 +22,7 @@
   </div>
 
   <div class="list-meta">
-    <p>12 itens • €23,40 estimado</p>
+    <p>{{ listaAtual?.produtos?.length || 0 }} itens na lista</p>
   </div>
   
   <div class="search-bar">
@@ -33,51 +33,57 @@
   <div class="progress-card">
     <div class="progress-text">
       <h3>Progresso</h3>
-      <p>3 de 5 itens marcados</p>
+      <p>{{ marcados }} de {{ listaAtual?.produtos?.length || 0 }} itens marcados</p>
     </div>
     <div class="progress-circle">
-      <span>60%</span>
+      <span>{{ progresso }}%</span>
     </div>
   </div>
 
   <div class="category-title">
-    <span>🧀 LACTICÍNIOS (3 ITENS)</span>
+    <span>🛒 PRODUTOS DA LISTA</span>
   </div>
 
   <div class="products-container">
     
-    <div class="product-item">
-      <div class="product-left">
-        <div class="product-image placeholder-img"></div>
-        <div class="product-details">
-          <h4 class="strikethrough">Leite Meio Gordo</h4>
-          <p>Mimosa 1L</p>
-        </div>
-      </div>
-      <div class="product-right">
-        <span class="price">€0,89</span>
-        <ion-icon name="checkmark-circle" class="checked-icon"></ion-icon>
-      </div>
+    <div *ngIf="!listaAtual?.produtos || listaAtual?.produtos?.length === 0" style="text-align: center; margin-top: 30px; color: #888;">
+      <p>Ainda não adicionaste produtos a esta lista.</p>
     </div>
 
-    <div class="product-item">
-      <div class="product-left">
-        <div class="product-image placeholder-img"></div>
-        <div class="product-details">
-          <h4>Iogurte Grego</h4>
-          <p>Natural 4x</p>
-        </div>
-      </div>
-      <div class="product-right">
-        <span class="price">€2,49</span>
-        <ion-icon name="ellipse-outline" class="unchecked-icon"></ion-icon>
-      </div>
-    </div>
+    <ion-list lines="none" style="background: transparent;">
+      <ion-item-sliding *ngFor="let prod of listaAtual?.produtos" #slidingItem>
+        
+        <ion-item-options side="start">
+          <ion-item-option color="success" (click)="riscarProduto(prod, slidingItem)">
+            <ion-icon slot="icon-only" name="checkmark-done-outline" style="font-size: 24px;"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
 
+        <ion-item class="custom-swipe-item" [ngClass]="{'bg-riscado': prod.riscado}">
+          <div class="product-item" style="width: 100%; border: none; margin: 0; padding: 0; background: transparent;">
+            <div class="product-left">
+              <div class="product-image" [ngClass]="prod.imagemClass"></div>
+              <div class="product-details">
+                <h4 [ngClass]="{'strikethrough-text': prod.riscado}">{{ prod.nome }}</h4>
+                <p>{{ prod.tamanho }}</p>
+              </div>
+            </div>
+            <div class="product-right">
+              <span class="price">{{ prod.preco }}</span>
+              <ion-icon [name]="prod.riscado ? 'checkmark-circle' : 'ellipse-outline'" 
+                        [class.checked-icon]="prod.riscado" 
+                        [class.unchecked-icon]="!prod.riscado">
+              </ion-icon>
+            </div>
+          </div>
+        </ion-item>
+
+      </ion-item-sliding>
+    </ion-list>
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button class="custom-fab">
+    <ion-fab-button class="custom-fab" routerLink="/tabs/tab2">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ProdutosService } from '../services/produtos.service'; // Chamamos o empregado
+import { NavController, ToastController } from '@ionic/angular'; 
+import { ProdutosService } from '../services/produtos.service';
+import { ListasService, Lista } from '../services/listas.service'; // Chamamos o cofre
 
 @Component({
   selector: 'app-produto-detalhes',
@@ -12,37 +14,60 @@ export class ProdutoDetalhesPage implements OnInit {
   
   public produtoIdId: string | null = null;
   public isListModalOpen = false;
-  
-  // A variável que vai guardar o produto correto para mostrar no ecrã
   public produtoAtual: any = null;
+  
+  // Variável para mostrar as listas reais no Modal
+  public listasNoCofre: Lista[] = [];
 
   constructor(
     private route: ActivatedRoute,
-    private produtosService: ProdutosService // Injetamos o serviço
+    private produtosService: ProdutosService,
+    private listasService: ListasService, // Injetado aqui
+    private navCtrl: NavController,       // Para voltar atrás
+    private toastCtrl: ToastController    // Para a mensagem de sucesso
   ) { }
 
-  ngOnInit() {
-    // 1. Recebe o ID do produto pelo URL
+  async ngOnInit() {
     this.produtoIdId = this.route.snapshot.paramMap.get('id');
 
     if (this.produtoIdId) {
-      // 2. Chama o serviço para ler o catálogo
       this.produtosService.getTodosProdutos().subscribe(dados => {
-        
-        // 3. Procura no catálogo o produto cujo ID seja igual ao ID do URL
-        // Usamos o comando "find" do JavaScript
         const produtoEncontrado = dados.produtos.find(
           (p: any) => p.id.toString() === this.produtoIdId
         );
-
         if (produtoEncontrado) {
           this.produtoAtual = produtoEncontrado;
         }
       });
     }
+
+    // Carregamos as tuas listas verdadeiras para o Modal
+    await this.listasService.init();
+    this.listasNoCofre = this.listasService.minhasListas;
   }
 
   setModalOpen(isOpen: boolean) {
     this.isListModalOpen = isOpen;
+  }
+
+  // A função ativada quando clicas numa lista no Modal
+  async gravarProdutoNaLista(lista: Lista) {
+    // Pede ao cofre para guardar
+    await this.listasService.adicionarProdutoALista(lista.nome, this.produtoAtual);
+
+    this.setModalOpen(false);
+
+    // Mostra um aviso verde de sucesso (Feedback visual importantíssimo em IHM!)
+    const toast = await this.toastCtrl.create({
+      message: `${this.produtoAtual.nome} adicionado à lista ${lista.nome}!`,
+      duration: 2500,
+      color: 'success',
+      position: 'top',
+      icon: 'checkmark-circle-outline'
+    });
+    await toast.present();
+
+    // Volta automaticamente para o ecrã das listas (Tab 1)
+    this.navCtrl.navigateRoot('/tabs/tab1');
   }
 }

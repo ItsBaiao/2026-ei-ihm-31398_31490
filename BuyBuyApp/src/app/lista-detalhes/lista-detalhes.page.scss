@@ -200,3 +200,24 @@
   margin-bottom: 20px;
   margin-right: 10px;
 }
+
+/* CSS Mágico para a Tarefa M3 */
+.custom-swipe-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bg-riscado {
+  --background: #dcfce7 !important; /* Fundo verde clarinho perfeito */
+  transition: 0.3s ease;
+}
+
+.strikethrough-text {
+  text-decoration: line-through;
+  color: #888;
+  transition: 0.3s ease;
+}

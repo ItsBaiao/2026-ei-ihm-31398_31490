@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ProdutosService } from '../services/produtos.service'; // Chamamos o Empregado
+import { ToastController } from '@ionic/angular';
+import { ProdutosService } from '../services/produtos.service';
+import { ListasService, Lista } from '../services/listas.service';
 
 @Component({
   selector: 'app-tab2',
@@ -9,40 +11,58 @@ import { ProdutosService } from '../services/produtos.service'; // Chamamos o Em
 })
 export class Tab2Page implements OnInit {
   
-  // As variáveis do teu design original
   public searchQuery: string = '';
   public showResults: boolean = false;
-
-  // A variável nova que vai receber a lista do JSON
   public produtosDoCatalogo: any[] = []; 
 
-  // Injetamos o serviço no motor da página
-  constructor(private produtosService: ProdutosService) {}
+  // Variáveis para o Modal de adição rápida
+  public isListModalOpen = false;
+  public produtoSelecionado: any = null;
+  public listasNoCofre: Lista[] = [];
 
-  ngOnInit() {
-    // Mal a página abre, pede os produtos ao serviço
+  constructor(
+    private produtosService: ProdutosService,
+    private listasService: ListasService,
+    private toastCtrl: ToastController
+  ) {}
+
+  async ngOnInit() {
     this.produtosService.getTodosProdutos().subscribe(dados => {
-      // O '.produtos' vem exatamente da palavra que usaste dentro do teu ficheiro JSON
       this.produtosDoCatalogo = dados.produtos; 
     });
   }
 
-  // As tuas funções originais da barra de pesquisa
-  onSearchChange(event: any) {
-    if (this.searchQuery.length > 0) {
-      this.showResults = true;
-    } else {
-      this.showResults = false;
+  // Carrega as listas sempre que entras na pesquisa
+  async ionViewWillEnter() {
+    await this.listasService.init();
+    this.listasNoCofre = this.listasService.minhasListas;
+  }
+
+  // Função mágica que bloqueia a ida para os detalhes e abre o Modal
+  abrirModalRapido(produto: any, event: Event) {
+    event.stopPropagation(); // Bloqueia o clique no cartão
+    this.produtoSelecionado = produto;
+    this.isListModalOpen = true;
+  }
+
+  setModalOpen(isOpen: boolean) {
+    this.isListModalOpen = isOpen;
+  }
+
+  async gravarProdutoNaLista(lista: Lista) {
+    if (this.produtoSelecionado) {
+      await this.listasService.adicionarProdutoALista(lista.nome, this.produtoSelecionado);
+      this.setModalOpen(false);
+
+      const toast = await this.toastCtrl.create({
+        message: `${this.produtoSelecionado.nome} adicionado!`,
+        duration: 2000, color: 'success', position: 'top'
+      });
+      await toast.present();
     }
   }
 
-  clearSearch() {
-    this.searchQuery = '';
-    this.showResults = false;
-  }
-
-  simulateSearch() {
-    this.searchQuery = 'Leite';
-    this.showResults = true;
-  }
+  onSearchChange(event: any) { this.showResults = this.searchQuery.length > 0; }
+  clearSearch() { this.searchQuery = ''; this.showResults = false; }
+  simulateSearch() { this.searchQuery = 'Leite'; this.showResults = true; }
 }

@@ -92,9 +92,52 @@
         </div>
       </div>
       
-      <div class="add-btn"><ion-icon name="add"></ion-icon></div>
+      <div class="add-btn" (click)="abrirModalRapido(produto, $event)">
+        <ion-icon name="add"></ion-icon>
+      </div>
     </div>
 
   </div>
+
+  <ion-modal [isOpen]="isListModalOpen" (didDismiss)="setModalOpen(false)" [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85]">
+    <ng-template>
+      
+      <div class="modal-header">
+        <div class="drag-indicator"></div>
+        <div class="modal-title-row">
+          <h3>Adicionar a qual lista?</h3>
+          <ion-icon name="close-outline" (click)="setModalOpen(false)"></ion-icon>
+        </div>
+      </div>
+      
+      <ion-content>
+        <div class="modal-content">
+          
+          <div class="selected-product" *ngIf="produtoSelecionado">
+            <div class="thumb-img" [ngClass]="produtoSelecionado.imagemClass"></div>
+            <div class="info">
+              <h4>{{ produtoSelecionado.nome }}</h4>
+              <p>{{ produtoSelecionado.tamanho }} • {{ produtoSelecionado.preco }}</p>
+            </div>
+          </div>
+
+          <div class="list-option" *ngFor="let lista of listasNoCofre" (click)="gravarProdutoNaLista(lista)" style="cursor: pointer;">
+            <div class="list-icon"><ion-icon [name]="lista.icone"></ion-icon></div>
+            <div class="list-text">
+              <h4>{{ lista.nome }}</h4>
+              <p>{{ lista.totalItens }} itens • {{ lista.dataEdicao }}</p>
+            </div>
+            <div class="add-circle-btn"><ion-icon name="add"></ion-icon></div>
+          </div>
+
+          <ion-button expand="block" fill="outline" class="create-new-list-btn" routerLink="/nova-lista" (click)="setModalOpen(false)">
+            <ion-icon name="add-outline" slot="start"></ion-icon> Criar Nova Lista
+          </ion-button>
+
+        </div>
+      </ion-content>
+
+    </ng-template>
+  </ion-modal>
 
 </ion-content>

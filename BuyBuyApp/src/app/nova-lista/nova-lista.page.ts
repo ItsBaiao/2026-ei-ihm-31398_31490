@@ -12,10 +12,13 @@ export class NovaListaPage implements OnInit {
 
   public isColorModalOpen = false;
 
-  // 1. Variáveis que guardam o que o utilizador escolhe no ecrã
   public nomeDaLista: string = ''; 
   public iconeEscolhido: string = 'cart-outline'; 
   public corEscolhida: string = 'border-dark'; 
+
+  public corPersonalizada: string = '#FF0000';
+  public hueValue: number = 0; 
+  public lightnessValue: number = 50; 
 
   constructor(
     private listasService: ListasService,
@@ -29,7 +32,6 @@ export class NovaListaPage implements OnInit {
     this.isColorModalOpen = isOpen;
   }
 
-  // 2. Funções ativadas quando clicas num ícone ou cor
   selecionarIcone(icone: string) {
     this.iconeEscolhido = icone;
   }
@@ -38,9 +40,33 @@ export class NovaListaPage implements OnInit {
     this.corEscolhida = cor;
   }
 
-  // 3. A função de guardar agora usa as tuas escolhas reais
+  confirmarCorModal() {
+    this.corEscolhida = this.corPersonalizada;
+    this.setModalOpen(false);
+  }
+
+  atualizarCorPeloSlider(event: any) {
+    this.hueValue = event.target.value;
+    this.corPersonalizada = this.hslToHex(this.hueValue, 100, this.lightnessValue);
+  }
+
+  atualizarLuminosidadePeloSlider(event: any) {
+    this.lightnessValue = event.target.value;
+    this.corPersonalizada = this.hslToHex(this.hueValue, 100, this.lightnessValue);
+  }
+
+  hslToHex(h: number, s: number, l: number): string {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+  }
+
   guardarLista() {
-    // Se não escreveres nada, ele dá o nome "Nova Lista" para não ficar vazio
     const nomeFinal = this.nomeDaLista.trim() !== '' ? this.nomeDaLista : 'Nova Lista';
 
     const nova: Lista = {
@@ -48,7 +74,8 @@ export class NovaListaPage implements OnInit {
       icone: this.iconeEscolhido,
       cor: this.corEscolhida,
       dataEdicao: 'Criada agora mesmo',
-      totalItens: 0
+      totalItens: 0,
+      produtos: [] 
     };
 
     this.listasService.adicionarLista(nova);

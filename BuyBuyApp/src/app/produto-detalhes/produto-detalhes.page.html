@@ -76,37 +76,19 @@
       
       <div class="modal-content">
         
-        <div class="selected-product">
-          <div class="thumb-img"></div>
+        <div class="selected-product" *ngIf="produtoAtual">
+          <div class="thumb-img" [ngClass]="produtoAtual.imagemClass"></div>
           <div class="info">
-            <h4>Leite Meio Gordo Mimosa</h4>
-            <p>1L • €0,89</p>
+            <h4>{{ produtoAtual.nome }}</h4>
+            <p>{{ produtoAtual.tamanho }} • {{ produtoAtual.preco }}</p>
           </div>
         </div>
 
-        <div class="list-option">
-          <div class="list-icon"><ion-icon name="basket-outline"></ion-icon></div>
+        <div class="list-option" *ngFor="let lista of listasNoCofre" (click)="gravarProdutoNaLista(lista)" style="cursor: pointer;">
+          <div class="list-icon"><ion-icon [name]="lista.icone"></ion-icon></div>
           <div class="list-text">
-            <h4>Lista Semanal</h4>
-            <p>12 itens • Última edição: hoje</p>
-          </div>
-          <div class="add-circle-btn"><ion-icon name="add"></ion-icon></div>
-        </div>
-
-        <div class="list-option">
-          <div class="list-icon"><ion-icon name="basket-outline"></ion-icon></div>
-          <div class="list-text">
-            <h4>Festa de Aniversário</h4>
-            <p>5 itens • Última edição: ontem</p>
-          </div>
-          <div class="add-circle-btn"><ion-icon name="add"></ion-icon></div>
-        </div>
-
-        <div class="list-option">
-          <div class="list-icon"><ion-icon name="basket-outline"></ion-icon></div>
-          <div class="list-text">
-            <h4>Trabalho</h4>
-            <p>0 itens • Criada em Jan</p>
+            <h4>{{ lista.nome }}</h4>
+            <p>{{ lista.totalItens }} itens • {{ lista.dataEdicao }}</p>
           </div>
           <div class="add-circle-btn"><ion-icon name="add"></ion-icon></div>
         </div>

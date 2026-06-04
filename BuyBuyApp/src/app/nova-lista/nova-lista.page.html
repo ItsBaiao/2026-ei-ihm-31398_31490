@@ -31,6 +31,7 @@
   <div class="section-block">
     <div class="section-label">COR DA LISTA</div>
     <div class="horizontal-scroll">
+      
       <div class="color-circle" [class.active-color]="corEscolhida === 'border-dark'" style="background: #008000;" (click)="selecionarCor('border-dark')">
         <ion-icon name="checkmark" *ngIf="corEscolhida === 'border-dark'"></ion-icon>
       </div>
@@ -40,12 +41,22 @@
       <div class="color-circle" [class.active-color]="corEscolhida === 'border-brown'" style="background: #f97316;" (click)="selecionarCor('border-brown')">
         <ion-icon name="checkmark" *ngIf="corEscolhida === 'border-brown'"></ion-icon>
       </div>
-      <div class="color-circle" style="background: #a855f7;"></div>
-      <div class="color-circle" style="background: #eab308;"></div>
-      <div class="color-circle" style="background: #ec4899;"></div>
-      <div class="icon-circle custom-color-btn" (click)="setModalOpen(true)">
+      <div class="color-circle" [class.active-color]="corEscolhida === 'border-purple'" style="background: #a855f7;" (click)="selecionarCor('border-purple')">
+        <ion-icon name="checkmark" *ngIf="corEscolhida === 'border-purple'"></ion-icon>
+      </div>
+      <div class="color-circle" [class.active-color]="corEscolhida === 'border-yellow'" style="background: #eab308;" (click)="selecionarCor('border-yellow')">
+        <ion-icon name="checkmark" *ngIf="corEscolhida === 'border-yellow'"></ion-icon>
+      </div>
+      <div class="color-circle" [class.active-color]="corEscolhida === 'border-pink'" style="background: #ec4899;" (click)="selecionarCor('border-pink')">
+        <ion-icon name="checkmark" *ngIf="corEscolhida === 'border-pink'"></ion-icon>
+      </div>
+      
+      <div class="icon-circle custom-color-btn" 
+           style="background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); border: none; color: black;" 
+           (click)="setModalOpen(true)">
         <ion-icon name="color-wand-outline"></ion-icon>
       </div>
+
     </div>
   </div>
 
@@ -71,18 +82,34 @@
           <ion-icon name="close-outline" (click)="setModalOpen(false)"></ion-icon>
         </div>
       </div>
+      
       <div class="modal-content">
-        <div class="color-spectrum"><div class="color-picker-ring"></div></div>
-        <div class="slider hue-slider"><div class="slider-thumb"></div></div>
-        <div class="slider opacity-slider"><div class="slider-thumb right"></div></div>
+        
+        <div class="color-spectrum" [style.background]="'hsl(' + hueValue + ', 100%, ' + lightnessValue + '%)'">
+          <div class="color-picker-ring"></div>
+        </div>
+
+        <div class="slider hue-slider" style="position: relative;">
+          <input type="range" min="0" max="360" [value]="hueValue" (input)="atualizarCorPeloSlider($event)" 
+                 style="position: absolute; width: 100%; height: 100%; opacity: 0; z-index: 10; margin: 0; top: 0; left: 0;">
+          <div class="slider-thumb" [style.left]="(hueValue / 360 * 100) + '%'"></div>
+        </div>
+
+        <div class="slider opacity-slider" style="position: relative; border-radius: 20px;" 
+             [style.background]="'linear-gradient(to right, black, hsl(' + hueValue + ', 100%, 50%), white)'">
+          <input type="range" min="0" max="100" [value]="lightnessValue" (input)="atualizarLuminosidadePeloSlider($event)" 
+                 style="position: absolute; width: 100%; height: 100%; opacity: 0; z-index: 10; margin: 0; top: 0; left: 0;">
+          <div class="slider-thumb right" [style.left]="lightnessValue + '%'"></div>
+        </div>
+
         <div class="hex-row">
-          <div class="color-preview"></div>
-          <div class="hex-input">
-            <span>#00C853</span>
+          <div class="hex-input" style="width: 100%;">
+            <ion-input [(ngModel)]="corPersonalizada" style="text-transform: uppercase; font-weight: bold;"></ion-input>
             <span class="copy-text">Copiar</span>
           </div>
         </div>
-        <ion-button expand="block" class="confirm-color-btn" (click)="setModalOpen(false)">
+
+        <ion-button expand="block" class="confirm-color-btn" (click)="confirmarCorModal()">
           Confirmar Cor
         </ion-button>
       </div>

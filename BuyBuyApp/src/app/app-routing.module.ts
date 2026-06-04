@@ -26,7 +26,7 @@ const routes: Routes = [
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
-    path: 'lista-detalhes',
+    path: 'lista-detalhes/:nome', // <-- Adiciona isto
     loadChildren: () => import('./lista-detalhes/lista-detalhes.module').then( m => m.ListaDetalhesPageModule)
   },
   {
