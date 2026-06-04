@@ -1,0 +1,51 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color="dark" routerLink="/welcome" routerDirection="back">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding"> 
+  <div class="login-wrapper">
+
+    <div class="main-logo">
+      <img src="assets/logo.png" alt="BuyBuy Logo" class="logo-image" />
+    </div>
+
+    <div class="titles">
+      <h1>Bem-vindo de volta</h1>
+      <p>Inicie sessão para continuar a poupar</p>
+    </div>
+
+    <div class="form-container">
+      
+      <div class="custom-input-box">
+        <ion-icon name="mail-outline"></ion-icon>
+        <ion-input type="email" placeholder="seu@email.com"></ion-input>
+      </div>
+
+      <div class="custom-input-box">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <ion-input type="password" placeholder="Palavra-passe"></ion-input>
+        <ion-icon name="eye-outline" class="suffix-icon"></ion-icon>
+      </div>
+
+      <div class="forgot-pwd">
+        <a href="#">Esqueceu a palavra-passe?</a>
+      </div>
+
+    </div>
+
+    <ion-button class="login-btn" expand="block" routerLink="/tabs/tab1">
+      ENTRAR <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+    </ion-button>
+
+    <div class="register-link">
+      Não tem conta? <a routerLink="/registo">Criar conta</a>
+    </div>
+
+  </div>
+</ion-content>  

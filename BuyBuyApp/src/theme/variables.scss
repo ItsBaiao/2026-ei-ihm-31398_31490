@@ -1,2 +1,23 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
+// Cores Globais da Aplicação (Forçado para Modo Claro)
+:root {
+  /** BuyBuy Primary Green **/
+  --ion-color-primary: #0da33d;
+  --ion-color-primary-rgb: 13, 163, 61;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #0b8f36;
+  --ion-color-primary-tint: #25ac50;
+
+  /** Cores de Sistema (Sucesso, Aviso, Erro) **/
+  --ion-color-success: #2dd36f;
+  --ion-color-warning: #ffc409;
+  --ion-color-danger: #eb445a;
+  --ion-color-medium: #92949c;
+  --ion-color-light: #f4f5f8;
+
+  /** Fundo e Texto Base **/
+  --ion-background-color: #ffffff;
+  --ion-text-color: #000000;
+}

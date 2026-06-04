@@ -1,0 +1,71 @@
+<!-- Seta de voltar atrás forçada para o Welcome -->
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color="dark" routerLink="/welcome" routerDirection="back">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="login-wrapper">
+
+    <!-- Logótipo Principal -->
+    <div class="main-logo">
+      <img src="assets/logo.png" alt="BuyBuy Logo" class="logo-image" />
+    </div>
+
+    <!-- Títulos Centrados -->
+    <div class="titles">
+      <h1>Criar Conta</h1>
+      <p>Junte-se à BuyBuy e comece a poupar</p>
+    </div>
+
+    <!-- Formulário -->
+    <div class="form-container">
+      
+      <!-- Campo: Nome -->
+      <div class="custom-input-box">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-input type="text" placeholder="O seu Nome"></ion-input>
+      </div>
+
+      <!-- Campo: Email -->
+      <div class="custom-input-box">
+        <ion-icon name="mail-outline"></ion-icon>
+        <ion-input type="email" placeholder="seu@email.com"></ion-input>
+      </div>
+
+      <!-- Campo: Password Atualizado com o Olho dinâmico -->
+      <div class="custom-input-box">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        
+        <!-- O type muda automaticamente entre 'text' e 'password' -->
+        <ion-input [type]="mostrarSenha ? 'text' : 'password'" placeholder="Palavra-passe"></ion-input>
+        
+        <!-- Quando clicado, corre a função toggleSenha() e muda o desenho do ícone -->
+        <ion-icon 
+          [name]="mostrarSenha ? 'eye-off-outline' : 'eye-outline'" 
+          class="suffix-icon" 
+          (click)="toggleSenha()"
+          style="cursor: pointer;">
+        </ion-icon>
+      </div>
+
+    </div>
+
+    <!-- Botão de Criar Conta Atualizado -->
+    <!-- Retirámos o routerLink e colocámos um evento (click) apontado ao nosso TS -->
+    <ion-button class="login-btn" expand="block" (click)="criarConta()">
+      CRIAR CONTA <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+    </ion-button>
+
+    <!-- Rodapé -->
+    <div class="register-link">
+      Já tem conta? <a routerLink="/login">Iniciar Sessão</a>
+    </div>
+
+  </div>
+</ion-content>
