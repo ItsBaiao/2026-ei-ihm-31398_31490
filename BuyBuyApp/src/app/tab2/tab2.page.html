@@ -72,49 +72,26 @@
 
   <div *ngIf="showResults" class="results-state">
     
-    <div class="search-product-card" [routerLink]="['/produto-detalhes', 1]" style="cursor: pointer;">
-      <div class="prod-img bg-leite"></div>
+    <div class="search-product-card" *ngFor="let produto of produtosDoCatalogo" [routerLink]="['/produto-detalhes', produto.id]" style="cursor: pointer;">
+      
+      <div class="prod-img" [ngClass]="produto.imagemClass"></div>
+      
       <div class="prod-info">
-        <h4>Leite Meio Gordo Mimosa</h4>
-        <p>Lacticínios • 1L</p>
-        <span class="badge brand-badge">MARCA PRÓPRIA</span>
-        <div class="price">€0,89</div>
-      </div>
-      <div class="add-btn"><ion-icon name="add"></ion-icon></div>
-    </div>
+        <h4>{{ produto.nome }}</h4>
+        <p>{{ produto.categoria }} • {{ produto.tamanho }}</p>
+        
+        <span class="badge" [ngClass]="produto.tagClass" *ngIf="produto.tag">{{ produto.tag }}</span>
+        
+        <div class="price-row" *ngIf="produto.precoAntigo">
+          <span class="old-price">{{ produto.precoAntigo }}</span>
+          <span class="price">{{ produto.preco }}</span>
+        </div>
 
-    <div class="search-product-card" [routerLink]="['/produto-detalhes', 2]" style="cursor: pointer;">
-      <div class="prod-img bg-achocolatado"></div>
-      <div class="prod-info">
-        <h4>Leite Achocolatado UHT</h4>
-        <p>Lacticínios • 200ml</p>
-        <span class="badge promo-badge">PROMOÇÃO</span>
-        <div class="price-row">
-          <span class="old-price">€1,15</span>
-          <span class="price">€0,95</span>
+        <div class="price" *ngIf="!produto.precoAntigo" [style.margin-top]="!produto.tag ? '22px' : '0'">
+          {{ produto.preco }}
         </div>
       </div>
-      <div class="add-btn"><ion-icon name="add"></ion-icon></div>
-    </div>
-
-    <div class="search-product-card" [routerLink]="['/produto-detalhes', 3]" style="cursor: pointer;">
-      <div class="prod-img bg-amendoa"></div>
-      <div class="prod-info">
-        <h4>Bebida Amêndoa S/ Açúcar</h4>
-        <p>Vegetal • 1L</p>
-        <div class="price" style="margin-top:22px;">€1,99</div>
-      </div>
-      <div class="add-btn"><ion-icon name="add"></ion-icon></div>
-    </div>
-
-    <div class="search-product-card" [routerLink]="['/produto-detalhes', 4]" style="cursor: pointer;">
-      <div class="prod-img bg-vigor"></div>
-      <div class="prod-info">
-        <h4>Leite Gordo Vigor</h4>
-        <p>Lacticínios • 1L</p>
-        <span class="badge new-badge">NOVIDADE</span>
-        <div class="price">€1,24</div>
-      </div>
+      
       <div class="add-btn"><ion-icon name="add"></ion-icon></div>
     </div>
 

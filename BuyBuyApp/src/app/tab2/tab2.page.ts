@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ProdutosService } from '../services/produtos.service'; // Chamamos o Empregado
 
 @Component({
   selector: 'app-tab2',
@@ -6,36 +7,42 @@ import { Component } from '@angular/core';
   styleUrls: ['tab2.page.scss'],
   standalone: false,
 })
-export class Tab2Page {
+export class Tab2Page implements OnInit {
   
-  // Variável que guarda o que está escrito na barra
-  searchQuery: string = '';
-  // Variável que decide se mostra o estado inicial ou os resultados
-  showResults: boolean = false;
+  // As variáveis do teu design original
+  public searchQuery: string = '';
+  public showResults: boolean = false;
 
-  constructor() {}
+  // A variável nova que vai receber a lista do JSON
+  public produtosDoCatalogo: any[] = []; 
 
-  // Deteta sempre que o utilizador escreve algo
+  // Injetamos o serviço no motor da página
+  constructor(private produtosService: ProdutosService) {}
+
+  ngOnInit() {
+    // Mal a página abre, pede os produtos ao serviço
+    this.produtosService.getTodosProdutos().subscribe(dados => {
+      // O '.produtos' vem exatamente da palavra que usaste dentro do teu ficheiro JSON
+      this.produtosDoCatalogo = dados.produtos; 
+    });
+  }
+
+  // As tuas funções originais da barra de pesquisa
   onSearchChange(event: any) {
-    const query = event.detail.value;
-    
-    // Se a pessoa escrever "leite", mostramos os resultados!
-    if (query && query.toLowerCase().includes('leite')) {
+    if (this.searchQuery.length > 0) {
       this.showResults = true;
-    } else if (!query) {
-      this.showResults = false; // Se apagar tudo, volta ao início
+    } else {
+      this.showResults = false;
     }
   }
 
-  // Função para limpar a barra ao clicar no "X"
   clearSearch() {
     this.searchQuery = '';
     this.showResults = false;
   }
 
-  // Função para quando se clica na pesquisa recente
   simulateSearch() {
-    this.searchQuery = 'leite';
+    this.searchQuery = 'Leite';
     this.showResults = true;
   }
 }

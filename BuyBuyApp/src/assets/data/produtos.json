@@ -1,0 +1,48 @@
+{
+  "produtos": [
+    {
+      "id": 1,
+      "nome": "Leite Meio Gordo Mimosa",
+      "categoria": "Lacticínios",
+      "tamanho": "1L",
+      "tag": "MARCA PRÓPRIA",
+      "tagClass": "brand-badge",
+      "preco": "€0,89",
+      "precoAntigo": null,
+      "imagemClass": "bg-leite"
+    },
+    {
+      "id": 2,
+      "nome": "Leite Achocolatado UHT",
+      "categoria": "Lacticínios",
+      "tamanho": "200ml",
+      "tag": "PROMOÇÃO",
+      "tagClass": "promo-badge",
+      "preco": "€0,95",
+      "precoAntigo": "€1,15",
+      "imagemClass": "bg-achocolatado"
+    },
+    {
+      "id": 3,
+      "nome": "Bebida Amêndoa S/ Açúcar",
+      "categoria": "Vegetal",
+      "tamanho": "1L",
+      "tag": null,
+      "tagClass": null,
+      "preco": "€1,99",
+      "precoAntigo": null,
+      "imagemClass": "bg-amendoa"
+    },
+    {
+      "id": 4,
+      "nome": "Leite Gordo Vigor",
+      "categoria": "Lacticínios",
+      "tamanho": "1L",
+      "tag": "NOVIDADE",
+      "tagClass": "new-badge",
+      "preco": "€1,24",
+      "precoAntigo": null,
+      "imagemClass": "bg-vigor"
+    }
+  ]
+}

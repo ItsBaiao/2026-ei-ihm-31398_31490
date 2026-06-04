@@ -13,17 +13,19 @@
 
 <ion-content class="ion-padding custom-bg">
 
-  <div class="product-image-container">
-    <div class="discount-badge">-18%</div>
-    <div class="mock-product-img"></div>
-  </div>
+  <div *ngIf="produtoAtual">
+    <div class="product-image-container">
+      <div class="discount-badge" *ngIf="produtoAtual.precoAntigo">PROMO</div>
+      <div class="mock-product-img" [ngClass]="produtoAtual.imagemClass"></div>
+    </div>
 
-  <div class="product-header">
-    <h1>Leite Meio Gordo Mimosa</h1>
-    <p>1L • Pack de 6</p>
-    <div class="price-row">
-      <span class="current-price">€0,89</span>
-      <span class="old-price">€1,09</span>
+    <div class="product-header">
+      <h1>{{ produtoAtual.nome }}</h1>
+      <p>{{ produtoAtual.tamanho }} • {{ produtoAtual.categoria }}</p>
+      <div class="price-row">
+        <span class="current-price">{{ produtoAtual.preco }}</span>
+        <span class="old-price" *ngIf="produtoAtual.precoAntigo">{{ produtoAtual.precoAntigo }}</span>
+      </div>
     </div>
   </div>
 
