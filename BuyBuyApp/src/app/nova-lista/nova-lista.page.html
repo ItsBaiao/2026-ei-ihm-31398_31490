@@ -14,30 +14,32 @@
 
   <div class="input-card">
     <ion-icon name="pencil-outline"></ion-icon>
-    <ion-input type="text" value="Lista Semanal"></ion-input>
+    <ion-input type="text" placeholder="Nome da Lista..." [(ngModel)]="nomeDaLista"></ion-input>
   </div>
 
   <div class="section-block">
     <div class="section-label">ÍCONE DA LISTA</div>
     <div class="horizontal-scroll">
-      <div class="icon-circle active"><ion-icon name="cart"></ion-icon></div>
-      <div class="icon-circle"><ion-icon name="home-outline"></ion-icon></div>
-      <div class="icon-circle"><ion-icon name="gift-outline"></ion-icon></div>
-      <div class="icon-circle"><ion-icon name="briefcase-outline"></ion-icon></div>
-      <div class="icon-circle"><ion-icon name="leaf-outline"></ion-icon></div>
-      <div class="icon-circle"><ion-icon name="add"></ion-icon></div>
+      <div class="icon-circle" [class.active]="iconeEscolhido === 'cart-outline'" (click)="selecionarIcone('cart-outline')"><ion-icon name="cart-outline"></ion-icon></div>
+      <div class="icon-circle" [class.active]="iconeEscolhido === 'home-outline'" (click)="selecionarIcone('home-outline')"><ion-icon name="home-outline"></ion-icon></div>
+      <div class="icon-circle" [class.active]="iconeEscolhido === 'gift-outline'" (click)="selecionarIcone('gift-outline')"><ion-icon name="gift-outline"></ion-icon></div>
+      <div class="icon-circle" [class.active]="iconeEscolhido === 'briefcase-outline'" (click)="selecionarIcone('briefcase-outline')"><ion-icon name="briefcase-outline"></ion-icon></div>
+      <div class="icon-circle" [class.active]="iconeEscolhido === 'leaf-outline'" (click)="selecionarIcone('leaf-outline')"><ion-icon name="leaf-outline"></ion-icon></div>
     </div>
   </div>
 
   <div class="section-block">
     <div class="section-label">COR DA LISTA</div>
     <div class="horizontal-scroll">
-      <div class="color-circle active-color" style="background: #008000;">
-        <ion-icon name="checkmark"></ion-icon>
+      <div class="color-circle" [class.active-color]="corEscolhida === 'border-dark'" style="background: #008000;" (click)="selecionarCor('border-dark')">
+        <ion-icon name="checkmark" *ngIf="corEscolhida === 'border-dark'"></ion-icon>
       </div>
-      <div class="color-circle" style="background: #3b82f6;"></div>
-      <div class="color-circle" style="background: #ef4444;"></div>
-      <div class="color-circle" style="background: #f97316;"></div>
+      <div class="color-circle" [class.active-color]="corEscolhida === 'border-light'" style="background: #3b82f6;" (click)="selecionarCor('border-light')">
+        <ion-icon name="checkmark" *ngIf="corEscolhida === 'border-light'"></ion-icon>
+      </div>
+      <div class="color-circle" [class.active-color]="corEscolhida === 'border-brown'" style="background: #f97316;" (click)="selecionarCor('border-brown')">
+        <ion-icon name="checkmark" *ngIf="corEscolhida === 'border-brown'"></ion-icon>
+      </div>
       <div class="color-circle" style="background: #a855f7;"></div>
       <div class="color-circle" style="background: #eab308;"></div>
       <div class="color-circle" style="background: #ec4899;"></div>
@@ -49,18 +51,14 @@
 
   <div class="section-block">
     <div class="section-label">LOJA PREFERIDA PARA ESTA LISTA</div>
-    
     <div class="store-card">
-      <div class="store-icon">
-        <ion-icon name="location"></ion-icon>
-      </div>
+      <div class="store-icon"><ion-icon name="location"></ion-icon></div>
       <div class="store-info">
         <h4>ÉBARATO</h4>
         <p>Constituição, Porto</p>
       </div>
       <div class="store-action">Alterar</div>
     </div>
-
     <div class="map-placeholder"></div>
   </div>
 
@@ -73,19 +71,10 @@
           <ion-icon name="close-outline" (click)="setModalOpen(false)"></ion-icon>
         </div>
       </div>
-      
       <div class="modal-content">
-        <div class="color-spectrum">
-          <div class="color-picker-ring"></div>
-        </div>
-
-        <div class="slider hue-slider">
-          <div class="slider-thumb"></div>
-        </div>
-        <div class="slider opacity-slider">
-          <div class="slider-thumb right"></div>
-        </div>
-
+        <div class="color-spectrum"><div class="color-picker-ring"></div></div>
+        <div class="slider hue-slider"><div class="slider-thumb"></div></div>
+        <div class="slider opacity-slider"><div class="slider-thumb right"></div></div>
         <div class="hex-row">
           <div class="color-preview"></div>
           <div class="hex-input">
@@ -93,7 +82,6 @@
             <span class="copy-text">Copiar</span>
           </div>
         </div>
-
         <ion-button expand="block" class="confirm-color-btn" (click)="setModalOpen(false)">
           Confirmar Cor
         </ion-button>
@@ -105,7 +93,7 @@
 
 <ion-footer class="ion-no-border custom-bg">
   <div class="ion-padding">
-    <ion-button expand="block" class="create-list-btn" routerLink="/tabs/tab1">
+    <ion-button expand="block" class="create-list-btn" (click)="guardarLista()">
       Criar Lista <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
     </ion-button>
   </div>

@@ -24,46 +24,18 @@
 
   <div class="lists-wrapper">
     
-    <div class="list-card border-dark" routerLink="/lista-detalhes" style="cursor: pointer;">
+    <div class="list-card" [ngClass]="lista.cor" *ngFor="let lista of listasNoEcra" routerLink="/lista-detalhes" style="cursor: pointer;">
       <div class="list-info">
-        <ion-icon name="basket-outline" class="list-icon"></ion-icon>
+        <ion-icon [name]="lista.icone" class="list-icon"></ion-icon>
         <div class="text-group">
-          <h3>Lista Semanal</h3>
-          <p>Última edição: Ontem</p>
+          <h3>{{ lista.nome }}</h3>
+          <p>{{ lista.dataEdicao }}</p>
         </div>
       </div>
-      <div class="item-badge">12 itens</div>
-    </div>
-
-    <div class="list-card border-light">
-      <div class="list-info">
-        <ion-icon name="gift-outline" class="list-icon"></ion-icon>
-        <div class="text-group">
-          <h3>Festa de Aniversário</h3>
-          <p>Criada há 3 dias</p>
-        </div>
-      </div>
-      <div class="item-badge">25 itens</div>
-    </div>
-
-    <div class="list-card border-brown">
-      <div class="list-info">
-        <ion-icon name="briefcase-outline" class="list-icon"></ion-icon>
-        <div class="text-group">
-          <h3>Trabalho</h3>
-          <p>Atualizada há 1 hora</p>
-        </div>
-      </div>
-      <div class="item-badge">5 itens</div>
+      <div class="item-badge">{{ lista.totalItens }} itens</div>
     </div>
 
   </div>
-
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button class="custom-fab">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button class="custom-fab" routerLink="/nova-lista">
