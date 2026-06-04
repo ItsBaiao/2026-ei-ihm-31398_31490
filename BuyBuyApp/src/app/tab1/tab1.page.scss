@@ -1,0 +1,121 @@
+ion-toolbar {
+  --padding-top: 10px;
+  --padding-bottom: 5px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+/* --- CABEÇALHO COM AVATAR --- */
+.custom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    ion-avatar {
+      width: 42px;
+      height: 42px;
+      border: 2px solid var(--ion-color-primary); // Pequena borda verde à volta do avatar
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0;
+    }
+  }
+}
+
+/* --- TÍTULO E TRAÇO VERDE --- */
+.section-title {
+  margin-top: 15px;
+  margin-bottom: 25px;
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+
+  .underline {
+    height: 3px;
+    width: 80px; // Largura do traço
+    background-color: var(--ion-color-primary);
+    border-radius: 2px;
+  }
+}
+
+/* --- CARTÕES DAS LISTAS --- */
+.lists-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.list-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  border-left: 4px solid transparent; // Preparar a borda esquerda
+
+  /* Cores das bordas esquerdas baseadas no teu Figma */
+  &.border-dark { border-left-color: #065f24; } 
+  &.border-light { border-left-color: #64e382; } 
+  &.border-brown { border-left-color: #8b6b00; } 
+
+  .list-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .list-icon {
+      font-size: 22px;
+      color: #065f24;
+    }
+
+    .text-group {
+      h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0 0 6px 0;
+      }
+
+      p {
+        font-size: 13px;
+        color: #777;
+        margin: 0;
+      }
+    }
+  }
+
+  /* Pílula verde com a quantidade de itens */
+  .item-badge {
+    background-color: #00c853; // Verde mais vivo
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+}
+
+/* --- BOTÃO FLUTUANTE (FAB) --- */
+.custom-fab {
+  --background: #065f24;
+  --background-hover: #044219;
+  --box-shadow: 0 4px 12px rgba(6, 95, 36, 0.3);
+  margin-bottom: 20px;
+  margin-right: 10px;
+}

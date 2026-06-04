@@ -3,13 +3,10 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
+    // Quando a app arranca (caminho vazio), vai direta para o Welcome
     path: '',
-    redirectTo: 'welcome', // Aqui sim, apenas dizemos para saltar para o welcome
+    redirectTo: 'welcome',
     pathMatch: 'full'
-  },
-  {
-    path: 'tabs',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
     path: 'welcome',
@@ -22,6 +19,31 @@ const routes: Routes = [
   {
     path: 'registo',
     loadChildren: () => import('./registo/registo.module').then( m => m.RegistoPageModule)
+  },
+  {
+    // AQUI ESTÁ A MAGIA QUE FALTAVA: A rota para as tabs!
+    path: 'tabs',
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
+    path: 'lista-detalhes',
+    loadChildren: () => import('./lista-detalhes/lista-detalhes.module').then( m => m.ListaDetalhesPageModule)
+  },
+  {
+    path: 'nova-lista',
+    loadChildren: () => import('./nova-lista/nova-lista.module').then( m => m.NovaListaPageModule)
+  },
+  {
+    path: 'loja-navegacao',
+    loadChildren: () => import('./loja-navegacao/loja-navegacao.module').then( m => m.LojaNavegacaoPageModule)
+  },
+  {
+    path: 'loja-mapa',
+    loadChildren: () => import('./loja-mapa/loja-mapa.module').then( m => m.LojaMapaPageModule)
+  },
+  {
+    path: 'produto-detalhes',
+    loadChildren: () => import('./produto-detalhes/produto-detalhes.module').then( m => m.ProdutoDetalhesPageModule)
   }
 ];
 
@@ -31,4 +53,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -1,0 +1,179 @@
+.custom-bg {
+  --background: #fdfdfd; 
+}
+
+ion-toolbar {
+  --background: #fdfdfd;
+}
+
+/* --- BARRA DE PESQUISA SUPERIOR --- */
+.header-container {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  gap: 15px;
+
+  .back-icon {
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .search-bar-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background: #f2f2f2;
+    border-radius: 12px;
+    padding: 0 15px;
+    height: 45px;
+
+    .search-icon { color: #00c853; font-size: 20px; margin-right: 10px; }
+    .clear-icon { color: #777; font-size: 20px; cursor: pointer; }
+    ion-input { --padding-start: 0; font-size: 15px; }
+  }
+}
+
+/* --- FILTROS (PÍLULAS) --- */
+.filter-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 15px;
+  &::-webkit-scrollbar { display: none; }
+
+  .filter-pill {
+    padding: 8px 16px;
+    background: #f0f0f0;
+    color: #555;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &.active { background: #00c853; color: white; }
+  }
+}
+
+/* --- ESTADO INICIAL: RECENTES E CATEGORIAS --- */
+.initial-state { padding: 0 15px 20px 15px; }
+
+.section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #777;
+  letter-spacing: 0.5px;
+  margin-bottom: 15px;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+
+  .recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    .recent-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #333;
+      font-size: 15px;
+
+      ion-icon { color: #888; font-size: 20px; }
+    }
+    .remove-icon { color: #888; font-size: 20px; }
+  }
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+
+  .category-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    border: 1px solid #fafafa;
+
+    .cat-icon { font-size: 35px; }
+    span { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  }
+}
+
+/* --- ESTADO DE RESULTADOS: PRODUTOS --- */
+.results-state { padding: 0 15px 20px 15px; }
+
+.search-product-card {
+  display: flex;
+  align-items: flex-start;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+
+  .prod-img {
+    width: 75px;
+    height: 75px;
+    border-radius: 12px;
+    background-color: #f5f5f5;
+    margin-right: 15px;
+
+    &.bg-leite { background-color: #e6f0fa; }
+    &.bg-achocolatado { background-color: #dcedc8; }
+    &.bg-amendoa { background-color: #c8e6c9; }
+    &.bg-vigor { background-color: #ffecb3; }
+  }
+
+  .prod-info {
+    flex-grow: 1;
+
+    h4 { margin: 0 0 4px 0; font-size: 15px; font-weight: 600; color: #1a1a1a; }
+    p { margin: 0 0 8px 0; font-size: 13px; color: #777; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-bottom: 8px;
+
+      &.brand-badge { background: #00c853; color: white; }
+      &.promo-badge { background: #ffebee; color: #d32f2f; }
+      &.new-badge { background: #00c853; color: white; }
+    }
+
+    .price { font-size: 16px; font-weight: 700; color: #065f24; }
+    
+    .price-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      .old-price { font-size: 13px; color: #999; text-decoration: line-through; }
+    }
+  }
+
+  .add-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #00c853;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    margin-top: 15px;
+    box-shadow: 0 4px 8px rgba(0,200,83,0.2);
+  }
+}

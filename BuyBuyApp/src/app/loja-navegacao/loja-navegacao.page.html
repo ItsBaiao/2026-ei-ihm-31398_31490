@@ -1,0 +1,110 @@
+<div class="store-status-bar">
+  <span><ion-icon name="location-outline"></ion-icon> Modo Loja Ativo - ÉBarato</span>
+  <span>SESSÃO: 12:45</span>
+</div>
+
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/lista-detalhes" text="" icon="arrow-back-outline" color="dark"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button class="end-session-btn" routerLink="/lista-detalhes">
+        <ion-icon name="close-outline"></ion-icon> Terminar Sessão
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding custom-bg">
+  
+  <div class="profile-header">
+    <div class="user-info">
+      <ion-avatar>
+        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
+      </ion-avatar>
+      <div class="greeting">
+        <p>Bom dia,</p>
+        <h2>Olá, Poupador!</h2>
+      </div>
+    </div>
+    <div class="notification-btn">
+      <ion-icon name="notifications-outline"></ion-icon>
+      <div class="badge"></div>
+    </div>
+  </div>
+
+  <div class="next-stop-card">
+    <div class="stop-info">
+      <p>PRÓXIMA PARAGEM</p>
+      <h2>Corredor 1:<br>Lacticínios</h2>
+    </div>
+    <div class="distance-badge">20m</div>
+  </div>
+
+  <div class="filter-scroll">
+    <div class="filter-pill active">Toda a Lista</div>
+    <div class="filter-pill">Corredor 1</div>
+    <div class="filter-pill">Corredor 4</div>
+  </div>
+
+  <div class="category-header">
+    <h3>🧀 Corredor 1: Lacticínios</h3>
+    <span class="category-badge">3/5 itens</span>
+  </div>
+
+  <div class="product-card active-product">
+    <div class="product-img"></div>
+    <div class="product-info">
+      <h4>Queijo Flamengo</h4>
+      <p>Terra Nostra • 200g</p>
+      <span class="price">2,49€</span>
+    </div>
+    <div class="action-btn add-btn">
+      <ion-icon name="add"></ion-icon>
+    </div>
+  </div>
+
+  <div class="product-card checked-product">
+    <div class="product-img"></div>
+    <div class="product-info">
+      <h4>Leite Meio Gordo</h4>
+      <p>Mimosa • 1L</p>
+      <span class="price">0,94€</span>
+    </div>
+    <div class="action-btn done-btn">
+      <ion-icon name="checkmark"></ion-icon>
+    </div>
+  </div>
+
+  <div class="product-card">
+    <div class="product-img"></div>
+    <div class="product-info">
+      <h4>Iogurte Grego</h4>
+      <p>Danone • Pack 4</p>
+      <span class="price">2,15€</span>
+    </div>
+    <div class="action-btn add-btn outline">
+      <ion-icon name="add"></ion-icon>
+    </div>
+  </div>
+
+  <div class="category-header" style="margin-top: 25px;">
+    <h3>🍪 Corredor 4: Bolachas</h3>
+    <span class="category-badge grey-badge">0/2 itens</span>
+  </div>
+
+  <div class="locked-card">
+    <ion-icon name="location-outline"></ion-icon>
+    <p>Chegue mais perto do Corredor 4 para ativar o foco e ver os detalhes dos itens.</p>
+  </div>
+
+  <div style="height: 80px;"></div>
+
+</ion-content>
+
+<div class="floating-bottom-btn">
+  <ion-button expand="block" class="map-btn" routerLink="/loja-mapa">
+    <ion-icon name="map-outline" slot="start"></ion-icon> Ver Mapa da Loja
+  </ion-button>
+</div>

@@ -1,17 +1,84 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
+    <ion-title class="header-title">Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="dark">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding custom-bg">
+  
+  <div class="profile-header-section">
+    <div class="avatar-circle">
+      <span>JG</span>
+    </div>
+    <h2>João Gaião</h2>
+    <p>joao.gaiao&#64;ipvc.pt</p>
+    <ion-button fill="outline" class="edit-profile-btn">
+      Editar Perfil
+    </ion-button>
+  </div>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <div class="divider"></div>
+
+  <div class="settings-list">
+    
+    <div class="setting-item">
+      <div class="item-left">
+        <div class="icon-box"><ion-icon name="storefront-outline"></ion-icon></div>
+        <span>Loja Preferida</span>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+    </div>
+
+    <div class="setting-item">
+      <div class="item-left">
+        <div class="icon-box"><ion-icon name="notifications-outline"></ion-icon></div>
+        <span>Notificações</span>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+    </div>
+
+    <div class="setting-item">
+      <div class="item-left">
+        <div class="icon-box"><ion-icon name="archive-outline"></ion-icon></div>
+        <span>Listas Arquivadas</span>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+    </div>
+
+    <div class="setting-item">
+      <div class="item-left">
+        <div class="icon-box"><ion-icon name="receipt-outline"></ion-icon></div>
+        <span>Histórico de Compras</span>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+    </div>
+
+    <div class="setting-item">
+      <div class="item-left">
+        <div class="icon-box"><ion-icon name="cloud-offline-outline"></ion-icon></div>
+        <span>Modo Offline</span>
+      </div>
+      <ion-toggle color="success" checked="true"></ion-toggle>
+    </div>
+
+    <div class="setting-item">
+      <div class="item-left">
+        <div class="icon-box"><ion-icon name="help-circle-outline"></ion-icon></div>
+        <span>Ajuda e Suporte</span>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+    </div>
+
+  </div>
+
+  <div class="logout-btn" routerLink="/login" style="cursor: pointer;">
+    <ion-icon name="log-out-outline"></ion-icon>
+    <span>Terminar Sessão</span>
+  </div>
+
 </ion-content>

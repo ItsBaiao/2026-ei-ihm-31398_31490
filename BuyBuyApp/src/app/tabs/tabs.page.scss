@@ -1,1 +1,40 @@
+.custom-tab-bar {
+  --background: #ffffff;
+  --border: none;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.04);
+  height: 75px; 
+  border-radius: 16px 16px 0 0; 
+  padding-bottom: 5px; 
 
+  ion-tab-button {
+    --color: #555555; 
+    --color-selected: #065f24; 
+    position: relative; /* Necessário para a bolha ficar presa ao botão */
+    z-index: 1;
+    
+    ion-icon {
+      font-size: 26px;
+      margin-bottom: 4px;
+    }
+
+    ion-label {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* --- O TRUQUE: A bolha agora aplica-se a QUALQUER botão selecionado --- */
+    &.tab-selected::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 75px;
+      height: 48px;
+      background-color: #a8f0a8; /* O verde claro da bolha */
+      border-radius: 25px; 
+      z-index: -1; /* Fica por trás do ícone e do texto */
+      transition: all 0.3s ease; /* Dá uma animação suave ao aparecer */
+    }
+  }
+}

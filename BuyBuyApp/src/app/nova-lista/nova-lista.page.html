@@ -1,0 +1,112 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1" text="" icon="arrow-back-outline" color="dark"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="header-title ion-text-center">Nova Lista</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="dark"><ion-icon name="ellipsis-vertical"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding custom-bg">
+
+  <div class="input-card">
+    <ion-icon name="pencil-outline"></ion-icon>
+    <ion-input type="text" value="Lista Semanal"></ion-input>
+  </div>
+
+  <div class="section-block">
+    <div class="section-label">ÍCONE DA LISTA</div>
+    <div class="horizontal-scroll">
+      <div class="icon-circle active"><ion-icon name="cart"></ion-icon></div>
+      <div class="icon-circle"><ion-icon name="home-outline"></ion-icon></div>
+      <div class="icon-circle"><ion-icon name="gift-outline"></ion-icon></div>
+      <div class="icon-circle"><ion-icon name="briefcase-outline"></ion-icon></div>
+      <div class="icon-circle"><ion-icon name="leaf-outline"></ion-icon></div>
+      <div class="icon-circle"><ion-icon name="add"></ion-icon></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-label">COR DA LISTA</div>
+    <div class="horizontal-scroll">
+      <div class="color-circle active-color" style="background: #008000;">
+        <ion-icon name="checkmark"></ion-icon>
+      </div>
+      <div class="color-circle" style="background: #3b82f6;"></div>
+      <div class="color-circle" style="background: #ef4444;"></div>
+      <div class="color-circle" style="background: #f97316;"></div>
+      <div class="color-circle" style="background: #a855f7;"></div>
+      <div class="color-circle" style="background: #eab308;"></div>
+      <div class="color-circle" style="background: #ec4899;"></div>
+      <div class="icon-circle custom-color-btn" (click)="setModalOpen(true)">
+        <ion-icon name="color-wand-outline"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-label">LOJA PREFERIDA PARA ESTA LISTA</div>
+    
+    <div class="store-card">
+      <div class="store-icon">
+        <ion-icon name="location"></ion-icon>
+      </div>
+      <div class="store-info">
+        <h4>ÉBARATO</h4>
+        <p>Constituição, Porto</p>
+      </div>
+      <div class="store-action">Alterar</div>
+    </div>
+
+    <div class="map-placeholder"></div>
+  </div>
+
+  <ion-modal [isOpen]="isColorModalOpen" (didDismiss)="setModalOpen(false)" [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85]">
+    <ng-template>
+      <div class="modal-header">
+        <div class="drag-indicator"></div>
+        <div class="modal-title-row">
+          <h3>Escolher Cor</h3>
+          <ion-icon name="close-outline" (click)="setModalOpen(false)"></ion-icon>
+        </div>
+      </div>
+      
+      <div class="modal-content">
+        <div class="color-spectrum">
+          <div class="color-picker-ring"></div>
+        </div>
+
+        <div class="slider hue-slider">
+          <div class="slider-thumb"></div>
+        </div>
+        <div class="slider opacity-slider">
+          <div class="slider-thumb right"></div>
+        </div>
+
+        <div class="hex-row">
+          <div class="color-preview"></div>
+          <div class="hex-input">
+            <span>#00C853</span>
+            <span class="copy-text">Copiar</span>
+          </div>
+        </div>
+
+        <ion-button expand="block" class="confirm-color-btn" (click)="setModalOpen(false)">
+          Confirmar Cor
+        </ion-button>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
+
+<ion-footer class="ion-no-border custom-bg">
+  <div class="ion-padding">
+    <ion-button expand="block" class="create-list-btn" routerLink="/tabs/tab1">
+      Criar Lista <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+    </ion-button>
+  </div>
+</ion-footer>

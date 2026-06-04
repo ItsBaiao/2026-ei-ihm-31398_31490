@@ -1,0 +1,128 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab2" text="" icon="arrow-back-outline" color="dark"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button color="success">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding custom-bg">
+
+  <div class="product-image-container">
+    <div class="discount-badge">-18%</div>
+    <div class="mock-product-img"></div>
+  </div>
+
+  <div class="product-header">
+    <h1>Leite Meio Gordo Mimosa</h1>
+    <p>1L • Pack de 6</p>
+    <div class="price-row">
+      <span class="current-price">€0,89</span>
+      <span class="old-price">€1,09</span>
+    </div>
+  </div>
+
+  <div class="location-card">
+    <div class="location-title">
+      <ion-icon name="location" color="success"></ion-icon>
+      <span>Corredor 1 - Lacticínios</span>
+    </div>
+    <div class="mini-map-placeholder">
+      <div class="map-pin"><ion-icon name="location"></ion-icon></div>
+    </div>
+  </div>
+
+  <div class="similar-section">
+    <div class="section-header">
+      <h2>Produtos Similares</h2>
+      <a href="#">Ver todos</a>
+    </div>
+    
+    <div class="horizontal-scroll">
+      <div class="similar-card">
+        <div class="sim-img bg-agros"></div>
+        <h4>Leite Magro Agros</h4>
+        <span class="sim-price">€0,95</span>
+      </div>
+      <div class="similar-card">
+        <div class="sim-img bg-vigor-choc"></div>
+        <h4>Leite Chocolate Vigor</h4>
+        <span class="sim-price">€1,15</span>
+      </div>
+      <div class="similar-card">
+        <div class="sim-img bg-amendoa"></div>
+        <h4>Bebida Amêndoa</h4>
+        <span class="sim-price">€1,89</span>
+      </div>
+    </div>
+  </div>
+
+  <ion-modal [isOpen]="isListModalOpen" (didDismiss)="setModalOpen(false)" [initialBreakpoint]="0.65" [breakpoints]="[0, 0.65, 0.85]">
+    <ng-template>
+      <div class="modal-header">
+        <div class="drag-indicator"></div>
+        <div class="modal-title-row">
+          <h3>Adicionar a qual lista?</h3>
+          <ion-icon name="close-outline" (click)="setModalOpen(false)"></ion-icon>
+        </div>
+      </div>
+      
+      <div class="modal-content">
+        
+        <div class="selected-product">
+          <div class="thumb-img"></div>
+          <div class="info">
+            <h4>Leite Meio Gordo Mimosa</h4>
+            <p>1L • €0,89</p>
+          </div>
+        </div>
+
+        <div class="list-option">
+          <div class="list-icon"><ion-icon name="basket-outline"></ion-icon></div>
+          <div class="list-text">
+            <h4>Lista Semanal</h4>
+            <p>12 itens • Última edição: hoje</p>
+          </div>
+          <div class="add-circle-btn"><ion-icon name="add"></ion-icon></div>
+        </div>
+
+        <div class="list-option">
+          <div class="list-icon"><ion-icon name="basket-outline"></ion-icon></div>
+          <div class="list-text">
+            <h4>Festa de Aniversário</h4>
+            <p>5 itens • Última edição: ontem</p>
+          </div>
+          <div class="add-circle-btn"><ion-icon name="add"></ion-icon></div>
+        </div>
+
+        <div class="list-option">
+          <div class="list-icon"><ion-icon name="basket-outline"></ion-icon></div>
+          <div class="list-text">
+            <h4>Trabalho</h4>
+            <p>0 itens • Criada em Jan</p>
+          </div>
+          <div class="add-circle-btn"><ion-icon name="add"></ion-icon></div>
+        </div>
+
+        <ion-button expand="block" fill="outline" class="create-new-list-btn" routerLink="/nova-lista" (click)="setModalOpen(false)">
+          <ion-icon name="add-outline" slot="start"></ion-icon> Criar Nova Lista
+        </ion-button>
+
+      </div>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
+
+<ion-footer class="ion-no-border custom-bg">
+  <div class="ion-padding">
+    <ion-button expand="block" class="main-add-btn" (click)="setModalOpen(true)">
+      <ion-icon name="add-circle-outline" slot="start"></ion-icon> Adicionar à Lista
+    </ion-button>
+  </div>
+</ion-footer>

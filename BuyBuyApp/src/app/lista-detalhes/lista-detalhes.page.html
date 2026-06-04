@@ -1,0 +1,85 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1" text="" icon="arrow-back-outline" color="dark"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="header-title">Lista Semanal</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="dark"><ion-icon name="share-social-outline"></ion-icon></ion-button>
+      <ion-button color="dark"><ion-icon name="ellipsis-vertical"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding custom-bg">
+  
+  <div class="start-shopping-card" routerLink="/loja-navegacao" style="cursor: pointer;">
+    <div class="icon-title">
+      <ion-icon name="cart-outline"></ion-icon>
+      <h2>Iniciar Compras</h2>
+    </div>
+    <p>Navega pelos corredores com a tua lista</p>
+  </div>
+
+  <div class="list-meta">
+    <p>12 itens • €23,40 estimado</p>
+  </div>
+  
+  <div class="search-bar">
+    <ion-icon name="search-outline"></ion-icon>
+    <ion-input type="text" placeholder="Procurar na lista..."></ion-input>
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-text">
+      <h3>Progresso</h3>
+      <p>3 de 5 itens marcados</p>
+    </div>
+    <div class="progress-circle">
+      <span>60%</span>
+    </div>
+  </div>
+
+  <div class="category-title">
+    <span>🧀 LACTICÍNIOS (3 ITENS)</span>
+  </div>
+
+  <div class="products-container">
+    
+    <div class="product-item">
+      <div class="product-left">
+        <div class="product-image placeholder-img"></div>
+        <div class="product-details">
+          <h4 class="strikethrough">Leite Meio Gordo</h4>
+          <p>Mimosa 1L</p>
+        </div>
+      </div>
+      <div class="product-right">
+        <span class="price">€0,89</span>
+        <ion-icon name="checkmark-circle" class="checked-icon"></ion-icon>
+      </div>
+    </div>
+
+    <div class="product-item">
+      <div class="product-left">
+        <div class="product-image placeholder-img"></div>
+        <div class="product-details">
+          <h4>Iogurte Grego</h4>
+          <p>Natural 4x</p>
+        </div>
+      </div>
+      <div class="product-right">
+        <span class="price">€2,49</span>
+        <ion-icon name="ellipse-outline" class="unchecked-icon"></ion-icon>
+      </div>
+    </div>
+
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="custom-fab">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

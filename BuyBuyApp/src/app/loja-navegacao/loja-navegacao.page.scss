@@ -1,0 +1,235 @@
+.custom-bg {
+  --background: #fdfdfd;
+}
+
+/* --- BARRA DE ESTADO NO TOPO --- */
+.store-status-bar {
+  background-color: #00c853;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.end-session-btn {
+  --color: #d32f2f;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: none;
+}
+
+/* --- PERFIL --- */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    ion-avatar { width: 45px; height: 45px; border: 2px solid #00c853; }
+
+    .greeting {
+      p { margin: 0; font-size: 13px; color: #666; }
+      h2 { margin: 0; font-size: 18px; font-weight: 700; color: #1a1a1a; }
+    }
+  }
+
+  .notification-btn {
+    width: 40px;
+    height: 40px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    
+    ion-icon { font-size: 20px; color: #333; }
+    
+    .badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 8px;
+      height: 8px;
+      background: red;
+      border-radius: 50%;
+      border: 2px solid #f0f0f0;
+    }
+  }
+}
+
+/* --- PRÓXIMA PARAGEM --- */
+.next-stop-card {
+  background-color: #00c853;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 15px rgba(0, 200, 83, 0.3);
+
+  .stop-info {
+    p { margin: 0 0 5px 0; font-size: 11px; font-weight: 600; letter-spacing: 1px; opacity: 0.9; }
+    h2 { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.2; }
+  }
+
+  .distance-badge {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    padding: 8px 15px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+}
+
+/* --- FILTROS HORIZONTAIS --- */
+.filter-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+  
+  &::-webkit-scrollbar { display: none; }
+
+  .filter-pill {
+    padding: 8px 16px;
+    background: #f0f0f0;
+    color: #555;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &.active {
+      background: #00c853;
+      color: white;
+    }
+  }
+}
+
+/* --- CATEGORIAS --- */
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+
+  h3 { margin: 0; font-size: 16px; font-weight: 700; color: #333; }
+  
+  .category-badge {
+    background: #e0f8e0;
+    color: #065f24;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+
+    &.grey-badge {
+      background: #f0f0f0;
+      color: #777;
+    }
+  }
+}
+
+/* --- PRODUTOS --- */
+.product-card {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 2px solid transparent;
+
+  &.active-product {
+    border-color: #00c853;
+  }
+
+  &.checked-product {
+    opacity: 0.6;
+    .product-info h4 { text-decoration: line-through; color: #888; }
+  }
+
+  .product-img {
+    width: 60px;
+    height: 60px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    margin-right: 15px;
+  }
+
+  .product-info {
+    flex-grow: 1;
+    h4 { margin: 0 0 2px 0; font-size: 15px; font-weight: 600; color: #1a1a1a; }
+    p { margin: 0 0 5px 0; font-size: 12px; color: #777; }
+    .price { font-size: 15px; font-weight: 700; color: #333; }
+  }
+
+  .action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+
+    &.add-btn { background: #00c853; color: white; }
+    &.add-btn.outline { background: white; border: 2px solid #00c853; color: #00c853; }
+    &.done-btn { background: #6b8e6b; color: white; }
+  }
+}
+
+/* --- CARTÃO BLOQUEADO --- */
+.locked-card {
+  border: 2px dashed #ccc;
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  color: #888;
+  
+  ion-icon { font-size: 30px; margin-bottom: 10px; opacity: 0.6; }
+  p { margin: 0; font-size: 13px; line-height: 1.5; }
+}
+
+/* --- BOTÃO FLUTUANTE (RODAPÉ) --- */
+.floating-bottom-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 100;
+
+  .map-btn {
+    --background: white;
+    --color: #00c853;
+    --border-color: #00c853;
+    --border-style: solid;
+    --border-width: 2px;
+    --border-radius: 25px;
+    --box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    height: 55px;
+    font-weight: 700;
+    font-size: 16px;
+  }
+}
