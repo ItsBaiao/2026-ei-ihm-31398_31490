@@ -72,7 +72,7 @@
 
   <div *ngIf="showResults" class="results-state">
     
-    <div class="search-product-card" routerLink="/produto-detalhes" style="cursor: pointer;">
+    <div class="search-product-card" [routerLink]="['/produto-detalhes', 1]" style="cursor: pointer;">
       <div class="prod-img bg-leite"></div>
       <div class="prod-info">
         <h4>Leite Meio Gordo Mimosa</h4>
@@ -83,7 +83,7 @@
       <div class="add-btn"><ion-icon name="add"></ion-icon></div>
     </div>
 
-    <div class="search-product-card">
+    <div class="search-product-card" [routerLink]="['/produto-detalhes', 2]" style="cursor: pointer;">
       <div class="prod-img bg-achocolatado"></div>
       <div class="prod-info">
         <h4>Leite Achocolatado UHT</h4>
@@ -97,7 +97,7 @@
       <div class="add-btn"><ion-icon name="add"></ion-icon></div>
     </div>
 
-    <div class="search-product-card">
+    <div class="search-product-card" [routerLink]="['/produto-detalhes', 3]" style="cursor: pointer;">
       <div class="prod-img bg-amendoa"></div>
       <div class="prod-info">
         <h4>Bebida Amêndoa S/ Açúcar</h4>
@@ -107,7 +107,7 @@
       <div class="add-btn"><ion-icon name="add"></ion-icon></div>
     </div>
 
-    <div class="search-product-card">
+    <div class="search-product-card" [routerLink]="['/produto-detalhes', 4]" style="cursor: pointer;">
       <div class="prod-img bg-vigor"></div>
       <div class="prod-info">
         <h4>Leite Gordo Vigor</h4>
