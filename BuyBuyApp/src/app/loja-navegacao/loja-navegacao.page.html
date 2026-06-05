@@ -1,110 +1,123 @@
-<div class="store-status-bar">
-  <span><ion-icon name="location-outline"></ion-icon> Modo Loja Ativo - ÉBarato</span>
-  <span>SESSÃO: 12:45</span>
-</div>
-
 <ion-header class="ion-no-border">
-  <ion-toolbar color="transparent">
+  <ion-toolbar color="transparent" class="custom-header">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/lista-detalhes" text="" icon="arrow-back-outline" color="dark"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/tab1" text="" icon="arrow-back-outline" color="dark"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button class="end-session-btn" routerLink="/lista-detalhes">
-        <ion-icon name="close-outline"></ion-icon> Terminar Sessão
+      <ion-button color="dark" class="header-btn" (click)="terminarSessao()">
+        <ion-icon name="close-outline" slot="start"></ion-icon> Terminar Sessão
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+  <div class="header-status-bar">
+    <span><ion-icon name="location-outline"></ion-icon> Modo Loja Ativo • ÉBarato</span>
+    <span>SESSÃO: 12:45</span>
+  </div>
 </ion-header>
 
-<ion-content class="ion-padding custom-bg">
-  
-  <div class="profile-header">
-    <div class="user-info">
-      <ion-avatar>
-        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
-      </ion-avatar>
-      <div class="greeting">
-        <p>Bom dia,</p>
-        <h2>Olá, Poupador!</h2>
-      </div>
+<ion-content class="custom-bg ion-padding">
+
+  <div class="user-welcome">
+    <div class="avatar"><ion-icon name="person"></ion-icon></div>
+    <div class="greeting">
+      <p>Bom dia,</p>
+      <h2>Olá, Poupador!</h2>
     </div>
-    <div class="notification-btn">
-      <ion-icon name="notifications-outline"></ion-icon>
-      <div class="badge"></div>
-    </div>
+    <div class="bell-icon"><ion-icon name="notifications-outline"></ion-icon></div>
   </div>
 
-  <div class="next-stop-card">
-    <div class="stop-info">
+  <div class="gps-card">
+    <div class="gps-text">
       <p>PRÓXIMA PARAGEM</p>
       <h2>Corredor 1:<br>Lacticínios</h2>
     </div>
-    <div class="distance-badge">20m</div>
+    <div class="distance-badge pulse-animation">20m</div>
   </div>
 
-  <div class="filter-scroll">
-    <div class="filter-pill active">Toda a Lista</div>
-    <div class="filter-pill">Corredor 1</div>
-    <div class="filter-pill">Corredor 4</div>
+  <div class="filter-pills">
+    <div class="pill active">Toda a Lista</div>
+    <div class="pill">Corredor 1</div>
+    <div class="pill">Corredor 4</div>
   </div>
 
   <div class="category-header">
-    <h3>🧀 Corredor 1: Lacticínios</h3>
-    <span class="category-badge">3/5 itens</span>
+    <span>🧀 Corredor 1: Lacticínios</span>
+    <span class="count">{{ listaAtual?.produtos?.length || 0 }} itens</span>
   </div>
 
-  <div class="product-card active-product">
-    <div class="product-img"></div>
-    <div class="product-info">
-      <h4>Queijo Flamengo</h4>
-      <p>Terra Nostra • 200g</p>
-      <span class="price">2,49€</span>
-    </div>
-    <div class="action-btn add-btn">
-      <ion-icon name="add"></ion-icon>
-    </div>
-  </div>
-
-  <div class="product-card checked-product">
-    <div class="product-img"></div>
-    <div class="product-info">
-      <h4>Leite Meio Gordo</h4>
-      <p>Mimosa • 1L</p>
-      <span class="price">0,94€</span>
-    </div>
-    <div class="action-btn done-btn">
-      <ion-icon name="checkmark"></ion-icon>
+  <div class="products-container">
+    <div class="product-card" *ngFor="let prod of listaAtual?.produtos">
+      <div class="prod-left">
+        <div class="prod-img" [ngClass]="prod.imagemClass"></div>
+        <div class="prod-info">
+          <h4 [ngClass]="{'riscado': prod.riscado}">{{ prod.nome }}</h4>
+          <p>{{ prod.tamanho }}</p>
+          <span class="price">{{ prod.preco }}</span>
+        </div>
+      </div>
+      <div class="prod-right">
+        <div class="add-btn" *ngIf="!prod.riscado" (click)="riscarProduto(prod)"><ion-icon name="add"></ion-icon></div>
+        <div class="check-btn" *ngIf="prod.riscado" (click)="riscarProduto(prod)"><ion-icon name="checkmark"></ion-icon></div>
+      </div>
     </div>
   </div>
 
-  <div class="product-card">
-    <div class="product-img"></div>
-    <div class="product-info">
-      <h4>Iogurte Grego</h4>
-      <p>Danone • Pack 4</p>
-      <span class="price">2,15€</span>
-    </div>
-    <div class="action-btn add-btn outline">
-      <ion-icon name="add"></ion-icon>
-    </div>
-  </div>
+  <ion-button expand="block" fill="outline" class="map-btn" (click)="setMapModalOpen(true)">
+    <ion-icon name="map-outline" slot="start"></ion-icon> VER MAPA DA LOJA
+  </ion-button>
 
-  <div class="category-header" style="margin-top: 25px;">
-    <h3>🍪 Corredor 4: Bolachas</h3>
-    <span class="category-badge grey-badge">0/2 itens</span>
-  </div>
 
-  <div class="locked-card">
-    <ion-icon name="location-outline"></ion-icon>
-    <p>Chegue mais perto do Corredor 4 para ativar o foco e ver os detalhes dos itens.</p>
-  </div>
+  <ion-modal [isOpen]="isMapModalOpen" (didDismiss)="setMapModalOpen(false)">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button color="dark" (click)="setMapModalOpen(false)"><ion-icon name="arrow-back-outline"></ion-icon></ion-button>
+          </ion-buttons>
+          <ion-title class="ion-text-center" style="font-weight: bold; font-size: 16px;">Mapa da Loja - ÉBarato</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content class="custom-bg ion-padding">
+        
+        <div class="map-wrapper">
+          <div class="map-zone padaria">PADARIA</div>
+          <div class="map-zone lacticinios">LACTICÍNIOS</div>
+          <div class="map-zone frutas">FRUTAS</div>
+          <div class="map-zone bebidas">BEBIDAS</div>
+          <div class="map-zone limpeza">LIMPEZA</div>
+          
+          <div class="map-pin pin-1">1</div>
+          <div class="map-pin pin-2">2</div>
+          <div class="map-pin pin-3">3</div>
+          
+          <div class="map-controls">
+            <div class="ctrl-btn"><ion-icon name="add"></ion-icon></div>
+            <div class="ctrl-btn"><ion-icon name="remove"></ion-icon></div>
+            <div class="ctrl-btn gps"><ion-icon name="locate-outline"></ion-icon></div>
+          </div>
+        </div>
 
-  <div style="height: 80px;"></div>
+      </ion-content>
+      
+      <ion-footer class="ion-no-border" style="background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <span style="font-size: 12px; font-weight: bold; color: #888; text-transform: uppercase;">Próxima Paragem</span>
+          <span style="background: #e6f9ed; color: #00C853; font-weight: bold; font-size: 12px; padding: 5px 10px; border-radius: 20px;"><ion-icon name="walk-outline"></ion-icon> 12m</span>
+        </div>
+        <h2 style="margin: 0 0 5px; font-size: 18px; font-weight: bold; color: #111;">Corredor 1: Lacticínios</h2>
+        <p style="margin: 0 0 20px; color: #666; font-size: 14px;">Leite Meio Gordo (Mimosa)</p>
+        
+        <div style="display: flex; gap: 10px;">
+          <ion-button expand="block" color="success" style="flex: 1; --border-radius: 12px; font-weight: bold;" (click)="setMapModalOpen(false)">
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon> ITEM ENCONTRADO
+          </ion-button>
+          <ion-button fill="outline" color="medium" style="--border-radius: 12px; width: 60px;">
+            <ion-icon name="play-skip-forward-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
-
-<div class="floating-bottom-btn">
-  <ion-button expand="block" class="map-btn" routerLink="/loja-mapa">
-    <ion-icon name="map-outline" slot="start"></ion-icon> Ver Mapa da Loja
-  </ion-button>
-</div>

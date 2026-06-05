@@ -34,7 +34,7 @@ const routes: Routes = [
     loadChildren: () => import('./nova-lista/nova-lista.module').then( m => m.NovaListaPageModule)
   },
   {
-    path: 'loja-navegacao',
+    path: 'loja-navegacao/:nome',
     loadChildren: () => import('./loja-navegacao/loja-navegacao.module').then( m => m.LojaNavegacaoPageModule)
   },
   {

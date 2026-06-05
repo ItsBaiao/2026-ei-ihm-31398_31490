@@ -13,7 +13,7 @@
 
 <ion-content class="ion-padding custom-bg">
   
-  <div class="start-shopping-card" routerLink="/loja-navegacao" style="cursor: pointer;">
+  <div class="start-shopping-card" [routerLink]="['/loja-navegacao', listaAtual?.nome]" style="cursor: pointer;">
     <div class="icon-title">
       <ion-icon name="cart-outline"></ion-icon>
       <h2>Iniciar Compras</h2>

@@ -26,17 +26,20 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    // O ngOnInit corre apenas uma vez quando a página nasce
+    this.ligarDetetores();
+  }
+
+  // O TRUQUE: O ionViewWillEnter corre SEMPRE que voltas a esta página
+  async ionViewWillEnter() {
     await this.listasService.init();
     const nomeRecebido = this.route.snapshot.paramMap.get('nome');
     if (nomeRecebido) {
       this.listaAtual = this.listasService.minhasListas.find(l => l.nome === nomeRecebido);
-      this.calcularProgresso();
+      this.calcularProgresso(); // Força a percentagem a atualizar!
     }
-
-    this.ligarDetetores();
   }
 
-  // Verifica mal a página abre (Híbrido: tenta o Nativo e o Web)
   async ionViewDidEnter() {
     const status = await Network.getStatus();
     if (!status.connected || !navigator.onLine) {
