@@ -44,6 +44,10 @@ const routes: Routes = [
   {
   path: 'produto-detalhes/:id', // <-- O truque está neste /:id
   loadChildren: () => import('./produto-detalhes/produto-detalhes.module').then( m => m.ProdutoDetalhesPageModule)
+  },
+  {
+    path: 'escolha-loja',
+    loadChildren: () => import('./escolha-loja/escolha-loja.module').then( m => m.EscolhaLojaPageModule)
   }
 ];
 

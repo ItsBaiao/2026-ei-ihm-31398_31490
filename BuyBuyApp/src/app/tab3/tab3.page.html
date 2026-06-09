@@ -2,7 +2,7 @@
   <ion-toolbar color="transparent">
     <ion-title class="header-title">Perfil</ion-title>
     <ion-buttons slot="end">
-      <ion-button color="dark">
+      <ion-button color="dark" (click)="mostrarEmDesenvolvimento()">
         <ion-icon name="notifications-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -13,11 +13,11 @@
   
   <div class="profile-header-section">
     <div class="avatar-circle">
-      <span>JG</span>
+      <span>{{ iniciais }}</span>
     </div>
-    <h2>João Gaião</h2>
-    <p>joao.gaiao&#64;ipvc.pt</p>
-    <ion-button fill="outline" class="edit-profile-btn">
+    <h2>{{ nomeUtilizador }}</h2>
+    <p>{{ emailUtilizador }}</p>
+    <ion-button fill="outline" class="edit-profile-btn" (click)="mostrarEmDesenvolvimento()">
       Editar Perfil
     </ion-button>
   </div>
@@ -26,7 +26,7 @@
 
   <div class="settings-list">
     
-    <div class="setting-item">
+    <div class="setting-item" routerLink="/escolha-loja" style="cursor: pointer;">
       <div class="item-left">
         <div class="icon-box"><ion-icon name="storefront-outline"></ion-icon></div>
         <span>Loja Preferida</span>
@@ -34,7 +34,7 @@
       <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
     </div>
 
-    <div class="setting-item">
+    <div class="setting-item" (click)="mostrarEmDesenvolvimento()" style="cursor: pointer;">
       <div class="item-left">
         <div class="icon-box"><ion-icon name="notifications-outline"></ion-icon></div>
         <span>Notificações</span>
@@ -42,7 +42,7 @@
       <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
     </div>
 
-    <div class="setting-item">
+    <div class="setting-item" (click)="mostrarEmDesenvolvimento()" style="cursor: pointer;">
       <div class="item-left">
         <div class="icon-box"><ion-icon name="archive-outline"></ion-icon></div>
         <span>Listas Arquivadas</span>
@@ -50,7 +50,7 @@
       <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
     </div>
 
-    <div class="setting-item">
+    <div class="setting-item" (click)="mostrarEmDesenvolvimento()" style="cursor: pointer;">
       <div class="item-left">
         <div class="icon-box"><ion-icon name="receipt-outline"></ion-icon></div>
         <span>Histórico de Compras</span>
@@ -58,15 +58,7 @@
       <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
     </div>
 
-    <div class="setting-item">
-      <div class="item-left">
-        <div class="icon-box"><ion-icon name="cloud-offline-outline"></ion-icon></div>
-        <span>Modo Offline</span>
-      </div>
-      <ion-toggle color="success" checked="true"></ion-toggle>
-    </div>
-
-    <div class="setting-item">
+    <div class="setting-item" (click)="mostrarEmDesenvolvimento()" style="cursor: pointer;">
       <div class="item-left">
         <div class="icon-box"><ion-icon name="help-circle-outline"></ion-icon></div>
         <span>Ajuda e Suporte</span>
@@ -76,7 +68,7 @@
 
   </div>
 
-  <div class="logout-btn" routerLink="/login" style="cursor: pointer;">
+  <div class="logout-btn" (click)="terminarSessao()" style="cursor: pointer;">
     <ion-icon name="log-out-outline"></ion-icon>
     <span>Terminar Sessão</span>
   </div>

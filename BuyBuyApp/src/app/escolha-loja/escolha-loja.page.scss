@@ -1,0 +1,108 @@
+.custom-bg {
+  --background: #fdfdfd; // Fundo muito ligeiramente cinza/rosado igual à foto
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #f2f2f2;
+  border-radius: 12px;
+  padding: 12px 15px;
+  margin-bottom: 25px;
+
+  ion-icon {
+    color: #666;
+    font-size: 20px;
+    margin-right: 10px;
+  }
+
+  input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    color: #333;
+    font-size: 15px;
+
+    &::placeholder {
+      color: #999;
+    }
+  }
+}
+
+.section-title {
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.store-card {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+
+  /* Estilo específico para a loja Verde (Selecionada) */
+  &.selected {
+    border: 2px solid #10b981;
+    background: #f0fdf4; 
+    box-shadow: none;
+  }
+
+  .icon-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+
+    &.selected-icon {
+      background: #6ee7b7; 
+      color: #047857; 
+    }
+
+    &.normal-icon {
+      background: transparent;
+      color: #444;
+      font-size: 24px;
+    }
+  }
+
+  .store-info {
+    flex: 1;
+    margin-left: 15px;
+
+    h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #222;
+    }
+
+    p {
+      margin: 0;
+      font-size: 12px;
+      color: #777;
+    }
+  }
+
+  .check-icon {
+    color: #10b981;
+    font-size: 24px;
+  }
+
+  .chevron-icon {
+    color: #ccc;
+    font-size: 20px;
+  }
+}

@@ -7,7 +7,7 @@ export interface Lista {
   cor: string;
   dataEdicao: string;
   totalItens: number;
-  produtos?: any[]; // O "carrinho" onde os produtos vão ficar guardados
+  produtos?: any[];
 }
 
 @Injectable({
@@ -18,46 +18,68 @@ export class ListasService {
   private _storage: Storage | null = null;
   public minhasListas: Lista[] = [];
 
+  // -----------------------------------------------------
+  // A NOSSA FONTE ÚNICA DE VERDADE PARA AS LOJAS
+  public lojasDoSistema = [
+    { id: 'ebarato', nome: 'ÉBarato - Constituição', morada: 'Rua de Cedofeita, Porto', ativa: true },
+    { id: 'aldi', nome: 'Aldi - Viana do Castelo', morada: 'Rua de Monserrate', ativa: false },
+    { id: 'mercadona', nome: 'Mercadona - Viana do Castelo', morada: 'Estrada da Abelheira', ativa: false },
+    { id: 'continente', nome: 'Continente Bom Dia - Viana do Castelo', morada: 'R. Gen. Humberto Delgado', ativa: false }
+  ];
+
+  // Guarda a loja que o utilizador tem escolhida neste momento
+  public lojaSelecionadaGlobal = this.lojasDoSistema[0];
+  // -----------------------------------------------------
+
   constructor(private storage: Storage) { }
+
+  private getChaveStorage(): string {
+    const email = localStorage.getItem('emailAtual');
+    if (email) {
+      return 'listas_' + email;
+    }
+    return 'listas'; 
+  }
 
   async init() {
     if (!this._storage) {
       const storage = await this.storage.create();
       this._storage = storage;
     }
-    const listasGuardadas = await this._storage.get('listas');
+    
+    const chave = this.getChaveStorage();
+    const listasGuardadas = await this._storage.get(chave);
+    
     if (listasGuardadas) {
       this.minhasListas = listasGuardadas;
+    } else {
+      this.minhasListas = []; 
     }
   }
 
   async adicionarLista(lista: Lista) {
     this.minhasListas.push(lista);
-    await this._storage?.set('listas', this.minhasListas);
+    const chave = this.getChaveStorage();
+    await this._storage?.set(chave, this.minhasListas);
   }
 
-  // A MAGIA DA TAREFA M1: Adicionar um produto a uma lista específica
   async adicionarProdutoALista(nomeDaLista: string, produto: any) {
     const index = this.minhasListas.findIndex(l => l.nome === nomeDaLista);
     if (index !== -1) {
-      // Se a lista ainda não tiver produtos, criamos um array vazio
       if (!this.minhasListas[index].produtos) {
         this.minhasListas[index].produtos = [];
       }
-      
-      // Colocamos o produto lá dentro. 
-      // Já leva o "riscado: false" para a Tarefa M3 e o "recente: true" para piscar a amarelo como no teu cenário!
       this.minhasListas[index].produtos.push({ ...produto, riscado: false, recente: true });
-      
-      // Atualizamos os contadores
       this.minhasListas[index].totalItens = this.minhasListas[index].produtos.length;
       this.minhasListas[index].dataEdicao = 'Atualizada agora mesmo';
 
-      // Guardamos tudo no cofre
-      await this._storage?.set('listas', this.minhasListas);
+      const chave = this.getChaveStorage();
+      await this._storage?.set(chave, this.minhasListas);
     }
   }
+
   async guardarAlteracoes() {
-    await this._storage?.set('listas', this.minhasListas);
+    const chave = this.getChaveStorage();
+    await this._storage?.set(chave, this.minhasListas);
   }
 }

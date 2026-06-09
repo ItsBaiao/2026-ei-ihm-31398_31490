@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
-import { ListasService, Lista } from '../services/listas.service';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { ListasService } from '../services/listas.service'; // O nosso cofre
 
 @Component({
   selector: 'app-nova-lista',
@@ -8,30 +8,30 @@ import { ListasService, Lista } from '../services/listas.service';
   styleUrls: ['./nova-lista.page.scss'],
   standalone: false
 })
-export class NovaListaPage implements OnInit {
+export class NovaListaPage {
 
+  // Variáveis do formulário
+  public nomeDaLista: string = '';
+  public iconeEscolhido: string = 'cart-outline';
+  public corEscolhida: string = 'border-dark';
+
+  // Variáveis da Modal de Cores
   public isColorModalOpen = false;
+  public hueValue = 0;
+  public lightnessValue = 50;
+  public corPersonalizada = '#FF0000';
 
-  public nomeDaLista: string = ''; 
-  public iconeEscolhido: string = 'cart-outline'; 
-  public corEscolhida: string = 'border-dark'; 
+  // A variável que vai guardar a loja selecionada no cofre
+  public lojaSelecionada: any;
 
-  public corPersonalizada: string = '#FF0000';
-  public hueValue: number = 0; 
-  public lightnessValue: number = 50; 
+  constructor(private router: Router, private listasService: ListasService) {}
 
-  constructor(
-    private listasService: ListasService,
-    private navCtrl: NavController
-  ) { }
-
-  ngOnInit() {
+  // Lê a loja sempre que a página abre
+  ionViewWillEnter() {
+    this.lojaSelecionada = this.listasService.lojaSelecionadaGlobal;
   }
 
-  setModalOpen(isOpen: boolean) {
-    this.isColorModalOpen = isOpen;
-  }
-
+  // Funções dos botões da interface
   selecionarIcone(icone: string) {
     this.iconeEscolhido = icone;
   }
@@ -40,45 +40,35 @@ export class NovaListaPage implements OnInit {
     this.corEscolhida = cor;
   }
 
-  confirmarCorModal() {
-    this.corEscolhida = this.corPersonalizada;
-    this.setModalOpen(false);
+  setModalOpen(isOpen: boolean) {
+    this.isColorModalOpen = isOpen;
   }
 
   atualizarCorPeloSlider(event: any) {
     this.hueValue = event.target.value;
-    this.corPersonalizada = this.hslToHex(this.hueValue, 100, this.lightnessValue);
   }
 
   atualizarLuminosidadePeloSlider(event: any) {
     this.lightnessValue = event.target.value;
-    this.corPersonalizada = this.hslToHex(this.hueValue, 100, this.lightnessValue);
   }
 
-  hslToHex(h: number, s: number, l: number): string {
-    l /= 100;
-    const a = s * Math.min(l, 1 - l) / 100;
-    const f = (n: number) => {
-      const k = (n + h / 30) % 12;
-      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color).toString(16).padStart(2, '0');
-    };
-    return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+  confirmarCorModal() {
+    this.setModalOpen(false);
   }
 
-  guardarLista() {
-    const nomeFinal = this.nomeDaLista.trim() !== '' ? this.nomeDaLista : 'Nova Lista';
-
-    const nova: Lista = {
-      nome: nomeFinal,
-      icone: this.iconeEscolhido,
-      cor: this.corEscolhida,
-      dataEdicao: 'Criada agora mesmo',
-      totalItens: 0,
-      produtos: [] 
-    };
-
-    this.listasService.adicionarLista(nova);
-    this.navCtrl.back();
+  // Guardar a lista e voltar à página principal
+  async guardarLista() {
+    if (this.nomeDaLista.trim() !== '') {
+      const novaLista = {
+        nome: this.nomeDaLista,
+        icone: this.iconeEscolhido,
+        cor: this.corEscolhida,
+        dataEdicao: 'Criada agora mesmo',
+        totalItens: 0,
+        produtos: []
+      };
+      await this.listasService.adicionarLista(novaLista);
+    }
+    this.router.navigate(['/tabs/tab1']);
   }
 }

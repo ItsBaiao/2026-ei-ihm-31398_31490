@@ -63,12 +63,12 @@
   <div class="section-block">
     <div class="section-label">LOJA PREFERIDA PARA ESTA LISTA</div>
     <div class="store-card">
-      <div class="store-icon"><ion-icon name="location"></ion-icon></div>
+      <div class="store-icon"><ion-icon name="location" style="color: white;"></ion-icon></div>
       <div class="store-info">
-        <h4>ÉBARATO</h4>
-        <p>Constituição, Porto</p>
+        <h4 style="font-weight: bold; margin: 0 0 5px; color: #333;">{{ lojaSelecionada?.nome }}</h4>
+        <p style="margin: 0; color: #777; font-size: 13px;">{{ lojaSelecionada?.morada }}</p>
       </div>
-      <div class="store-action">Alterar</div>
+      <div class="store-action" routerLink="/escolha-loja" style="cursor: pointer; color: #666; font-weight: bold; font-size: 14px;">Alterar</div>
     </div>
     <div class="map-placeholder"></div>
   </div>
@@ -86,8 +86,7 @@
       <div class="modal-content">
         
         <div class="color-spectrum" [style.background]="'hsl(' + hueValue + ', 100%, ' + lightnessValue + '%)'">
-          <div class="color-picker-ring"></div>
-        </div>
+          </div>
 
         <div class="slider hue-slider" style="position: relative;">
           <input type="range" min="0" max="360" [value]="hueValue" (input)="atualizarCorPeloSlider($event)" 

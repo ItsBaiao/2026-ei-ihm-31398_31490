@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ListasService, Lista } from '../services/listas.service'; // Importamos o cofre
+import { ListasService, Lista } from '../services/listas.service';
 
 @Component({
   selector: 'app-tab1',
@@ -9,18 +9,20 @@ import { ListasService, Lista } from '../services/listas.service'; // Importamos
 })
 export class Tab1Page {
 
-  // Variável que vai segurar as listas para o ecrã mostrar
   public listasNoEcra: Lista[] = [];
+  // 1. Variável nova para o ecrã
+  public nomeUtilizador: string = 'Poupador';
 
   constructor(private listasService: ListasService) {}
 
-  // Este comando corre SEMPRE que a Tab 1 fica visível
   async ionViewWillEnter() {
-    // 1. Garante que o cofre do Ionic Storage já foi lido
+    // 2. Lê a memória para ver o nome de quem entrou
+    const userGuardado = localStorage.getItem('utilizadorAtual');
+    if (userGuardado) {
+      this.nomeUtilizador = userGuardado;
+    }
+
     await this.listasService.init();
-    
-    // 2. Passa as listas do cofre para a nossa variável do ecrã
     this.listasNoEcra = this.listasService.minhasListas;
   }
-
 }

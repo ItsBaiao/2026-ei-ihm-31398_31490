@@ -13,6 +13,9 @@ export class LojaNavegacaoPage implements OnInit {
 
   public listaAtual: Lista | undefined;
   public isMapModalOpen = false;
+  
+  // A variável que faltava para resolver o erro!
+  public nomeUtilizador: string = 'Poupador';
 
   constructor(
     private route: ActivatedRoute,
@@ -25,6 +28,14 @@ export class LojaNavegacaoPage implements OnInit {
     const nomeRecebido = this.route.snapshot.paramMap.get('nome');
     if (nomeRecebido) {
       this.listaAtual = this.listasService.minhasListas.find(l => l.nome === nomeRecebido);
+    }
+  }
+
+  // Adicionámos isto para o ecrã ler o nome sempre que entras na loja
+  ionViewWillEnter() {
+    const userGuardado = localStorage.getItem('utilizadorAtual');
+    if (userGuardado) {
+      this.nomeUtilizador = userGuardado;
     }
   }
 

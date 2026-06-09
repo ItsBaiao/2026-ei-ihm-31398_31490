@@ -1,0 +1,38 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab3" text="" icon="arrow-back-outline" color="success"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center" style="font-weight: bold; color: #333;">Loja Preferida</ion-title>
+    <ion-buttons slot="end" style="width: 48px;"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg ion-padding">
+  
+  <div class="search-bar">
+    <ion-icon name="search-outline"></ion-icon>
+    <input type="text" placeholder="Pesquisar loja ou localidade..." />
+  </div>
+
+  <div class="section-title">LOJAS DISPONÍVEIS</div>
+  
+  <div class="store-card" *ngFor="let loja of lojas" 
+       [ngClass]="{'selected': loja.id === lojaAtual?.id}" 
+       (click)="selecionarLoja(loja)">
+    
+    <div class="icon-circle" [ngClass]="loja.id === lojaAtual?.id ? 'selected-icon' : 'normal-icon'">
+      <ion-icon [name]="loja.id === lojaAtual?.id ? 'location' : 'location-outline'"></ion-icon>
+    </div>
+    
+    <div class="store-info">
+      <h3>{{ loja.nome }}</h3>
+      <p>{{ loja.morada }}</p>
+    </div>
+    
+    <ion-icon [name]="loja.id === lojaAtual?.id ? 'checkmark-circle' : 'chevron-forward-outline'" 
+              [ngClass]="loja.id === lojaAtual?.id ? 'check-icon' : 'chevron-icon'">
+    </ion-icon>
+  </div>
+
+</ion-content>

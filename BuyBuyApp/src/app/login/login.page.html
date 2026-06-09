@@ -24,12 +24,14 @@
       
       <div class="custom-input-box">
         <ion-icon name="mail-outline"></ion-icon>
-        <ion-input type="email" placeholder="seu@email.com"></ion-input>
+        <ion-input type="email" placeholder="seu@email.com" [(ngModel)]="emailInput"></ion-input>
       </div>
 
       <div class="custom-input-box">
         <ion-icon name="lock-closed-outline"></ion-icon>
-        <ion-input [type]="mostrarSenha ? 'text' : 'password'" placeholder="Palavra-passe"></ion-input>
+        
+        <ion-input [type]="mostrarSenha ? 'text' : 'password'" placeholder="Palavra-passe" [(ngModel)]="senhaInput"></ion-input>
+        
         <ion-icon 
           [name]="mostrarSenha ? 'eye-off-outline' : 'eye-outline'" 
           class="suffix-icon" 
@@ -44,7 +46,7 @@
 
     </div>
 
-    <ion-button class="login-btn" expand="block" routerLink="/tabs/tab1">
+    <ion-button class="login-btn" expand="block" (click)="iniciarSessao()">
       ENTRAR <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
     </ion-button>
 
