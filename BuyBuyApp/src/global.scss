@@ -43,3 +43,8 @@
 .border-purple { border-left: 6px solid #a855f7 !important; }
 .border-yellow { border-left: 6px solid #eab308 !important; }
 .border-pink { border-left: 6px solid #ec4899 !important; }
+
+/* Pega no componente inteiro e move-o fisicamente no eixo Y para cima */
+ion-toast.toast-acima-das-tabs {
+  transform: translateY(-70px) !important; 
+}

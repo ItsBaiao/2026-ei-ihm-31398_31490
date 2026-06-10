@@ -62,6 +62,45 @@ export class Tab2Page implements OnInit {
     }
   }
 
+  // NOVA FUNÇÃO PARA O BOTÃO "CRIAR NOVA LISTA"
+  async criarListaRapida() {
+    // 1. Fecha o modal primeiro para não crashar
+    this.setModalOpen(false);
+
+    // 2. Espera a animação do modal acabar
+    setTimeout(async () => {
+      
+      const numeroAleatorio = Math.floor(Math.random() * 1000) + 1;
+      const nomeDaNovaLista = 'Lista Rápida ' + numeroAleatorio;
+
+      // 3. Monta a lista e usa o this.produtoSelecionado
+      const novaLista = {
+        nome: nomeDaNovaLista,
+        icone: 'cart-outline',
+        cor: 'border-light',
+        dataEdicao: 'Criada agora mesmo',
+        totalItens: 1,
+        produtos: [{ ...this.produtoSelecionado, riscado: false, recente: true }]
+      };
+
+      // 4. Guarda no cofre e atualiza as listas desta página
+      await this.listasService.adicionarLista(novaLista);
+      this.listasNoCofre = this.listasService.minhasListas;
+
+      // 5. Mostra a mensagem de sucesso cá em baixo
+      const toast = await this.toastCtrl.create({
+        message: `Criada e adicionado à ${nomeDaNovaLista}!`,
+        duration: 3000,
+        color: 'success',
+        icon: 'checkmark-circle',
+        position: 'bottom',
+        cssClass: 'toast-acima-das-tabs'
+      });
+      await toast.present();
+
+    }, 300);
+  }
+
   onSearchChange(event: any) { this.showResults = this.searchQuery.length > 0; }
   clearSearch() { this.searchQuery = ''; this.showResults = false; }
   simulateSearch() { this.searchQuery = 'Leite'; this.showResults = true; }

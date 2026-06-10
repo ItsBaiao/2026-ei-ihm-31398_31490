@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { ToastController, ActionSheetController, AlertController, NavController } from '@ionic/angular';
 import { ListasService, Lista } from '../services/listas.service';
 import { Network } from '@capacitor/network'; 
 
@@ -15,28 +15,33 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
   public listaAtual: Lista | undefined;
   public progresso: number = 0;
   public marcados: number = 0;
-
+  
+  public isOffline: boolean = false;
   public avisoOffline: HTMLIonToastElement | null = null;
   private networkListener: any; 
 
+  // Injetámos as novas ferramentas no constructor
   constructor(
     private route: ActivatedRoute,
     private listasService: ListasService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private actionSheetCtrl: ActionSheetController,
+    private alertCtrl: AlertController,
+    private navCtrl: NavController
   ) { }
 
   async ngOnInit() {
-    // O ngOnInit corre apenas uma vez quando a página nasce
     this.ligarDetetores();
   }
 
-  // O TRUQUE: O ionViewWillEnter corre SEMPRE que voltas a esta página
   async ionViewWillEnter() {
+    this.isOffline = !navigator.onLine;
     await this.listasService.init();
+    
     const nomeRecebido = this.route.snapshot.paramMap.get('nome');
     if (nomeRecebido) {
       this.listaAtual = this.listasService.minhasListas.find(l => l.nome === nomeRecebido);
-      this.calcularProgresso(); // Força a percentagem a atualizar!
+      this.calcularProgresso(); 
     }
   }
 
@@ -55,45 +60,66 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
     window.removeEventListener('offline', this.mostrarAvisoOffline.bind(this));
   }
 
-  async ligarDetetores() {
-    // 1. Detetor Nativo (Para o telemóvel físico)
-    this.networkListener = await Network.addListener('networkStatusChange', async status => {
-      if (status.connected) {
-        this.esconderAviso();
-      } else {
-        this.mostrarAvisoOffline();
-      }
-    });
+  async editarListaCompleta() {
+    if (this.listaAtual) {
+      // Navega para a página de nova lista e leva o nome às cavalitas no URL
+      this.navCtrl.navigateForward(['/nova-lista'], {
+        queryParams: { editar: this.listaAtual.nome }
+      });
+    }
+  }
 
-    // 2. Detetor Web (Para o browser e emulador teimoso)
+  async apagarLista() {
+    if (this.listaAtual) {
+      // Procura a lista no cofre
+      const index = this.listasService.minhasListas.findIndex(l => l.nome === this.listaAtual?.nome);
+      
+      if (index > -1) {
+        // Corta a lista fora do cofre
+        this.listasService.minhasListas.splice(index, 1);
+        await this.listasService.guardarAlteracoes();
+        
+        const toast = await this.toastCtrl.create({
+          message: 'Lista apagada com sucesso!',
+          duration: 2000, color: 'dark', position: 'bottom'
+        });
+        await toast.present();
+        
+        // Volta para a página principal porque esta lista já não existe!
+        this.navCtrl.navigateBack('/tabs/tab1');
+      }
+    }
+  }
+
+  // ==========================================
+  // FUNÇÕES DE REDE E PRODUTOS (MANTIDAS)
+  // ==========================================
+
+  async ligarDetetores() {
+    this.networkListener = await Network.addListener('networkStatusChange', async status => {
+      if (status.connected) { this.esconderAviso(); } else { this.mostrarAvisoOffline(); }
+    });
     window.addEventListener('online', () => this.esconderAviso());
     window.addEventListener('offline', () => this.mostrarAvisoOffline());
   }
 
   async esconderAviso() {
+    this.isOffline = false;
     if (this.avisoOffline) {
       await this.avisoOffline.dismiss();
       this.avisoOffline = null;
-
       const toast = await this.toastCtrl.create({
-        message: 'Ligação restaurada. Sincronizado!',
-        duration: 2500,
-        color: 'success',
-        icon: 'wifi-outline',
-        position: 'bottom'
+        message: 'Ligação restaurada. Sincronizado!', duration: 2500, color: 'success', icon: 'wifi-outline', position: 'bottom'
       });
       await toast.present();
     }
   }
 
   async mostrarAvisoOffline() {
+    this.isOffline = true;
     if (this.avisoOffline) return; 
-
     this.avisoOffline = await this.toastCtrl.create({
-      message: 'A funcionar em modo offline. As alterações estão a ser guardadas.',
-      color: 'dark',
-      icon: 'cloud-offline-outline',
-      position: 'bottom'
+      message: 'A funcionar em modo offline. As alterações estão a ser guardadas.', color: 'dark', icon: 'cloud-offline-outline', position: 'bottom'
     });
     await this.avisoOffline.present();
   }
@@ -101,7 +127,6 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
   async riscarProduto(produto: any, slidingItem: any) {
     produto.riscado = !produto.riscado; 
     slidingItem.close(); 
-    
     this.calcularProgresso(); 
     await this.listasService.guardarAlteracoes(); 
 

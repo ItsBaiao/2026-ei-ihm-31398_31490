@@ -70,4 +70,42 @@ export class ProdutoDetalhesPage implements OnInit {
     // Volta automaticamente para o ecrã das listas (Tab 1)
     this.navCtrl.navigateRoot('/tabs/tab1');
   }
+
+  async criarListaRapida() {
+    // 1. Fechar o modal PRIMEIRO (acaba com a sobreposição de janelas)
+    this.setModalOpen(false);
+
+    // 2. Esperar um bocadinho para a animação do modal terminar de fechar
+    setTimeout(async () => {
+      
+      // 3. Criar nome padrão para a lista (Sugestão do Grupo 26)
+      const numeroAleatorio = Math.floor(Math.random() * 1000) + 1;
+      const nomeDaNovaLista = 'Lista Rápida ' + numeroAleatorio;
+
+      // 4. Criar a estrutura da lista já com o produto lá dentro!
+      const novaLista = {
+        nome: nomeDaNovaLista,
+        icone: 'cart-outline',
+        cor: 'border-light', // cor azul padrão
+        dataEdicao: 'Criada agora mesmo',
+        totalItens: 1,
+        produtos: [{ ...this.produtoAtual, riscado: false, recente: true }]
+      };
+
+      // 5. Guardar a lista no cofre (ListasService)
+      await this.listasService.adicionarLista(novaLista);
+
+      // 6. Feedback visual de sucesso
+      const toast = await this.toastCtrl.create({
+        message: `Criada e adicionado à ${nomeDaNovaLista}!`,
+        duration: 3000,
+        color: 'success',
+        icon: 'checkmark-circle',
+        position: 'bottom',
+        cssClass: 'toast-acima-das-tabs' // Aproveitamos a classe que criámos antes!
+      });
+      await toast.present();
+
+    }, 300); // 300 milissegundos é o tempo exato da animação do modal
+  }
 }

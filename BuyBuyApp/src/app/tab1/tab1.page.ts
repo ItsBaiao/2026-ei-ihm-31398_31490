@@ -9,20 +9,18 @@ import { ListasService, Lista } from '../services/listas.service';
 })
 export class Tab1Page {
 
-  public listasNoEcra: Lista[] = [];
-  // 1. Variável nova para o ecrã
   public nomeUtilizador: string = 'Poupador';
 
   constructor(private listasService: ListasService) {}
 
-  async ionViewWillEnter() {
-    // 2. Lê a memória para ver o nome de quem entrou
-    const userGuardado = localStorage.getItem('utilizadorAtual');
-    if (userGuardado) {
-      this.nomeUtilizador = userGuardado;
-    }
+  // A SOLUÇÃO DEFINITIVA: O Getter
+  // O Angular vai avaliar isto em tempo real, sempre que houver qualquer mudança no sistema
+  get listasNoEcra(): Lista[] {
+    return this.listasService.minhasListas;
+  }
 
-    await this.listasService.init();
-    this.listasNoEcra = this.listasService.minhasListas;
+  // Só precisamos de garantir que o cofre é lido na inicialização
+  async ionViewWillEnter() {
+    await this.listasService.init(); 
   }
 }

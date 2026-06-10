@@ -48,10 +48,17 @@ export class Tab3Page {
   async mostrarEmDesenvolvimento() {
     const toast = await this.toastCtrl.create({
       message: 'Funcionalidade ainda em desenvolvimento! 🚧',
-      duration: 2500,
+      duration: 3000,
       color: 'warning',
-      position: 'top'
+      position: 'bottom',
+      cssClass: 'toast-acima-das-tabs', // Adicionámos esta linha!
+      buttons: [
+        {
+          icon: 'close-outline',
+          role: 'cancel'
+        }
+      ]
     });
-    toast.present();
+    await toast.present();
   }
 }
