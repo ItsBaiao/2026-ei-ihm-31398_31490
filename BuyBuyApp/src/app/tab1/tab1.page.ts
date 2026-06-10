@@ -9,18 +9,38 @@ import { ListasService, Lista } from '../services/listas.service';
 })
 export class Tab1Page {
 
-  public nomeUtilizador: string = 'Poupador';
+  public primeiroNome: string = 'Poupador';
+  public iniciaisAvatar: string = 'PO';
 
   constructor(private listasService: ListasService) {}
 
-  // A SOLUÇÃO DEFINITIVA: O Getter
-  // O Angular vai avaliar isto em tempo real, sempre que houver qualquer mudança no sistema
+  // O nosso Getter para as listas 
   get listasNoEcra(): Lista[] {
     return this.listasService.minhasListas;
   }
 
-  // Só precisamos de garantir que o cofre é lido na inicialização
   async ionViewWillEnter() {
     await this.listasService.init(); 
+
+    // Agora sim! Vai buscar à chave EXATA que definiste no teu login/perfil
+    const userGuardado = localStorage.getItem('utilizadorAtual');
+    
+    if (userGuardado) {
+      // Extrai apenas o primeiro nome (ex: "Joao Gaiao" -> "Joao")
+      this.primeiroNome = userGuardado.trim().split(' ')[0];
+      
+      // Gera as iniciais usando a mesma função da Tab3
+      this.gerarIniciais(userGuardado);
+    }
+  }
+
+  // A mesma função genial que tens na Tab3, adaptada para a variável desta página
+  gerarIniciais(nome: string) {
+    const nomes = nome.trim().split(' ');
+    if (nomes.length > 1) {
+      this.iniciaisAvatar = nomes[0][0].toUpperCase() + nomes[nomes.length - 1][0].toUpperCase();
+    } else {
+      this.iniciaisAvatar = nome.substring(0, 2).toUpperCase();
+    }
   }
 }

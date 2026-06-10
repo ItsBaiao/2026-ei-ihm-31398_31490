@@ -1,16 +1,18 @@
 <ion-header class="ion-no-border">
   <ion-toolbar color="transparent">
-    <div class="custom-header">
-      <div class="user-profile">
-        <ion-avatar>
-          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
-        </ion-avatar>
-        <h2>Olá, {{ nomeUtilizador }}!</h2>
+    <div class="custom-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      
+      <div class="user-profile" style="display: flex; align-items: center; gap: 12px;">
+        <div class="avatar-circular-pequeno">
+          {{ iniciaisAvatar }}
+        </div>
+        <h2 style="margin: 0; font-size: 1.2rem; font-weight: bold;">Olá, {{ primeiroNome }}!</h2>
       </div>
       
       <ion-button fill="clear" color="dark">
         <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
       </ion-button>
+
     </div>
   </ion-toolbar>
 </ion-header>

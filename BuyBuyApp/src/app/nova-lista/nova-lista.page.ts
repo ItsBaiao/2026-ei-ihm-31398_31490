@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router'; // Adicionado ActivatedRoute
+import { Router, ActivatedRoute } from '@angular/router';
 import { ListasService } from '../services/listas.service';
 
 @Component({
@@ -9,17 +9,11 @@ import { ListasService } from '../services/listas.service';
   standalone: false
 })
 export class NovaListaPage implements OnInit {
-
-  // Variáveis do formulário
   public nomeDaLista: string = '';
   public iconeEscolhido: string = 'cart-outline';
   public corEscolhida: string = 'border-dark';
-
-  // VARIÁVEIS NOVAS PARA A EDIÇÃO
   public isEditMode: boolean = false;
   public nomeListaOriginal: string = '';
-
-  // Variáveis da Modal de Cores
   public isColorModalOpen = false;
   public hueValue = 0;
   public lightnessValue = 50;
@@ -27,80 +21,81 @@ export class NovaListaPage implements OnInit {
 
   public lojaSelecionada: any;
 
-  constructor(
-    private router: Router, 
-    private route: ActivatedRoute, // Injetado para ler os parâmetros
-    private listasService: ListasService
-  ) {}
+  constructor(private router: Router, private route: ActivatedRoute, private listasService: ListasService) {}
 
   async ngOnInit() {
-    // Fica à escuta: "Será que fui chamado com um nome para editar?"
     this.route.queryParams.subscribe(async params => {
       if (params['editar']) {
         this.isEditMode = true;
         this.nomeListaOriginal = params['editar'];
         await this.carregarDadosDaLista();
-      } else {
-        // Se não trouxer nada, garante que entra em modo de criação limpo
-        this.isEditMode = false;
-        this.nomeDaLista = '';
-        this.iconeEscolhido = 'cart-outline';
-        this.corEscolhida = 'border-dark';
       }
     });
   }
 
-  ionViewWillEnter() {
-    this.lojaSelecionada = this.listasService.lojaSelecionadaGlobal;
-  }
+  ionViewWillEnter() { this.lojaSelecionada = this.listasService.lojaSelecionadaGlobal; }
 
-  // Função nova que vai ao cofre buscar as cores e ícones da lista a editar
   async carregarDadosDaLista() {
     await this.listasService.init();
-    const listaParaEditar = this.listasService.minhasListas.find(l => l.nome === this.nomeListaOriginal);
-    
-    if (listaParaEditar) {
-      this.nomeDaLista = listaParaEditar.nome;
-      this.iconeEscolhido = listaParaEditar.icone;
-      this.corEscolhida = listaParaEditar.cor;
+    const lista = this.listasService.minhasListas.find(l => l.nome === this.nomeListaOriginal);
+    if (lista) {
+      this.nomeDaLista = lista.nome;
+      this.iconeEscolhido = lista.icone;
+      this.corEscolhida = lista.cor;
     }
   }
 
   selecionarIcone(icone: string) { this.iconeEscolhido = icone; }
   selecionarCor(cor: string) { this.corEscolhida = cor; }
   setModalOpen(isOpen: boolean) { this.isColorModalOpen = isOpen; }
-  atualizarCorPeloSlider(event: any) { this.hueValue = event.target.value; }
-  atualizarLuminosidadePeloSlider(event: any) { this.lightnessValue = event.target.value; }
-  confirmarCorModal() { this.setModalOpen(false); }
 
-  // O nosso botão inteligente
+  atualizarCorPeloSlider(event: any) { 
+    this.hueValue = event.target.value; 
+    this.atualizarCorHex();
+  }
+  
+  atualizarLuminosidadePeloSlider(event: any) { 
+    this.lightnessValue = event.target.value; 
+    this.atualizarCorHex();
+  }
+
+  atualizarCorHex() {
+    const h = this.hueValue;
+    const l = this.lightnessValue;
+    const a = 100 * Math.min(l / 100, 1 - l / 100) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l / 100 - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    this.corPersonalizada = `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+  }
+
+  confirmarCorModal() { 
+    this.corEscolhida = this.corPersonalizada;
+    this.setModalOpen(false); 
+  }
+
   async guardarLista() {
-    if (this.nomeDaLista.trim() !== '') {
-      
-      if (this.isEditMode) {
-        // MODO EDIÇÃO: Atualiza a lista existente
-        const index = this.listasService.minhasListas.findIndex(l => l.nome === this.nomeListaOriginal);
-        if (index > -1) {
-          this.listasService.minhasListas[index].nome = this.nomeDaLista;
-          this.listasService.minhasListas[index].icone = this.iconeEscolhido;
-          this.listasService.minhasListas[index].cor = this.corEscolhida;
-          this.listasService.minhasListas[index].dataEdicao = 'Editada agora mesmo';
-          
-          await this.listasService.guardarAlteracoes();
-        }
-      } else {
-        // MODO CRIAÇÃO: O que tu já tinhas antes
-        const novaLista = {
-          nome: this.nomeDaLista,
-          icone: this.iconeEscolhido,
-          cor: this.corEscolhida,
-          dataEdicao: 'Criada agora mesmo',
-          totalItens: 0,
-          produtos: []
+    if (this.nomeDaLista.trim() === '') return;
+    const lista = { nome: this.nomeDaLista, icone: this.iconeEscolhido, cor: this.corEscolhida, dataEdicao: 'Agora', produtos: [] };
+    
+    if (this.isEditMode) {
+      const index = this.listasService.minhasListas.findIndex(l => l.nome === this.nomeListaOriginal);
+      if (index > -1) this.listasService.minhasListas[index] = { ...this.listasService.minhasListas[index], ...lista };
+    } else {
+        // MODO CRIAÇÃO: Adicionamos o totalItens: 0 que faltava
+        const novaLista = { 
+          nome: this.nomeDaLista, 
+          icone: this.iconeEscolhido, 
+          cor: this.corEscolhida, 
+          dataEdicao: 'Agora', 
+          totalItens: 0, // <--- AQUI ESTÁ A CORREÇÃO
+          produtos: [] 
         };
         await this.listasService.adicionarLista(novaLista);
-      }
     }
+    await this.listasService.guardarAlteracoes();
     this.router.navigate(['/tabs/tab1']);
   }
 }

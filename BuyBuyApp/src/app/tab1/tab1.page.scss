@@ -119,3 +119,19 @@ ion-toolbar {
   margin-bottom: 20px;
   margin-right: 10px;
 }
+
+/* A nossa bolinha verde para o Avatar no ecrã inicial */
+.avatar-circular-pequeno {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #00d26a; /* O vosso verde principal */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 6px rgba(0, 210, 106, 0.2);
+}

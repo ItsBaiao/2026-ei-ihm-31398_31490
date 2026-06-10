@@ -1,71 +1,72 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="transparent" class="custom-header">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/tab1" text="" icon="arrow-back-outline" color="dark"></ion-back-button>
-    </ion-buttons>
+  <ion-toolbar color="transparent" style="padding-top: env(safe-area-inset-top, 20px);">
     <ion-buttons slot="end">
-      <ion-button color="dark" class="header-btn" (click)="terminarSessao()">
+      <ion-button fill="solid" color="danger" (click)="terminarSessao()" class="btn-terminar">
         <ion-icon name="close-outline" slot="start"></ion-icon> Terminar Sessão
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <div class="header-status-bar">
-    <span><ion-icon name="location-outline"></ion-icon> Modo Loja Ativo • ÉBarato</span>
-    <span>SESSÃO: 12:45</span>
-  </div>
 </ion-header>
 
 <ion-content class="custom-bg ion-padding">
 
-  <div class="user-welcome">
-    <div class="avatar"><ion-icon name="person"></ion-icon></div>
-    <div class="greeting">
-      <p>Bom dia,</p>
-      <h2>Olá, {{ nomeUtilizador }}!</h2>
-    </div>
-    <div class="bell-icon"><ion-icon name="notifications-outline"></ion-icon></div>
-  </div>
-
-  <div class="gps-card">
+  <div class="gps-card" *ngIf="corredorAtual">
     <div class="gps-text">
       <p>PRÓXIMA PARAGEM</p>
-      <h2>Corredor 1:<br>Lacticínios</h2>
+      <h2>
+        {{ corredorAtual.nomeCorredor }}:<br>{{ corredorAtual.categoria }}
+      </h2>
     </div>
-    <div class="distance-badge pulse-animation">20m</div>
+    
+    <div (click)="setMapModalOpen(true)" class="map-shortcut">
+      <ion-icon name="map-outline"></ion-icon>
+    </div>
+  </div>
+
+  <div class="gps-card success" *ngIf="!corredorAtual && gruposCorredores.length > 0">
+    <div class="gps-text">
+      <h2>🎉 Tudo Comprado!</h2>
+      <p class="subtitle">Podes dirigir-te à caixa de pagamento.</p>
+    </div>
   </div>
 
   <div class="filter-pills">
-    <div class="pill active">Toda a Lista</div>
-    <div class="pill">Corredor 1</div>
-    <div class="pill">Corredor 4</div>
-  </div>
-
-  <div class="category-header">
-    <span>🧀 Corredor 1: Lacticínios</span>
-    <span class="count">{{ listaAtual?.produtos?.length || 0 }} itens</span>
-  </div>
-
-  <div class="products-container">
-    <div class="product-card" *ngFor="let prod of listaAtual?.produtos">
-      <div class="prod-left">
-        <div class="prod-img" [ngClass]="prod.imagemClass"></div>
-        <div class="prod-info">
-          <h4 [ngClass]="{'riscado': prod.riscado}">{{ prod.nome }}</h4>
-          <p>{{ prod.tamanho }}</p>
-          <span class="price">{{ prod.preco }}</span>
-        </div>
-      </div>
-      <div class="prod-right">
-        <div class="add-btn" *ngIf="!prod.riscado" (click)="riscarProduto(prod)"><ion-icon name="add"></ion-icon></div>
-        <div class="check-btn" *ngIf="prod.riscado" (click)="riscarProduto(prod)"><ion-icon name="checkmark"></ion-icon></div>
-      </div>
+    <div class="pill" [class.active]="filtroCorredor === 'Toda a Lista'" (click)="mudarFiltroCorredor('Toda a Lista')">
+      Toda a Lista
+    </div>
+    
+    <div class="pill" *ngFor="let grupo of gruposCorredores" [class.active]="filtroCorredor === grupo.nomeCorredor" (click)="mudarFiltroCorredor(grupo.nomeCorredor)">
+      {{ grupo.nomeCorredor }}
     </div>
   </div>
 
-  <ion-button expand="block" fill="outline" class="map-btn" (click)="setMapModalOpen(true)">
-    <ion-icon name="map-outline" slot="start"></ion-icon> VER MAPA DA LOJA
-  </ion-button>
+  <ng-container *ngFor="let grupo of gruposCorredores">
+    <div class="corredor-section" *ngIf="filtroCorredor === 'Toda a Lista' || filtroCorredor === grupo.nomeCorredor">
+      
+      <div class="category-header">
+        <span class="title">{{ grupo.icone }} {{ grupo.nomeCorredor }}: {{ grupo.categoria }}</span>
+        <span class="count">{{ contarPendentes(grupo) }} itens</span>
+      </div>
 
+      <div class="products-container">
+        <div class="product-card" *ngFor="let prod of grupo.produtos" [style.opacity]="prod.riscado ? '0.6' : '1'">
+          <div class="prod-left">
+            <div class="prod-img" [ngClass]="prod.imagemClass"></div>
+            <div class="prod-info">
+              <h4 [ngClass]="{'riscado': prod.riscado}">{{ prod.nome }}</h4>
+              <p>{{ prod.tamanho }}</p>
+              <span class="price">{{ prod.preco }}</span>
+            </div>
+          </div>
+          <div class="prod-right">
+            <div class="add-btn" *ngIf="!prod.riscado" (click)="riscarProduto(prod)"><ion-icon name="add"></ion-icon></div>
+            <div class="check-btn" *ngIf="prod.riscado" (click)="riscarProduto(prod)"><ion-icon name="checkmark"></ion-icon></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </ng-container>
 
   <ion-modal [isOpen]="isMapModalOpen" (didDismiss)="setMapModalOpen(false)">
     <ng-template>
@@ -74,48 +75,57 @@
           <ion-buttons slot="start">
             <ion-button color="dark" (click)="setMapModalOpen(false)"><ion-icon name="arrow-back-outline"></ion-icon></ion-button>
           </ion-buttons>
-          <ion-title class="ion-text-center" style="font-weight: bold; font-size: 16px;">Mapa da Loja - ÉBarato</ion-title>
+          <ion-title class="ion-text-center" style="font-weight: bold; font-size: 16px;">Planta da Loja - ÉBarato</ion-title>
         </ion-toolbar>
       </ion-header>
       
       <ion-content class="custom-bg ion-padding">
         
-        <div class="map-wrapper">
-          <div class="map-zone padaria">PADARIA</div>
-          <div class="map-zone lacticinios">LACTICÍNIOS</div>
-          <div class="map-zone frutas">FRUTAS</div>
-          <div class="map-zone bebidas">BEBIDAS</div>
-          <div class="map-zone limpeza">LIMPEZA</div>
-          
-          <div class="map-pin pin-1">1</div>
-          <div class="map-pin pin-2">2</div>
-          <div class="map-pin pin-3">3</div>
-          
-          <div class="map-controls">
-            <div class="ctrl-btn"><ion-icon name="add"></ion-icon></div>
-            <div class="ctrl-btn"><ion-icon name="remove"></ion-icon></div>
-            <div class="ctrl-btn gps"><ion-icon name="locate-outline"></ion-icon></div>
+        <div class="supermarket-map">
+          <div class="aisles-container">
+            
+            <div class="corridor"><span class="vertical-text">C6: CARNES</span></div>
+            <div class="shelf"></div>
+            
+            <div class="corridor"><span class="vertical-text">C5: BEBIDAS</span></div>
+            <div class="shelf"></div>
+            
+            <div class="corridor"><span class="vertical-text">C4: LIMPEZA</span></div>
+            <div class="shelf"></div>
+            
+            <div class="corridor"><span class="vertical-text">C3: PADARIA</span></div>
+            <div class="shelf"></div>
+            
+            <div class="corridor"><span class="vertical-text">C2: LEGUMES</span></div>
+            <div class="shelf"></div>
+            
+            <div class="corridor"><span class="vertical-text">C1: LACTICÍNIOS</span></div>
+
           </div>
         </div>
 
       </ion-content>
       
       <ion-footer class="ion-no-border" style="background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 12px; font-weight: bold; color: #888; text-transform: uppercase;">Próxima Paragem</span>
-          <span style="background: #e6f9ed; color: #00C853; font-weight: bold; font-size: 12px; padding: 5px 10px; border-radius: 20px;"><ion-icon name="walk-outline"></ion-icon> 12m</span>
+        
+        <div *ngIf="corredorAtual">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 12px; font-weight: bold; color: #888; text-transform: uppercase;">Próxima Paragem</span>
+          </div>
+          <h2 style="margin: 0 0 5px; font-size: 18px; font-weight: bold; color: #111;">{{ corredorAtual.nomeCorredor }}: {{ corredorAtual.categoria }}</h2>
+          <p style="margin: 0 0 20px; color: #666; font-size: 14px;">Procura a zona destacada na planta acima.</p>
         </div>
-        <h2 style="margin: 0 0 5px; font-size: 18px; font-weight: bold; color: #111;">Corredor 1: Lacticínios</h2>
-        <p style="margin: 0 0 20px; color: #666; font-size: 14px;">Leite Meio Gordo (Mimosa)</p>
+
+        <div *ngIf="!corredorAtual">
+          <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: bold; color: #111;">🎉 Compras Concluídas!</h2>
+        </div>
         
         <div style="display: flex; gap: 10px;">
           <ion-button expand="block" color="success" style="flex: 1; --border-radius: 12px; font-weight: bold;" (click)="setMapModalOpen(false)">
-            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon> ITEM ENCONTRADO
-          </ion-button>
-          <ion-button fill="outline" color="medium" style="--border-radius: 12px; width: 60px;">
-            <ion-icon name="play-skip-forward-outline"></ion-icon>
+            <ion-icon name="arrow-back-outline" slot="start"></ion-icon> VOLTAR À LISTA
           </ion-button>
         </div>
+
       </ion-footer>
     </ng-template>
   </ion-modal>

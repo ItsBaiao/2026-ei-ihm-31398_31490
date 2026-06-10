@@ -52,9 +52,12 @@
       </div>
       
       <div class="icon-circle custom-color-btn" 
-           style="background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); border: none; color: black;" 
+           style="background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); border: none; color: black; position: relative;" 
            (click)="setModalOpen(true)">
-        <ion-icon name="color-wand-outline"></ion-icon>
+        
+        <ion-icon name="checkmark" style="position: absolute; color: white; font-size: 24px;" *ngIf="corEscolhida.startsWith('#')"></ion-icon>
+        
+        <ion-icon name="color-wand-outline" *ngIf="!corEscolhida.startsWith('#')"></ion-icon>
       </div>
 
     </div>

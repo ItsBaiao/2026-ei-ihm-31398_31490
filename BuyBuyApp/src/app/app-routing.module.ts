@@ -38,10 +38,6 @@ const routes: Routes = [
     loadChildren: () => import('./loja-navegacao/loja-navegacao.module').then( m => m.LojaNavegacaoPageModule)
   },
   {
-    path: 'loja-mapa',
-    loadChildren: () => import('./loja-mapa/loja-mapa.module').then( m => m.LojaMapaPageModule)
-  },
-  {
   path: 'produto-detalhes/:id', // <-- O truque está neste /:id
   loadChildren: () => import('./produto-detalhes/produto-detalhes.module').then( m => m.ProdutoDetalhesPageModule)
   },

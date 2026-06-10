@@ -1,17 +1,25 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <div class="header-container">
-      <ion-icon name="arrow-back-outline" class="back-icon" routerLink="/tabs/tab1"></ion-icon>
       
-      <div class="search-bar-wrapper">
+      <ion-icon 
+        *ngIf="showResults" 
+        name="arrow-back-outline" 
+        class="back-icon" 
+        (click)="voltarParaCategorias()">
+      </ion-icon>
+      
+      <div class="search-bar-wrapper" [style.margin-left]="!showResults ? '0' : '10px'">
         <ion-icon name="search-outline" class="search-icon"></ion-icon>
         <ion-input 
           placeholder="Pesquisar produto..." 
           [(ngModel)]="searchQuery" 
-          (ionInput)="onSearchChange($event)">
+          (ionInput)="onSearchChange($event)"
+          (keyup.enter)="buscarComEnter()">
         </ion-input>
-        <ion-icon name="close-outline" class="clear-icon" *ngIf="searchQuery" (click)="clearSearch()"></ion-icon>
+        <ion-icon name="close-outline" class="clear-icon" *ngIf="searchQuery" (click)="voltarParaCategorias()"></ion-icon>
       </div>
+      
     </div>
   </ion-toolbar>
 </ion-header>
@@ -19,89 +27,74 @@
 <ion-content class="custom-bg">
   
   <div class="filter-scroll" *ngIf="!showResults">
-    <div class="filter-pill active">Todos</div>
-    <div class="filter-pill">Promoção</div>
-    <div class="filter-pill">Marca Própria</div>
-    <div class="filter-pill">Bio</div>
+    <div class="filter-pill" [class.active]="filtroAtivo === 'Todos'" (click)="mudarFiltroTopo('Todos')">Todos</div>
+    <div class="filter-pill" [class.active]="filtroAtivo === 'Promoção'" (click)="mudarFiltroTopo('Promoção')">Promoção</div>
+    <div class="filter-pill" [class.active]="filtroAtivo === 'Marca Própria'" (click)="mudarFiltroTopo('Marca Própria')">Marca Própria</div>
+    <div class="filter-pill" [class.active]="filtroAtivo === 'Bio'" (click)="mudarFiltroTopo('Bio')">Bio</div>
   </div>
 
   <div class="filter-scroll" *ngIf="showResults">
-    <div class="filter-pill active">Todos</div>
-    <div class="filter-pill">Lacticínios</div>
-    <div class="filter-pill">Bebidas</div>
-    <div class="filter-pill">Vegetal</div>
+    <div class="filter-pill" [class.active]="filtroAtivo === 'Todos'" (click)="mudarFiltroTopo('Todos')">Todos</div>
+    <div class="filter-pill" [class.active]="filtroAtivo === 'Promoção'" (click)="mudarFiltroTopo('Promoção')">Promoção</div>
+    <div class="filter-pill" [class.active]="filtroAtivo === 'Marca Própria'" (click)="mudarFiltroTopo('Marca Própria')">Marca Própria</div>
+    <div class="filter-pill" [class.active]="filtroAtivo === 'Bio'" (click)="mudarFiltroTopo('Bio')">Bio</div>
   </div>
 
   <div *ngIf="!showResults" class="initial-state">
     
-    <div class="section-title">PESQUISAS RECENTES</div>
-    <div class="recent-list">
-      <div class="recent-item" (click)="simulateSearch()" style="cursor: pointer;">
-        <div class="recent-left">
-          <ion-icon name="time-outline"></ion-icon>
-          <span>Leite</span>
+    <div *ngIf="pesquisasRecentes.length > 0">
+      <div class="section-title">PESQUISAS RECENTES</div>
+      <div class="recent-list">
+        <div class="recent-item" *ngFor="let pesquisa of pesquisasRecentes; let i = index" (click)="fazerPesquisa(pesquisa)" style="cursor: pointer;">
+          <div class="recent-left">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ pesquisa }}</span>
+          </div>
+          <ion-icon name="close-outline" class="remove-icon" (click)="removerPesquisa(i, $event)"></ion-icon>
         </div>
-        <ion-icon name="close-outline" class="remove-icon"></ion-icon>
-      </div>
-      <div class="recent-item">
-        <div class="recent-left">
-          <ion-icon name="time-outline"></ion-icon>
-          <span>Azeite</span>
-        </div>
-        <ion-icon name="close-outline" class="remove-icon"></ion-icon>
-      </div>
-      <div class="recent-item">
-        <div class="recent-left">
-          <ion-icon name="time-outline"></ion-icon>
-          <span>Pão de Forma</span>
-        </div>
-        <ion-icon name="close-outline" class="remove-icon"></ion-icon>
       </div>
     </div>
 
     <div class="section-title" style="margin-top: 25px;">CATEGORIAS</div>
     <div class="categories-grid">
-      <div class="category-card"><div class="cat-icon">🥛</div><span>Lacticínios</span></div>
-      <div class="category-card"><div class="cat-icon">🥦</div><span>Legumes</span></div>
-      <div class="category-card"><div class="cat-icon">🍞</div><span>Padaria</span></div>
-      <div class="category-card"><div class="cat-icon">🧹</div><span>Limpeza</span></div>
-      <div class="category-card"><div class="cat-icon">🥤</div><span>Bebidas</span></div>
-      <div class="category-card"><div class="cat-icon">🍖</div><span>Carnes</span></div>
+      <div class="category-card" (click)="abrirCategoria('Lacticínios')"><div class="cat-icon">🥛</div><span>Lacticínios</span></div>
+      <div class="category-card" (click)="abrirCategoria('Legumes')"><div class="cat-icon">🥦</div><span>Legumes</span></div>
+      <div class="category-card" (click)="abrirCategoria('Padaria')"><div class="cat-icon">🍞</div><span>Padaria</span></div>
+      <div class="category-card" (click)="abrirCategoria('Limpeza')"><div class="cat-icon">🧹</div><span>Limpeza</span></div>
+      <div class="category-card" (click)="abrirCategoria('Bebidas')"><div class="cat-icon">🥤</div><span>Bebidas</span></div>
+      <div class="category-card" (click)="abrirCategoria('Carnes')"><div class="cat-icon">🍖</div><span>Carnes</span></div>
     </div>
   </div>
 
   <div *ngIf="showResults" class="results-state">
     
-    <div class="search-product-card" *ngFor="let produto of produtosDoCatalogo" [routerLink]="['/produto-detalhes', produto.id]" style="cursor: pointer;">
-      
+    <div *ngIf="produtosFiltrados.length === 0" style="text-align: center; padding: 40px 20px; color: #666;">
+      <ion-icon name="search-outline" style="font-size: 48px; opacity: 0.3;"></ion-icon>
+      <h3 style="margin-top: 10px;">Nenhum produto encontrado</h3>
+    </div>
+
+    <div class="search-product-card" *ngFor="let produto of produtosFiltrados" [routerLink]="['/produto-detalhes', produto.id]" style="cursor: pointer;">
       <div class="prod-img" [ngClass]="produto.imagemClass"></div>
-      
       <div class="prod-info">
         <h4>{{ produto.nome }}</h4>
         <p>{{ produto.categoria }} • {{ produto.tamanho }}</p>
-        
         <span class="badge" [ngClass]="produto.tagClass" *ngIf="produto.tag">{{ produto.tag }}</span>
-        
         <div class="price-row" *ngIf="produto.precoAntigo">
           <span class="old-price">{{ produto.precoAntigo }}</span>
           <span class="price">{{ produto.preco }}</span>
         </div>
-
         <div class="price" *ngIf="!produto.precoAntigo" [style.margin-top]="!produto.tag ? '22px' : '0'">
           {{ produto.preco }}
         </div>
       </div>
-      
       <div class="add-btn" (click)="abrirModalRapido(produto, $event)">
         <ion-icon name="add"></ion-icon>
       </div>
     </div>
-
   </div>
 
   <ion-modal [isOpen]="isListModalOpen" (didDismiss)="setModalOpen(false)" [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85]">
     <ng-template>
-      
       <div class="modal-header">
         <div class="drag-indicator"></div>
         <div class="modal-title-row">
@@ -109,10 +102,8 @@
           <ion-icon name="close-outline" (click)="setModalOpen(false)"></ion-icon>
         </div>
       </div>
-      
       <ion-content>
         <div class="modal-content">
-          
           <div class="selected-product" *ngIf="produtoSelecionado">
             <div class="thumb-img" [ngClass]="produtoSelecionado.imagemClass"></div>
             <div class="info">
@@ -120,7 +111,6 @@
               <p>{{ produtoSelecionado.tamanho }} • {{ produtoSelecionado.preco }}</p>
             </div>
           </div>
-
           <div class="list-option" *ngFor="let lista of listasNoCofre" (click)="gravarProdutoNaLista(lista)" style="cursor: pointer;">
             <div class="list-icon"><ion-icon [name]="lista.icone"></ion-icon></div>
             <div class="list-text">
@@ -129,15 +119,11 @@
             </div>
             <div class="add-circle-btn"><ion-icon name="add"></ion-icon></div>
           </div>
-
           <ion-button expand="block" fill="outline" class="create-new-list-btn" (click)="criarListaRapida()">
             <ion-icon name="add-outline" slot="start"></ion-icon> Criar Nova Lista
           </ion-button>
-
         </div>
       </ion-content>
-
     </ng-template>
   </ion-modal>
-
 </ion-content>
