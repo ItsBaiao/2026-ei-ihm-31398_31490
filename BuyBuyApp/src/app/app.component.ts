@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
+import { Router } from '@angular/router'; // <-- 1. Importamos o Router
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,8 @@ import { ScreenOrientation } from '@capacitor/screen-orientation';
 })
 export class AppComponent {
   
-  constructor() {
+  // 2. Injetamos o Router no construtor para podermos navegar
+  constructor(private router: Router) {
     this.iniciarApp();
   }
 
@@ -21,6 +23,15 @@ export class AppComponent {
     } catch (error) {
       // Este catch previne erros no browser do PC, já que isto é uma funcionalidade física
       console.log('Bloqueio de rotação aplicado. Apenas detetável no dispositivo físico.');
+    }
+
+    // 3. A MÁGICA DO AUTO-LOGIN
+    // Vai ao telemóvel procurar se alguém já fez login antes
+    const emailGuardado = localStorage.getItem('emailAtual');
+    
+    if (emailGuardado) {
+      // Se encontrou um email, cancela a viagem para o Welcome e vai direto para a Tab 1!
+      this.router.navigateByUrl('/tabs/tab1');
     }
   }
 }

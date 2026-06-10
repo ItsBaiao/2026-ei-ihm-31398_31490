@@ -14,7 +14,7 @@ export class Tab2Page implements OnInit {
   // Variáveis da pesquisa
   public searchQuery: string = '';
   public showResults: boolean = false;
-  public filtroAtivo: string = 'Todos'; 
+  public filtroAtivo: string = '';
   public categoriaAtiva: string = 'Todas';
   
   public produtosDoCatalogo: any[] = []; 
@@ -96,7 +96,7 @@ export class Tab2Page implements OnInit {
   fazerPesquisa(termo: string) {
     this.searchQuery = termo;
     this.categoriaAtiva = 'Todas';
-    this.filtroAtivo = 'Todos';
+    this.filtroAtivo = ''; // <-- Mudado para vazio
     this.showResults = true;
     this.guardarPesquisa(termo);
     this.aplicarFiltros();
@@ -105,7 +105,7 @@ export class Tab2Page implements OnInit {
   abrirCategoria(categoria: string) {
     this.searchQuery = '';
     this.categoriaAtiva = categoria;
-    this.filtroAtivo = 'Todos';
+    this.filtroAtivo = ''; // <-- Mudado para vazio
     this.showResults = true;
     this.aplicarFiltros();
   }
@@ -123,7 +123,7 @@ export class Tab2Page implements OnInit {
       temp = temp.filter(p => p.categoria === this.categoriaAtiva);
     }
 
-    if (this.filtroAtivo !== 'Todos') {
+    if (this.filtroAtivo !== 'Todos' && this.filtroAtivo !== '') {
       if (this.filtroAtivo === 'Promoção') {
         temp = temp.filter(p => p.precoAntigo);
       } else {
@@ -143,7 +143,7 @@ export class Tab2Page implements OnInit {
     this.searchQuery = '';
     this.showResults = false;
     this.categoriaAtiva = 'Todas';
-    this.filtroAtivo = 'Todos';
+    this.filtroAtivo = ''; // <-- Mudado para vazio
     this.produtosFiltrados = [...this.produtosDoCatalogo];
   }
 
@@ -163,9 +163,15 @@ export class Tab2Page implements OnInit {
     if (this.produtoSelecionado) {
       await this.listasService.adicionarProdutoALista(lista.nome, this.produtoSelecionado);
       this.setModalOpen(false);
+      
       const toast = await this.toastCtrl.create({
-        message: `${this.produtoSelecionado.nome} adicionado!`, duration: 2000, color: 'success', position: 'top'
+        message: `${this.produtoSelecionado.nome} adicionado!`, 
+        duration: 2000, 
+        color: 'success', 
+        position: 'bottom',              // Envia o aviso para a parte inferior
+        cssClass: 'toast-acima-do-botao' // Aplica a margem de 85px para saltar as tabs
       });
+      
       await toast.present();
     }
   }
@@ -181,7 +187,12 @@ export class Tab2Page implements OnInit {
       await this.listasService.adicionarLista(novaLista);
       this.listasNoCofre = this.listasService.minhasListas;
       const toast = await this.toastCtrl.create({
-        message: `Criada e adicionado à ${nomeDaNovaLista}!`, duration: 3000, color: 'success', icon: 'checkmark-circle', position: 'bottom', cssClass: 'toast-acima-das-tabs'
+        message: `Criada e adicionado à ${nomeDaNovaLista}!`,
+        duration: 3000,
+        color: 'success',
+        icon: 'checkmark-circle',
+        position: 'bottom', // <-- Mudar para bottom
+        cssClass: 'toast-acima-do-botao' // <-- Usar a nossa classe
       });
       await toast.present();
     }, 300);

@@ -78,23 +78,31 @@ export class NovaListaPage implements OnInit {
 
   async guardarLista() {
     if (this.nomeDaLista.trim() === '') return;
-    const lista = { nome: this.nomeDaLista, icone: this.iconeEscolhido, cor: this.corEscolhida, dataEdicao: 'Agora', produtos: [] };
     
     if (this.isEditMode) {
+      // MODO EDIÇÃO: Atualizamos apenas as características visuais, os produtos ficam intocáveis!
       const index = this.listasService.minhasListas.findIndex(l => l.nome === this.nomeListaOriginal);
-      if (index > -1) this.listasService.minhasListas[index] = { ...this.listasService.minhasListas[index], ...lista };
+      
+      if (index > -1) {
+        this.listasService.minhasListas[index].nome = this.nomeDaLista;
+        this.listasService.minhasListas[index].icone = this.iconeEscolhido;
+        this.listasService.minhasListas[index].cor = this.corEscolhida;
+        this.listasService.minhasListas[index].dataEdicao = 'Editada agora mesmo';
+        // Repara: não mexemos no .produtos nem no .totalItens!
+      }
     } else {
-        // MODO CRIAÇÃO: Adicionamos o totalItens: 0 que faltava
+        // MODO CRIAÇÃO: Criamos tudo do zero, com 0 itens e array de produtos vazio
         const novaLista = { 
           nome: this.nomeDaLista, 
           icone: this.iconeEscolhido, 
           cor: this.corEscolhida, 
-          dataEdicao: 'Agora', 
-          totalItens: 0, // <--- AQUI ESTÁ A CORREÇÃO
+          dataEdicao: 'Criada agora mesmo', 
+          totalItens: 0, 
           produtos: [] 
         };
         await this.listasService.adicionarLista(novaLista);
     }
+    
     await this.listasService.guardarAlteracoes();
     this.router.navigate(['/tabs/tab1']);
   }

@@ -24,6 +24,11 @@
           <ion-label>Editar Lista</ion-label>
         </ion-item>
 
+        <ion-item button (click)="limparProdutos()" detail="false">
+          <ion-icon name="close-circle-outline" slot="start" color="warning"></ion-icon>
+          <ion-label color="warning">Limpar Produtos</ion-label>
+        </ion-item>
+
         <ion-item button (click)="apagarLista()" detail="false">
           <ion-icon name="trash-outline" slot="start" color="danger"></ion-icon>
           <ion-label color="danger">Apagar Lista</ion-label>
@@ -36,7 +41,7 @@
 
 <ion-content class="ion-padding custom-bg">
   
-  <div class="start-shopping-card" [routerLink]="['/loja-navegacao', listaAtual?.nome]" style="cursor: pointer;">
+  <div class="start-shopping-card" (click)="iniciarCompras()" [style.opacity]="(!listaAtual?.produtos || listaAtual?.produtos?.length === 0) ? '0.6' : '1'" style="cursor: pointer;">
     <div class="icon-title">
       <ion-icon name="cart-outline"></ion-icon>
       <h2>{{ isOffline ? 'Iniciar Compras (Offline)' : 'Iniciar Compras' }}</h2>
@@ -85,7 +90,10 @@
         <ion-item class="custom-swipe-item" [ngClass]="{'bg-riscado': prod.riscado}">
           <div class="product-item" style="width: 100%; border: none; margin: 0; padding: 0; background: transparent;">
             <div class="product-left">
-              <div class="product-image" [ngClass]="prod.imagemClass"></div>
+              <div class="product-image" style="overflow: hidden; display: flex; justify-content: center; align-items: center; background: #f5f5f5;">
+                <img *ngIf="prod.imagemUrl" [src]="prod.imagemUrl" style="width: 100%; height: 100%; object-fit: cover;">
+                <ion-icon *ngIf="!prod.imagemUrl" name="image-outline" style="font-size: 24px; color: #ccc;"></ion-icon>
+              </div>
               <div class="product-details">
                 <h4 [ngClass]="{'strikethrough-text': prod.riscado}">{{ prod.nome }}</h4>
                 <p>{{ prod.tamanho }}</p>
@@ -93,13 +101,15 @@
             </div>
             <div class="product-right">
               <span class="price">{{ prod.preco }}</span>
-              <ion-icon [name]="prod.riscado ? 'checkmark-circle' : 'ellipse-outline'" 
-                        [class.checked-icon]="prod.riscado" 
-                        [class.unchecked-icon]="!prod.riscado">
-              </ion-icon>
-            </div>
+              </div>
           </div>
         </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="removerProduto(prod, slidingItem)">
+            <ion-icon slot="icon-only" name="trash-outline" style="font-size: 24px;"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
 
       </ion-item-sliding>
     </ion-list>

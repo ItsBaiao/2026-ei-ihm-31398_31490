@@ -48,3 +48,8 @@
 ion-toast.toast-acima-das-tabs {
   transform: translateY(-70px) !important; 
 }
+
+/* Empurra os avisos para flutuarem acima do botão verde (+) */
+ion-toast.toast-acima-do-botao {
+  margin-bottom: 85px;
+}

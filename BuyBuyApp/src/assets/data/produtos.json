@@ -1,27 +1,201 @@
 {
   "produtos": [
-    { "id": 1, "nome": "Leite Meio Gordo", "categoria": "Lacticínios", "tamanho": "1L", "tag": "Marca Própria", "tagClass": "bg-brand", "preco": "€0,89", "precoAntigo": null, "imagemClass": "bg-leite" },
-    { "id": 2, "nome": "Manteiga com Sal", "categoria": "Lacticínios", "tamanho": "250g", "tag": "Promoção", "tagClass": "bg-promo", "preco": "€1,99", "precoAntigo": "€2,50", "imagemClass": "bg-manteiga" },
-    { "id": 3, "nome": "Iogurte Natural Bio", "categoria": "Lacticínios", "tamanho": "4x125g", "tag": "Bio", "tagClass": "bg-bio", "preco": "€2,10", "precoAntigo": null, "imagemClass": "bg-iogurte" },
-    
-    { "id": 4, "nome": "Brócolos Frescos", "categoria": "Legumes", "tamanho": "500g", "tag": "Bio", "tagClass": "bg-bio", "preco": "€1,45", "precoAntigo": null, "imagemClass": "bg-brocolos" },
-    { "id": 5, "nome": "Cenouras", "categoria": "Legumes", "tamanho": "1kg", "tag": "Marca Própria", "tagClass": "bg-brand", "preco": "€0,79", "precoAntigo": null, "imagemClass": "bg-cenouras" },
-    { "id": 6, "nome": "Tomate Cacho", "categoria": "Legumes", "tamanho": "1kg", "tag": "Promoção", "tagClass": "bg-promo", "preco": "€1,69", "precoAntigo": "€2,20", "imagemClass": "bg-tomate" },
-
-    { "id": 7, "nome": "Pão de Forma", "categoria": "Padaria", "tamanho": "600g", "tag": "Marca Própria", "tagClass": "bg-brand", "preco": "€1,20", "precoAntigo": null, "imagemClass": "bg-pao" },
-    { "id": 8, "nome": "Baguete Rústica", "categoria": "Padaria", "tamanho": "250g", "tag": null, "tagClass": null, "preco": "€0,65", "precoAntigo": null, "imagemClass": "bg-baguete" },
-    { "id": 9, "nome": "Croissants de Manteiga", "categoria": "Padaria", "tamanho": "Pack 4", "tag": "Promoção", "tagClass": "bg-promo", "preco": "€2,00", "precoAntigo": "€2,80", "imagemClass": "bg-croissant" },
-
-    { "id": 10, "nome": "Lixívia Perfumada", "categoria": "Limpeza", "tamanho": "2L", "tag": "Marca Própria", "tagClass": "bg-brand", "preco": "€1,10", "precoAntigo": null, "imagemClass": "bg-lixivia" },
-    { "id": 11, "nome": "Detergente Máquina Loiça", "categoria": "Limpeza", "tamanho": "40 doses", "tag": "Promoção", "tagClass": "bg-promo", "preco": "€5,99", "precoAntigo": "€8,99", "imagemClass": "bg-detergente" },
-    { "id": 12, "nome": "Lava Tudo Limão", "categoria": "Limpeza", "tamanho": "1L", "tag": "Bio", "tagClass": "bg-bio", "preco": "€2,50", "precoAntigo": null, "imagemClass": "bg-lavatudo" },
-
-    { "id": 13, "nome": "Água Mineral", "categoria": "Bebidas", "tamanho": "1.5L", "tag": "Marca Própria", "tagClass": "bg-brand", "preco": "€0,30", "precoAntigo": null, "imagemClass": "bg-agua" },
-    { "id": 14, "nome": "Sumo de Laranja", "categoria": "Bebidas", "tamanho": "1L", "tag": "Promoção", "tagClass": "bg-promo", "preco": "€1,20", "precoAntigo": "€1,80", "imagemClass": "bg-sumo" },
-    { "id": 15, "nome": "Chá Verde Gelo", "categoria": "Bebidas", "tamanho": "1.5L", "tag": "Bio", "tagClass": "bg-bio", "preco": "€1,85", "precoAntigo": null, "imagemClass": "bg-cha" },
-
-    { "id": 16, "nome": "Peito de Frango", "categoria": "Carnes", "tamanho": "1kg", "tag": "Promoção", "tagClass": "bg-promo", "preco": "€4,99", "precoAntigo": "€6,50", "imagemClass": "bg-frango" },
-    { "id": 17, "nome": "Carne Picada Bovino", "categoria": "Carnes", "tamanho": "500g", "tag": "Marca Própria", "tagClass": "bg-brand", "preco": "€3,49", "precoAntigo": null, "imagemClass": "bg-picada" },
-    { "id": 18, "nome": "Bifes de Peru", "categoria": "Carnes", "tamanho": "500g", "tag": "Bio", "tagClass": "bg-bio", "preco": "€5,20", "precoAntigo": null, "imagemClass": "bg-peru" }
+    {
+      "id": 1,
+      "nome": "Leite Meio Gordo",
+      "categoria": "Lacticínios",
+      "tamanho": "1L",
+      "tag": "Marca Própria",
+      "tagClass": "bg-brand",
+      "preco": "€0,89",
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/leiteMeioGordo.jpg"
+    },
+    {
+      "id": 2,
+      "nome": "Manteiga com Sal",
+      "categoria": "Lacticínios",
+      "tamanho": "250g",
+      "tag": "Promoção",
+      "tagClass": "bg-promo",
+      "preco": "€1,99",
+      "precoAntigo": "€2,50",
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/manteiga%20com%20sal.jpg"
+    },
+    {
+      "id": 3,
+      "nome": "Iogurte Natural Bio",
+      "categoria": "Lacticínios",
+      "tamanho": "4x125g",
+      "tag": "Bio",
+      "tagClass": "bg-bio",
+      "preco": "€2,10",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/iogurte%20natural.jpg"
+    },
+    {
+      "id": 4,
+      "nome": "Brócolos Frescos",
+      "categoria": "Legumes",
+      "tamanho": "500g",
+      "tag": "Bio",
+      "tagClass": "bg-bio",
+      "preco": "€1,45",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/Broculos%20Frescos.jpg"
+    },
+    {
+      "id": 5,
+      "nome": "Cenouras",
+      "categoria": "Legumes",
+      "tamanho": "1kg",
+      "tag": "Marca Própria",
+      "tagClass": "bg-brand",
+      "preco": "€0,79",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/Cenoura.jpg"
+    },
+    {
+      "id": 6,
+      "nome": "Tomate Cacho",
+      "categoria": "Legumes",
+      "tamanho": "1kg",
+      "tag": "Promoção",
+      "tagClass": "bg-promo",
+      "preco": "€1,69",
+      "precoAntigo": "€2,20",
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/Tomate%20cacho.jpg"
+    },
+    {
+      "id": 7,
+      "nome": "Pão de Forma",
+      "categoria": "Padaria",
+      "tamanho": "600g",
+      "tag": "Marca Própria",
+      "tagClass": "bg-brand",
+      "preco": "€1,20",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/Pao%20de%20forma.png"
+    },
+    {
+      "id": 8,
+      "nome": "Baguete Rústica",
+      "categoria": "Padaria",
+      "tamanho": "250g",
+      "tag": null,
+      "tagClass": null,
+      "preco": "€0,65",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/baguete%20rustica.jpg"
+    },
+    {
+      "id": 9,
+      "nome": "Croissants de Manteiga",
+      "categoria": "Padaria",
+      "tamanho": "Pack 4",
+      "tag": "Promoção",
+      "tagClass": "bg-promo",
+      "preco": "€2,00",
+      "precoAntigo": "€2,80",
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/croissant%20de%20manteiga.jpg"
+    },
+    {
+      "id": 10,
+      "nome": "Lixívia Perfumada",
+      "categoria": "Limpeza",
+      "tamanho": "2L",
+      "tag": "Marca Própria",
+      "tagClass": "bg-brand",
+      "preco": "€1,10",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/lixivia%20perfumada.jpg"
+    },
+    {
+      "id": 11,
+      "nome": "Detergente Máquina Loiça",
+      "categoria": "Limpeza",
+      "tamanho": "40 doses",
+      "tag": "Promoção",
+      "tagClass": "bg-promo",
+      "preco": "€5,99",
+      "precoAntigo": "€8,99",
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/detergente%20maquina%20loica.jpg"
+    },
+    {
+      "id": 12,
+      "nome": "Lava Tudo Limão",
+      "categoria": "Limpeza",
+      "tamanho": "1L",
+      "tag": "Bio",
+      "tagClass": "bg-bio",
+      "preco": "€2,50",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/lava%20tudo%20limao.jpg"
+    },
+    {
+      "id": 13,
+      "nome": "Água Mineral",
+      "categoria": "Bebidas",
+      "tamanho": "1.5L",
+      "tag": "Marca Própria",
+      "tagClass": "bg-brand",
+      "preco": "€0,30",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/agua%20mineral.jpg"
+    },
+    {
+      "id": 14,
+      "nome": "Sumo de Laranja",
+      "categoria": "Bebidas",
+      "tamanho": "1L",
+      "tag": "Promoção",
+      "tagClass": "bg-promo",
+      "preco": "€1,20",
+      "precoAntigo": "€1,80",
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/sumo%20de%20laranja.jpg"
+    },
+    {
+      "id": 15,
+      "nome": "Chá Verde Gelo",
+      "categoria": "Bebidas",
+      "tamanho": "1.5L",
+      "tag": "Bio",
+      "tagClass": "bg-bio",
+      "preco": "€1,85",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/cha%20verde.png"
+    },
+    {
+      "id": 16,
+      "nome": "Peito de Frango",
+      "categoria": "Carnes",
+      "tamanho": "1kg",
+      "tag": "Promoção",
+      "tagClass": "bg-promo",
+      "preco": "€4,99",
+      "precoAntigo": "€6,50",
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/peito%20de%20frango.jpg"
+    },
+    {
+      "id": 17,
+      "nome": "Carne Picada Bovino",
+      "categoria": "Carnes",
+      "tamanho": "500g",
+      "tag": "Marca Própria",
+      "tagClass": "bg-brand",
+      "preco": "€3,49",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/carne%20picada%20bovino.jpg"
+    },
+    {
+      "id": 18,
+      "nome": "Bifes de Peru",
+      "categoria": "Carnes",
+      "tamanho": "500g",
+      "tag": "Bio",
+      "tagClass": "bg-bio",
+      "preco": "€5,20",
+      "precoAntigo": null,
+      "imagemUrl": "https://dagnaxnvdlfrzuqrrfuq.supabase.co/storage/v1/object/public/produtos/bifes%20de%20peru.jpg"
+    }
   ]
 }

@@ -74,7 +74,12 @@
     </div>
 
     <div class="search-product-card" *ngFor="let produto of produtosFiltrados" [routerLink]="['/produto-detalhes', produto.id]" style="cursor: pointer;">
-      <div class="prod-img" [ngClass]="produto.imagemClass"></div>
+      
+      <div class="prod-img" style="overflow: hidden; display: flex; justify-content: center; align-items: center; background: #f5f5f5;">
+        <img *ngIf="produto.imagemUrl" [src]="produto.imagemUrl" style="width: 100%; height: 100%; object-fit: cover;">
+        <ion-icon *ngIf="!produto.imagemUrl" name="image-outline" style="font-size: 24px; color: #ccc;"></ion-icon>
+      </div>
+
       <div class="prod-info">
         <h4>{{ produto.nome }}</h4>
         <p>{{ produto.categoria }} • {{ produto.tamanho }}</p>
@@ -105,7 +110,12 @@
       <ion-content>
         <div class="modal-content">
           <div class="selected-product" *ngIf="produtoSelecionado">
-            <div class="thumb-img" [ngClass]="produtoSelecionado.imagemClass"></div>
+            
+            <div class="thumb-img" style="overflow: hidden; display: flex; justify-content: center; align-items: center; background: #f5f5f5;">
+              <img *ngIf="produtoSelecionado.imagemUrl" [src]="produtoSelecionado.imagemUrl" style="width: 100%; height: 100%; object-fit: cover;">
+              <ion-icon *ngIf="!produtoSelecionado.imagemUrl" name="image-outline" style="font-size: 20px; color: #ccc;"></ion-icon>
+            </div>
+
             <div class="info">
               <h4>{{ produtoSelecionado.nome }}</h4>
               <p>{{ produtoSelecionado.tamanho }} • {{ produtoSelecionado.preco }}</p>

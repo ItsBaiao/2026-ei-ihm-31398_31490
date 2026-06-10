@@ -51,7 +51,12 @@
       <div class="products-container">
         <div class="product-card" *ngFor="let prod of grupo.produtos" [style.opacity]="prod.riscado ? '0.6' : '1'">
           <div class="prod-left">
-            <div class="prod-img" [ngClass]="prod.imagemClass"></div>
+            
+            <div class="prod-img" style="overflow: hidden; display: flex; justify-content: center; align-items: center; background: #f5f5f5; border-radius: 8px;">
+              <img *ngIf="prod.imagemUrl" [src]="prod.imagemUrl" style="width: 100%; height: 100%; object-fit: cover;">
+              <ion-icon *ngIf="!prod.imagemUrl" name="image-outline" style="font-size: 24px; color: #ccc;"></ion-icon>
+            </div>
+
             <div class="prod-info">
               <h4 [ngClass]="{'riscado': prod.riscado}">{{ prod.nome }}</h4>
               <p>{{ prod.tamanho }}</p>
@@ -72,9 +77,6 @@
     <ng-template>
       <ion-header class="ion-no-border">
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button color="dark" (click)="setMapModalOpen(false)"><ion-icon name="arrow-back-outline"></ion-icon></ion-button>
-          </ion-buttons>
           <ion-title class="ion-text-center" style="font-weight: bold; font-size: 16px;">Planta da Loja - ÉBarato</ion-title>
         </ion-toolbar>
       </ion-header>

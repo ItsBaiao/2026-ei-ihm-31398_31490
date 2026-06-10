@@ -20,7 +20,6 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
   public avisoOffline: HTMLIonToastElement | null = null;
   private networkListener: any; 
 
-  // Injetámos as novas ferramentas no constructor
   constructor(
     private route: ActivatedRoute,
     private listasService: ListasService,
@@ -52,6 +51,22 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
     }
   }
 
+  async iniciarCompras() {
+    if (!this.listaAtual?.produtos || this.listaAtual.produtos.length === 0) {
+      const toast = await this.toastCtrl.create({
+        message: 'Adiciona pelo menos um produto para iniciar as compras.',
+        duration: 2500,
+        color: 'warning',
+        icon: 'alert-circle-outline',
+        position: 'bottom', // <-- Alterado para baixo
+        cssClass: 'toast-acima-do-botao' // <-- Nova classe
+      });
+      await toast.present();
+    } else {
+      this.navCtrl.navigateForward(['/loja-navegacao', this.listaAtual.nome]);
+    }
+  }
+
   ngOnDestroy() {
     if (this.networkListener) {
       this.networkListener.remove();
@@ -62,7 +77,6 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
 
   async editarListaCompleta() {
     if (this.listaAtual) {
-      // Navega para a página de nova lista e leva o nome às cavalitas no URL
       this.navCtrl.navigateForward(['/nova-lista'], {
         queryParams: { editar: this.listaAtual.nome }
       });
@@ -71,29 +85,74 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
 
   async apagarLista() {
     if (this.listaAtual) {
-      // Procura a lista no cofre
       const index = this.listasService.minhasListas.findIndex(l => l.nome === this.listaAtual?.nome);
       
       if (index > -1) {
-        // Corta a lista fora do cofre
         this.listasService.minhasListas.splice(index, 1);
         await this.listasService.guardarAlteracoes();
         
         const toast = await this.toastCtrl.create({
           message: 'Lista apagada com sucesso!',
-          duration: 2000, color: 'dark', position: 'bottom'
+          duration: 2000, 
+          color: 'dark', 
+          position: 'bottom', // <-- Alterado para baixo
+          cssClass: 'toast-acima-do-botao' // <-- Nova classe
         });
         await toast.present();
         
-        // Volta para a página principal porque esta lista já não existe!
         this.navCtrl.navigateBack('/tabs/tab1');
       }
     }
   }
 
-  // ==========================================
-  // FUNÇÕES DE REDE E PRODUTOS (MANTIDAS)
-  // ==========================================
+  async limparProdutos() {
+    if (this.listaAtual && this.listaAtual.produtos) {
+      this.listaAtual.produtos = []; 
+      this.listaAtual.totalItens = 0;
+      this.listaAtual.dataEdicao = 'Esvaziada agora mesmo';
+      
+      this.calcularProgresso(); 
+      await this.listasService.guardarAlteracoes(); 
+
+      const toast = await this.toastCtrl.create({
+        message: 'Todos os produtos foram removidos da lista.',
+        duration: 2500,
+        color: 'dark',
+        position: 'bottom', // <-- Alterado para baixo
+        cssClass: 'toast-acima-do-botao' // <-- Nova classe
+      });
+      await toast.present();
+    }
+  }
+
+  async removerProduto(produto: any, slidingItem: any) {
+    slidingItem.close(); 
+
+    if (this.listaAtual && this.listaAtual.produtos) {
+      // 1. Encontra a posição exata daquela linha específica na lista
+      const index = this.listaAtual.produtos.indexOf(produto);
+      
+      // 2. Se encontrou, apaga APENAS esse elemento (1)
+      if (index > -1) {
+        this.listaAtual.produtos.splice(index, 1);
+        
+        this.listaAtual.totalItens = this.listaAtual.produtos.length;
+        this.listaAtual.dataEdicao = 'Atualizada agora mesmo';
+
+        this.calcularProgresso(); 
+        await this.listasService.guardarAlteracoes();
+
+        const toast = await this.toastCtrl.create({
+          message: `${produto.nome} removido.`,
+          duration: 2000,
+          color: 'dark',
+          position: 'bottom',
+          cssClass: 'toast-acima-do-botao'
+        });
+        await toast.present();
+      }
+    }
+  }
 
   async ligarDetetores() {
     this.networkListener = await Network.addListener('networkStatusChange', async status => {
@@ -109,7 +168,12 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
       await this.avisoOffline.dismiss();
       this.avisoOffline = null;
       const toast = await this.toastCtrl.create({
-        message: 'Ligação restaurada. Sincronizado!', duration: 2500, color: 'success', icon: 'wifi-outline', position: 'bottom'
+        message: 'Ligação restaurada. Sincronizado!', 
+        duration: 2500, 
+        color: 'success', 
+        icon: 'wifi-outline', 
+        position: 'bottom', // <-- Alterado para baixo
+        cssClass: 'toast-acima-do-botao' // <-- Nova classe
       });
       await toast.present();
     }
@@ -117,10 +181,22 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
 
   async mostrarAvisoOffline() {
     this.isOffline = true;
+    
     if (this.avisoOffline) return; 
+    
     this.avisoOffline = await this.toastCtrl.create({
-      message: 'A funcionar em modo offline. As alterações estão a ser guardadas.', color: 'dark', icon: 'cloud-offline-outline', position: 'bottom'
+      message: 'A funcionar em modo offline. As alterações estão a ser guardadas.', 
+      color: 'dark', 
+      icon: 'cloud-offline-outline', 
+      position: 'bottom', // <-- Alterado para baixo
+      duration: 3500,
+      cssClass: 'toast-acima-do-botao' // <-- Nova classe
     });
+
+    this.avisoOffline.onDidDismiss().then(() => {
+      this.avisoOffline = null;
+    });
+
     await this.avisoOffline.present();
   }
 
