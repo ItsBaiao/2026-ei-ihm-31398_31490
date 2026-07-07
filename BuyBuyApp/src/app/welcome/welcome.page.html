@@ -4,7 +4,7 @@
     <div class="header-section">
       <img src="assets/logo.png" alt="BuyBuy Logo" class="welcome-logo" />
       <h1 class="brand-title">BuyBuy</h1>
-      <p class="subtitle">Faça as suas compras de forma<br>rápida, fresca e inteligente.</p>
+      <p class="subtitle" [innerHTML]="strings.t.welcome.subtitulo"></p>
     </div>
 
     <div class="image-section">
@@ -13,11 +13,11 @@
 
     <div class="action-section">
       <ion-button expand="block" class="primary-btn" routerLink="/login">
-        Iniciar Sessão
+        {{ strings.t.welcome.iniciarSessao }}
       </ion-button>
       
       <ion-button expand="block" fill="outline" class="secondary-btn" routerLink="/registo">
-        Criar uma nova conta
+        {{ strings.t.welcome.criarConta }}
       </ion-button>
     </div>
 

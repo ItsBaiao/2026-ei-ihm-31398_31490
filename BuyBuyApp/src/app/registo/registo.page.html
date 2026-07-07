@@ -19,23 +19,23 @@
 
     <!-- Títulos Centrados -->
     <div class="titles">
-      <h1>Criar Conta</h1>
-      <p>Junte-se à BuyBuy e comece a poupar</p>
+      <h1>{{ strings.t.registo.titulo }}</h1>
+      <p>{{ strings.t.registo.subtitulo }}</p>
     </div>
 
     <!-- Formulário -->
-    <div class="form-container">
+    <form [formGroup]="registoForm" (ngSubmit)="criarConta()" class="form-container">
       
       <!-- Campo: Nome -->
       <div class="custom-input-box">
         <ion-icon name="person-outline"></ion-icon>
-        <ion-input type="text" placeholder="O seu Nome" [(ngModel)]="nomeInput"></ion-input>
+        <ion-input type="text" [placeholder]="strings.t.registo.nomePlaceholder" formControlName="nome"></ion-input>
       </div>
 
       <!-- Campo: Email -->
       <div class="custom-input-box">
         <ion-icon name="mail-outline"></ion-icon>
-        <ion-input type="email" placeholder="seu@email.com" [(ngModel)]="emailInput"></ion-input>
+        <ion-input type="email" [placeholder]="strings.t.registo.emailPlaceholder" formControlName="email"></ion-input>
       </div>
 
       <!-- Campo: Password Atualizado com o Olho dinâmico -->
@@ -43,7 +43,7 @@
         <ion-icon name="lock-closed-outline"></ion-icon>
         
         <!-- O type muda automaticamente entre 'text' e 'password' -->
-        <ion-input [type]="mostrarSenha ? 'text' : 'password'" placeholder="Palavra-passe" [(ngModel)]="senhaInput"></ion-input>
+        <ion-input [type]="mostrarSenha ? 'text' : 'password'" [placeholder]="strings.t.registo.senhaPlaceholder" formControlName="senha"></ion-input>
         <!-- Quando clicado, corre a função toggleSenha() e muda o desenho do ícone -->
         <ion-icon 
           [name]="mostrarSenha ? 'eye-off-outline' : 'eye-outline'" 
@@ -53,17 +53,17 @@
         </ion-icon>
       </div>
 
-    </div>
+    </form>
 
     <!-- Botão de Criar Conta Atualizado -->
-    <!-- Retirámos o routerLink e colocámos um evento (click) apontado ao nosso TS -->
+    <!-- Agora é do tipo submit para disparar o formulário automaticamente ou chamar a função criarConta() -->
     <ion-button class="login-btn" expand="block" (click)="criarConta()">
-      CRIAR CONTA <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      {{ strings.t.registo.criarConta }} <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
     </ion-button>
 
     <!-- Rodapé -->
     <div class="register-link">
-      Já tem conta? <a routerLink="/login">Iniciar Sessão</a>
+      {{ strings.t.registo.jaTemConta }} <a routerLink="/login">{{ strings.t.registo.iniciarSessao }}</a>
     </div>
 
   </div>

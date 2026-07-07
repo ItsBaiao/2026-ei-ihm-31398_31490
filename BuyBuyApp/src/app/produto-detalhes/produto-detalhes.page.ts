@@ -20,6 +20,7 @@ export class ProdutoDetalhesPage implements OnInit {
   public produtosSimilares: any[] = [];
   
   public listasNoCofre: Lista[] = [];
+  public quantidadeSelecionada: number = 1;
 
   constructor(
     private route: ActivatedRoute,
@@ -60,15 +61,32 @@ export class ProdutoDetalhesPage implements OnInit {
   }
 
   setModalOpen(isOpen: boolean) {
+    if (isOpen) {
+      this.quantidadeSelecionada = 1; // Reseta para 1 ao abrir
+    }
     this.isListModalOpen = isOpen;
   }
 
+  aumentarQuantidadeModal() {
+    this.quantidadeSelecionada++;
+  }
+
+  diminuirQuantidadeModal() {
+    if (this.quantidadeSelecionada > 1) {
+      this.quantidadeSelecionada--;
+    }
+  }
+
   async gravarProdutoNaLista(lista: Lista) {
-    await this.listasService.adicionarProdutoALista(lista.nome, this.produtoAtual);
+    await this.listasService.adicionarProdutoALista(
+      lista.nome, 
+      this.produtoAtual, 
+      this.quantidadeSelecionada
+    );
     this.setModalOpen(false);
 
     const toast = await this.toastCtrl.create({
-      message: `${this.produtoAtual.nome} adicionado à lista ${lista.nome}!`,
+      message: `${this.produtoAtual.nome} (${this.quantidadeSelecionada}x) adicionado à lista ${lista.nome}!`,
       duration: 2500,
       color: 'success',
       position: 'top',
@@ -91,8 +109,8 @@ export class ProdutoDetalhesPage implements OnInit {
         icone: 'cart-outline',
         cor: 'border-light',
         dataEdicao: 'Criada agora mesmo',
-        totalItens: 1,
-        produtos: [{ ...this.produtoAtual, riscado: false, recente: true }]
+        totalItens: this.quantidadeSelecionada,
+        produtos: [{ ...this.produtoAtual, quantidade: this.quantidadeSelecionada, riscado: false, recente: true }]
       };
 
       await this.listasService.adicionarLista(novaLista);

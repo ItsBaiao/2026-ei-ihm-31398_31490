@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { StringsService } from '../services/strings.service';
 
 @Component({
   selector: 'app-welcome',
@@ -6,11 +7,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./welcome.page.scss'],
   standalone: false,
 })
-export class WelcomePage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class WelcomePage {
+  public strings = inject(StringsService);
 }

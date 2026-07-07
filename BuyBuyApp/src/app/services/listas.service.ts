@@ -8,7 +8,9 @@ export interface Lista {
   dataEdicao: string;
   totalItens: number;
   produtos?: any[];
+  arquivada?: boolean;
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -63,14 +65,21 @@ export class ListasService {
     await this._storage?.set(chave, this.minhasListas);
   }
 
-  async adicionarProdutoALista(nomeDaLista: string, produto: any) {
+  async adicionarProdutoALista(nomeDaLista: string, produto: any, quantidade: number = 1) {
     const index = this.minhasListas.findIndex(l => l.nome === nomeDaLista);
     if (index !== -1) {
       if (!this.minhasListas[index].produtos) {
         this.minhasListas[index].produtos = [];
       }
-      this.minhasListas[index].produtos.push({ ...produto, riscado: false, recente: true });
-      this.minhasListas[index].totalItens = this.minhasListas[index].produtos.length;
+      
+      const prodExistente = this.minhasListas[index].produtos!.find(p => p.id === produto.id);
+      if (prodExistente) {
+        prodExistente.quantidade = (prodExistente.quantidade || 1) + quantidade;
+      } else {
+        this.minhasListas[index].produtos!.push({ ...produto, quantidade: quantidade, riscado: false, recente: true });
+      }
+
+      this.minhasListas[index].totalItens = this.minhasListas[index].produtos!.reduce((acc, p) => acc + (p.quantidade || 1), 0);
       this.minhasListas[index].dataEdicao = 'Atualizada agora mesmo';
 
       const chave = this.getChaveStorage();

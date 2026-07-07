@@ -1,0 +1,27 @@
+{
+  "welcome": {
+    "subtitulo": "Faça as suas compras de forma<br>rápida, fresca e inteligente.",
+    "iniciarSessao": "Iniciar Sessão",
+    "criarConta": "Criar uma nova conta"
+  },
+  "login": {
+    "titulo": "Bem-vindo de volta",
+    "subtitulo": "Inicie sessão para continuar a poupar",
+    "emailPlaceholder": "seu@email.com",
+    "senhaPlaceholder": "Palavra-passe",
+    "esqueceuSenha": "Esqueceu a palavra-passe?",
+    "entrar": "ENTRAR",
+    "naoTemConta": "Não tem conta?",
+    "criarConta": "Criar conta"
+  },
+  "registo": {
+    "titulo": "Criar Conta",
+    "subtitulo": "Junte-se à BuyBuy e comece a poupar",
+    "nomePlaceholder": "O seu Nome",
+    "emailPlaceholder": "seu@email.com",
+    "senhaPlaceholder": "Palavra-passe",
+    "criarConta": "CRIAR CONTA",
+    "jaTemConta": "Já tem conta?",
+    "iniciarSessao": "Iniciar Sessão"
+  }
+}

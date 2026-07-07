@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { ListasService, Lista } from '../services/listas.service';
@@ -9,7 +9,7 @@ import { ListasService, Lista } from '../services/listas.service';
   styleUrls: ['./loja-navegacao.page.scss'],
   standalone: false
 })
-export class LojaNavegacaoPage implements OnInit {
+export class LojaNavegacaoPage {
 
   public listaAtual: Lista | undefined;
   public isMapModalOpen = false;
@@ -25,7 +25,7 @@ export class LojaNavegacaoPage implements OnInit {
     private navCtrl: NavController
   ) { }
 
-  async ngOnInit() {
+  async ionViewWillEnter() {
     await this.listasService.init();
     const nomeRecebido = this.route.snapshot.paramMap.get('nome');
     

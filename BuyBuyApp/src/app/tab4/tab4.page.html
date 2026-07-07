@@ -1,0 +1,543 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <!-- Botão de Voltar do Chat -->
+    <ion-buttons slot="start" *ngIf="amigoAtivo || grupoAtivo">
+      <ion-button (click)="fecharChat()" color="dark">
+        <ion-icon name="arrow-back-outline" style="font-size: 24px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <!-- Título Principal (Sem Chat Ativo) -->
+    <div class="custom-header-title" *ngIf="!amigoAtivo && !grupoAtivo">
+      <h1>Conversas</h1>
+    </div>
+
+    <!-- Botão de Novo Chat (Canto Superior Direito - Estilo WhatsApp) -->
+    <ion-buttons slot="end" *ngIf="!amigoAtivo && !grupoAtivo">
+      <ion-button (click)="abrirNovoChatModal()" style="--background: #f2f2f2; --border-radius: 50%; width: 38px; height: 38px; margin-right: 12px; display: flex; align-items: center; justify-content: center;">
+        <ion-icon name="add" style="font-size: 24px; color: #0da33d;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <!-- Cabeçalho Chat Amigo Ativo -->
+    <div class="chat-header-info" *ngIf="amigoAtivo" (click)="abrirInfoAmigo()" style="cursor: pointer;">
+      <div class="chat-avatar">{{ amigoAtivo.iniciais }}</div>
+      <div class="chat-text-details">
+        <h3>{{ amigoAtivo.nome }}</h3>
+        <p>{{ amigoAtivo.email }}</p>
+      </div>
+    </div>
+
+    <!-- Cabeçalho Chat Grupo Ativo -->
+    <div class="chat-header-info" *ngIf="grupoAtivo" (click)="abrirInfoGrupo()" style="cursor: pointer;">
+      <div class="chat-avatar" style="background: #e8d0f0; color: #6f0ca3;">{{ grupoAtivo.iniciais }}</div>
+      <div class="chat-text-details">
+        <h3>{{ grupoAtivo.nome }}</h3>
+        <p>{{ grupoAtivo.membros.length }} membros</p>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg ion-padding">
+
+  <!-- SEGMENTO DE SELEÇÃO: AMIGOS / GRUPOS (Apenas visível se nenhum chat estiver ativo) -->
+  <ion-segment [(ngModel)]="segmentoAtivo" color="success" style="margin-bottom: 16px;" *ngIf="!amigoAtivo && !grupoAtivo">
+    <ion-segment-button value="amigos">
+      <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 700;">Amigos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="grupos">
+      <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 700;">Grupos</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- ================= VISTA DE AMIGOS ================= -->
+  <div *ngIf="!amigoAtivo && !grupoAtivo && segmentoAtivo === 'amigos'">
+    
+    <!-- Lista de Amigos -->
+    <h2 class="section-title">Os meus Amigos</h2>
+    
+    <div class="empty-state" *ngIf="amigos.length === 0" style="padding: 20px 0;">
+      <ion-icon name="people-outline"></ion-icon>
+      <h4>Ainda não tem amigos adicionados</h4>
+      <p>Clique no botão "+" no canto superior direito para adicionar um amigo e começar a conversar!</p>
+    </div>
+
+    <div class="friends-list" *ngIf="amigos.length > 0">
+      <div class="friend-item" *ngFor="let amigo of amigos" (click)="abrirChat(amigo)" style="cursor: pointer; margin-bottom: 8px;">
+        <div class="friend-avatar">{{ amigo.iniciais }}</div>
+        <div class="friend-details">
+          <h4>{{ amigo.nome }}</h4>
+          <p>{{ amigo.email }}</p>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <div class="chat-icon-btn" style="padding: 6px; color: #0da33d;">
+            <ion-icon name="chatbubble-ellipses-outline" style="font-size: 20px;"></ion-icon>
+          </div>
+          <ion-button fill="clear" color="danger" (click)="removerAmigo(amigo, $event)" style="margin: 0; --padding-start: 4px; --padding-end: 4px; width: 32px; height: 32px;">
+            <ion-icon name="trash-outline" slot="icon-only" style="font-size: 18px;"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= VISTA DE GRUPOS ================= -->
+  <div *ngIf="!amigoAtivo && !grupoAtivo && segmentoAtivo === 'grupos'">
+    
+    <!-- Lista de Grupos -->
+    <h2 class="section-title">Os meus Grupos</h2>
+    
+    <div class="empty-state" *ngIf="grupos.length === 0" style="padding: 20px 0;">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <h4>Ainda não pertence a nenhum grupo</h4>
+      <p>Clique no botão "+" no canto superior direito para criar um grupo com os seus amigos!</p>
+    </div>
+
+    <div class="friends-list" *ngIf="grupos.length > 0">
+      <div class="friend-item" *ngFor="let grupo of grupos" (click)="abrirChatGrupo(grupo)" style="cursor: pointer; margin-bottom: 8px;">
+        <div class="friend-avatar" style="background: #f8f0fc; color: #9c27b0; border-color: rgba(156, 39, 176, 0.15);">{{ grupo.iniciais }}</div>
+        <div class="friend-details">
+          <h4>{{ grupo.nome }}</h4>
+          <p>{{ grupo.membros.length }} membros</p>
+        </div>
+        <div class="chat-icon-btn" style="color: #9c27b0; font-size: 20px; padding: 6px;">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= VISTA DE CHAT ATIVO (AMIGO OU GRUPO) ================= -->
+  <div *ngIf="amigoAtivo || grupoAtivo" class="chat-container">
+
+    <!-- Mensagens -->
+    <div class="messages-list">
+      
+      <div class="message-bubble-wrapper" 
+           *ngFor="let msg of mensagens" 
+           [ngClass]="{'sent': msg.remetente === emailAtual, 'received': msg.remetente !== emailAtual}">
+        
+        <div class="message-bubble">
+          <!-- Nome do Remetente (Apenas em Grupos para mensagens recebidas) -->
+          <span class="msg-sender-label" *ngIf="grupoAtivo && msg.remetente !== emailAtual" style="font-size: 11px; font-weight: 800; color: #0da33d; margin-bottom: 2px; display: block;">
+            {{ msg.remetenteNome || msg.remetente }}
+          </span>
+
+          <!-- Conteúdo do tipo TEXTO -->
+          <div *ngIf="msg.tipo === 'texto'" class="msg-text">
+            {{ msg.texto }}
+          </div>
+
+          <!-- Conteúdo do tipo LISTA -->
+          <div *ngIf="msg.tipo === 'lista'" class="msg-list-card">
+            <div class="list-card-header">
+              <ion-icon name="share-social-outline" class="share-icon"></ion-icon>
+              <span>LISTA PARTILHADA</span>
+            </div>
+            <div class="list-card-body">
+              <div class="list-icon-wrapper">
+                <ion-icon [name]="msg.listaDados?.icone || 'cart-outline'"></ion-icon>
+              </div>
+              <div class="list-info">
+                <h4>{{ msg.listaDados?.nome }}</h4>
+                <p>{{ msg.listaDados?.produtos?.length }} produtos • Pronto a importar</p>
+              </div>
+            </div>
+            <ion-button 
+              expand="block" 
+              class="import-btn" 
+              (click)="importarListaDoChat(msg.listaDados)">
+              <ion-icon name="download-outline" slot="start"></ion-icon>
+              Importar Lista
+            </ion-button>
+          </div>
+
+          <span class="msg-time">{{ msg.data }}</span>
+        </div>
+      </div>
+
+      <!-- Placeholder se não houver mensagens -->
+      <div class="empty-chat-state" *ngIf="mensagens.length === 0">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <p>Inicie a conversa! Envie uma mensagem ou partilhe uma lista de compras.</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>
+
+<!-- FOOTER CHAT (INPUT) -->
+<ion-footer class="ion-no-border custom-bg" *ngIf="amigoAtivo || grupoAtivo">
+  <div class="chat-input-bar">
+    
+    <!-- Botão de Clip para partilhar Lista -->
+    <ion-button fill="clear" color="dark" class="attach-btn" (click)="abrirSeletorDeListas()">
+      <ion-icon name="add-circle-outline"></ion-icon>
+    </ion-button>
+
+    <!-- Caixa de Input de Texto -->
+    <ion-input 
+      placeholder="Escreva uma mensagem..." 
+      [(ngModel)]="novaMensagemText" 
+      (keyup.enter)="enviarMensagem()">
+    </ion-input>
+
+    <!-- Botão Enviar -->
+    <ion-button class="send-btn" (click)="enviarMensagem()">
+      <ion-icon name="paper-plane-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+
+  </div>
+</ion-footer>
+
+<!-- MODAL UNIFICADO "NOVO CHAT" (ESTILO WHATSAPP) -->
+<ion-modal [isOpen]="isNovoChatModalOpen" (didDismiss)="isNovoChatModalOpen = false" [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85, 0.95]">
+  <ng-template>
+    
+    <!-- Topo do Modal com Fecho e Título Estáveis -->
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 16px; color: #111;">Iniciar Conversa</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="isNovoChatModalOpen = false" style="--background: #f2f2f2; --border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; margin-right: 8px;">
+            <ion-icon name="close" style="font-size: 18px; color: #333;"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      
+      <!-- Barra de Pesquisa Fixa -->
+      <div style="padding: 4px 16px 12px 16px; background: #ffffff;">
+        <ion-searchbar 
+          placeholder="Pesquise por nome ou e-mail..." 
+          [(ngModel)]="termoPesquisa"
+          style="--border-radius: 12px; --box-shadow: none; font-family: 'Outfit', sans-serif; font-size: 14px; padding: 0;">
+        </ion-searchbar>
+      </div>
+    </ion-header>
+
+    <ion-content class="custom-bg ion-padding">
+      
+      <!-- Secção de Criação (Apenas se a pesquisa estiver vazia) -->
+      <div *ngIf="!termoPesquisa" style="margin-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px;">
+        <!-- Novo Grupo -->
+        <div class="friend-item" (click)="abrirNovoGrupo()" style="cursor: pointer; padding: 10px 0; border-bottom: 1px solid #fbfbfb;">
+          <div class="friend-avatar" style="background: #f8f0fc; color: #9c27b0; border-color: rgba(156, 39, 176, 0.15); width: 42px; height: 42px; font-size: 20px;">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="friend-details">
+            <h4 style="font-size: 14px; font-weight: 800; color: #9c27b0;">Novo Grupo</h4>
+            <p style="font-size: 11px;">Crie um chat conjunto com vários amigos</p>
+          </div>
+        </div>
+
+        <!-- Novo Amigo -->
+        <div class="friend-item" (click)="abrirNovoContacto()" style="cursor: pointer; padding: 10px 0;">
+          <div class="friend-avatar" style="background: #eaf8ed; color: #0da33d; border-color: rgba(13, 163, 61, 0.15); width: 42px; height: 42px; font-size: 20px;">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </div>
+          <div class="friend-details">
+            <h4 style="font-size: 14px; font-weight: 800; color: #0da33d;">Novo Amigo</h4>
+            <p style="font-size: 11px;">Adicione um amigo através do e-mail dele</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Título de Contactos -->
+      <p style="font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #888; letter-spacing: 0.5px; text-transform: uppercase; margin: 12px 0 10px 4px;">Contactos e Grupos Disponíveis</p>
+
+      <!-- Lista Filtrada -->
+      <div class="friends-list" *ngIf="obterItensFiltrados().length > 0">
+        <div class="friend-item" 
+             *ngFor="let item of obterItensFiltrados()" 
+             (click)="selecionarItem(item)" 
+             style="cursor: pointer; margin-bottom: 8px;">
+          
+          <!-- Avatar Amigo ou Grupo -->
+          <div class="friend-avatar" 
+               [style.background]="item.tipo === 'amigo' ? '#f0f9f0' : '#f8f0fc'"
+               [style.color]="item.tipo === 'amigo' ? '#0da33d' : '#9c27b0'"
+               [style.border-color]="item.tipo === 'amigo' ? 'rgba(13,163,61,0.1)' : 'rgba(156,39,176,0.1)'">
+            {{ item.iniciais }}
+          </div>
+          
+          <div class="friend-details">
+            <h4 style="font-size: 14px;">{{ item.nome }}</h4>
+            <p style="font-size: 11px;">{{ item.tipo === 'amigo' ? item.email : (item.membros.length + ' membros') }}</p>
+          </div>
+
+          <div style="font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 8px;"
+               [style.background]="item.tipo === 'amigo' ? '#eaf8ed' : '#f8f0fc'"
+               [style.color]="item.tipo === 'amigo' ? '#0da33d' : '#9c27b0'">
+            {{ item.tipo === 'amigo' ? 'AMIGO' : 'GRUPO' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado Vazio para Filtro -->
+      <div *ngIf="obterItensFiltrados().length === 0" style="text-align: center; padding: 30px; color: #999; font-family: 'Outfit', sans-serif; font-size: 13px;">
+        Nenhum contacto ou grupo corresponde à sua pesquisa.
+      </div>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- MODAL DE DETALHES DO CONTACTO (ESTILO WHATSAPP) -->
+<ion-modal [isOpen]="isInfoModalOpen" (didDismiss)="setInfoModalOpen(false)" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 0.95]">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 16px; color: #111;">Detalhes do Amigo</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setInfoModalOpen(false)" color="dark" style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px;">Fechar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="custom-bg ion-padding">
+      <div class="info-profile-section" style="text-align: center; padding: 15px 0 25px 0; border-bottom: 1px solid rgba(0,0,0,0.05); margin-bottom: 15px;">
+        <div class="big-avatar" style="width: 80px; height: 80px; background: #f0f9f0; color: #0da33d; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 800; margin: 0 auto 12px auto; border: 2px solid rgba(13, 163, 61, 0.25);">
+          {{ amigoAtivo?.iniciais }}
+        </div>
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; margin: 0; color: #111;">{{ amigoAtivo?.nome }}</h2>
+        <p style="font-family: 'Outfit', sans-serif; font-size: 13px; color: #666; margin: 4px 0 0 0;">{{ amigoAtivo?.email }}</p>
+      </div>
+
+      <h3 style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #888; letter-spacing: 0.8px; text-transform: uppercase; margin: 20px 0 10px 4px;">Listas Enviadas ({{ obterListasPartilhadas().length }})</h3>
+
+      <div class="shared-lists-container">
+        <!-- Estado Vazio -->
+        <div class="empty-state" *ngIf="obterListasPartilhadas().length === 0" style="padding: 30px 10px; text-align: center; color: #888;">
+          <ion-icon name="folder-open-outline" style="font-size: 36px; opacity: 0.4; margin-bottom: 8px; color: #999;"></ion-icon>
+          <p style="font-family: 'Outfit', sans-serif; font-size: 13px; margin: 0;">Nenhuma lista de compras partilhada nesta conversa.</p>
+        </div>
+
+        <!-- Lista de Cards de Listas Partilhadas -->
+        <div class="shared-list-item" *ngFor="let msg of obterListasPartilhadas()" style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border-radius: 14px; padding: 12px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+          <div style="display: flex; align-items: center; gap: 12px; max-width: 70%;">
+            <div style="width: 38px; height: 38px; background: #f5f5f5; color: #555; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+              <ion-icon [name]="msg.listaDados?.icone || 'cart-outline'"></ion-icon>
+            </div>
+            <div style="overflow: hidden;">
+              <h4 style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; margin: 0; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ msg.listaDados?.nome }}</h4>
+              <p style="font-family: 'Outfit', sans-serif; font-size: 11px; margin: 2px 0 0 0; color: #777;">{{ msg.listaDados?.produtos?.length }} produtos • {{ msg.data }}</p>
+            </div>
+          </div>
+          <ion-button size="small" fill="outline" color="success" (click)="importarListaDoChat(msg.listaDados); setInfoModalOpen(false);" style="font-weight: 700; text-transform: none; font-size: 12px; font-family: 'Outfit', sans-serif; margin: 0;">
+            Importar
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- MODAL DE DETALHES DO GRUPO (ESTILO WHATSAPP) -->
+<ion-modal [isOpen]="isInfoGrupoModalOpen" (didDismiss)="setInfoGrupoModalOpen(false)" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 0.95]">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 16px; color: #111;">Detalhes do Grupo</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setInfoGrupoModalOpen(false)" color="dark" style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px;">Fechar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="custom-bg ion-padding">
+      <div class="info-profile-section" style="text-align: center; padding: 15px 0 25px 0; border-bottom: 1px solid rgba(0,0,0,0.05); margin-bottom: 15px;">
+        <div class="big-avatar" style="width: 80px; height: 80px; background: #f8f0fc; color: #9c27b0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 800; margin: 0 auto 12px auto; border: 2px solid rgba(156, 39, 176, 0.25);">
+          {{ grupoAtivo?.iniciais }}
+        </div>
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; margin: 0; color: #111;">{{ grupoAtivo?.nome }}</h2>
+        <p style="font-family: 'Outfit', sans-serif; font-size: 13px; color: #666; margin: 4px 0 0 0;">Criado por: {{ grupoAtivo?.criador }}</p>
+      </div>
+
+      <!-- MEMBROS DO GRUPO -->
+      <h3 style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #888; letter-spacing: 0.8px; text-transform: uppercase; margin: 20px 0 10px 4px;">Membros ({{ grupoAtivo?.membros?.length }})</h3>
+      
+      <div class="members-container" style="background: #ffffff; border-radius: 14px; padding: 8px 12px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+        <div *ngFor="let membro of grupoAtivo?.membros" style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #fbfbfb;">
+          <div style="width: 32px; height: 32px; background: #e8d0f0; color: #6f0ca3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; font-family: 'Outfit', sans-serif;">
+            {{ obterIniciais(obterNomeMembro(membro)) }}
+          </div>
+          <div>
+            <h4 style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; margin: 0; color: #333;">
+              {{ obterNomeMembro(membro) }}
+              <span *ngIf="membro.toLowerCase() === emailAtual.toLowerCase()" style="font-size: 11px; font-weight: 400; color: #888;"> (Tu)</span>
+            </h4>
+            <p style="font-family: 'Outfit', sans-serif; font-size: 11px; margin: 2px 0 0 0; color: #888;">{{ membro }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTAS PARTILHADAS -->
+      <h3 style="font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; color: #888; letter-spacing: 0.8px; text-transform: uppercase; margin: 20px 0 10px 4px;">Listas Partilhadas ({{ obterListasPartilhadas().length }})</h3>
+
+      <div class="shared-lists-container" style="margin-bottom: 25px;">
+        <div class="empty-state" *ngIf="obterListasPartilhadas().length === 0" style="padding: 20px 10px; text-align: center; color: #888;">
+          <ion-icon name="folder-open-outline" style="font-size: 30px; opacity: 0.4; margin-bottom: 6px; color: #999;"></ion-icon>
+          <p style="font-family: 'Outfit', sans-serif; font-size: 12px; margin: 0;">Nenhuma lista de compras partilhada no grupo.</p>
+        </div>
+
+        <div class="shared-list-item" *ngFor="let msg of obterListasPartilhadas()" style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border-radius: 14px; padding: 12px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+          <div style="display: flex; align-items: center; gap: 12px; max-width: 70%;">
+            <div style="width: 38px; height: 38px; background: #f5f5f5; color: #555; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+              <ion-icon [name]="msg.listaDados?.icone || 'cart-outline'"></ion-icon>
+            </div>
+            <div style="overflow: hidden;">
+              <h4 style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; margin: 0; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ msg.listaDados?.nome }}</h4>
+              <p style="font-family: 'Outfit', sans-serif; font-size: 11px; margin: 2px 0 0 0; color: #777;">Partilhado por {{ msg.remetenteNome }} • {{ msg.data }}</p>
+            </div>
+          </div>
+          <ion-button size="small" fill="outline" color="success" (click)="importarListaDoChat(msg.listaDados); setInfoGrupoModalOpen(false);" style="font-weight: 700; text-transform: none; font-size: 12px; font-family: 'Outfit', sans-serif; margin: 0;">
+            Importar
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- BOTÃO SAIR DO GRUPO -->
+      <ion-button expand="block" color="danger" (click)="sairDoGrupo(); setInfoGrupoModalOpen(false);" style="font-family: 'Outfit', sans-serif; font-weight: 700; --border-radius: 12px;">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Sair do Grupo
+      </ion-button>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- MODAL PARA CRIAR GRUPO (PREMIUM ESTILO WHATSAPP) -->
+<ion-modal [isOpen]="isCriarGrupoModalOpen" (didDismiss)="setCriarGrupoModalOpen(false)" [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85, 0.95]">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 16px; color: #111;">Novo Grupo</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setCriarGrupoModalOpen(false)" color="dark" style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px;">Fechar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="custom-bg ion-padding">
+      <!-- Nome do Grupo -->
+      <div style="background: #ffffff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.04); padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px;">
+        <ion-item lines="none" style="--background: #f5f5f5; --border-radius: 12px; --padding-start: 12px;">
+          <ion-icon name="people-outline" slot="start" style="color: #666; margin-right: 8px;"></ion-icon>
+          <ion-input 
+            placeholder="Nome do grupo..." 
+            [(ngModel)]="nomeGrupoInput" 
+            type="text"
+            style="font-family: 'Outfit', sans-serif; font-size: 14px; color: #111;">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Lista de Membros Selecionados (Horizontal Scroll - WhatsApp style) -->
+      <div *ngIf="obterMembrosSelecionados().length > 0" style="margin-bottom: 16px;">
+        <p style="font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #888; letter-spacing: 0.5px; text-transform: uppercase; margin: 0 0 8px 4px;">Selecionados ({{ obterMembrosSelecionados().length }})</p>
+        <div style="display: flex; gap: 12px; overflow-x: auto; padding: 4px;">
+          <div *ngFor="let membro of obterMembrosSelecionados()" 
+               (click)="desmarcarMembro(membro.email)" 
+               style="text-align: center; position: relative; width: 55px; cursor: pointer;">
+            <div style="width: 44px; height: 44px; background: #eaf8ed; color: #0da33d; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'Outfit', sans-serif; font-size: 14px; margin: 0 auto; border: 1px solid rgba(13,163,61,0.2);">
+              {{ membro.iniciais }}
+            </div>
+            <div style="font-family: 'Outfit', sans-serif; font-size: 10px; color: #333; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">
+              {{ membro.nome.split(' ')[0] }}
+            </div>
+            <!-- Botão 'x' para remover -->
+            <div style="position: absolute; top: -2px; right: 2px; width: 16px; height: 16px; background: #ff4d4d; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">
+              ✕
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de Amigos Selecionáveis -->
+      <p style="font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: #888; letter-spacing: 0.5px; text-transform: uppercase; margin: 0 0 10px 4px;">Incluir Amigos no Grupo</p>
+      
+      <div *ngIf="amigos.length > 0" class="friends-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+        <div class="friend-item" 
+             *ngFor="let amigo of amigos" 
+             (click)="toggleSelecaoMembro(amigo.email)"
+             [style.background]="membrosSelecionados[amigo.email] ? '#f0f9f4' : '#ffffff'"
+             [style.border-color]="membrosSelecionados[amigo.email] ? 'rgba(13,163,61,0.2)' : 'rgba(0,0,0,0.02)'"
+             style="cursor: pointer; padding: 10px 12px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+          
+          <div class="friend-avatar" 
+               [style.background]="membrosSelecionados[amigo.email] ? '#0da33d' : '#f0f9f0'"
+               [style.color]="membrosSelecionados[amigo.email] ? '#ffffff' : '#0da33d'">
+            {{ amigo.iniciais }}
+          </div>
+          
+          <div class="friend-details">
+            <h4 style="font-size: 14px;">{{ amigo.nome }}</h4>
+            <p style="font-size: 11px;">{{ amigo.email }}</p>
+          </div>
+
+          <!-- Checkbox Redonda Personalizada -->
+          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+               [style.border-color]="membrosSelecionados[amigo.email] ? '#0da33d' : '#ccc'"
+               [style.background]="membrosSelecionados[amigo.email] ? '#0da33d' : 'transparent'">
+            <ion-icon name="checkmark" *ngIf="membrosSelecionados[amigo.email]" style="color: white; font-size: 12px; font-weight: bold;"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="amigos.length === 0" style="font-family: 'Outfit', sans-serif; font-size: 13px; color: #999; margin-bottom: 24px; text-align: center; padding: 24px;">
+        Adicione amigos primeiro para os poder incluir em grupos.
+      </div>
+
+      <!-- Botão Criar -->
+      <ion-button expand="block" style="--background: #0da33d; --border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; height: 48px;" (click)="criarGrupo()" [disabled]="!nomeGrupoInput.trim()">
+        Criar Grupo
+      </ion-button>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- MODAL PARA ADICIONAR AMIGO (PREMIUM) -->
+<ion-modal [isOpen]="isAddFriendModalOpen" (didDismiss)="setAddFriendModalOpen(false)" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.5]">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 16px; color: #111;">Adicionar Amigo</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setAddFriendModalOpen(false)" color="dark" style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px;">Fechar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="custom-bg ion-padding" style="text-align: center;">
+      <div style="margin-top: 10px; margin-bottom: 24px;">
+        <div style="width: 70px; height: 70px; background: #eaf8ed; color: #0da33d; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; margin: 0 auto 16px auto; box-shadow: 0 8px 20px rgba(13,163,61,0.1);">
+          <ion-icon name="person-add-outline"></ion-icon>
+        </div>
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #111; margin: 0;">Encontrar Amigo</h2>
+        <p style="font-family: 'Outfit', sans-serif; font-size: 13px; color: #666; margin: 4px 20px 0 20px; line-height: 1.4;">Insira o e-mail do seu amigo para estabelecer a ligação e começar a partilhar listas de compras.</p>
+      </div>
+
+      <div style="background: #ffffff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.04); padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 24px;">
+        <ion-item lines="none" style="--background: #f5f5f5; --border-radius: 12px; --padding-start: 12px;">
+          <ion-icon name="mail-outline" slot="start" style="color: #666; margin-right: 8px;"></ion-icon>
+          <ion-input 
+            placeholder="E-mail registado..." 
+            [(ngModel)]="emailAmigoInput" 
+            type="email"
+            style="font-family: 'Outfit', sans-serif; font-size: 14px; color: #111;">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <ion-button expand="block" style="--background: #0da33d; --border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; height: 48px;" (click)="confirmarAdicionarAmigo()">
+        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+        Adicionar aos Contactos
+      </ion-button>
+    </ion-content>
+  </ng-template>
+</ion-modal>

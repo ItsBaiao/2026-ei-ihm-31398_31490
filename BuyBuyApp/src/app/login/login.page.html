@@ -16,21 +16,21 @@
     </div>
 
     <div class="titles">
-      <h1>Bem-vindo de volta</h1>
-      <p>Inicie sessão para continuar a poupar</p>
+      <h1>{{ strings.t.login.titulo }}</h1>
+      <p>{{ strings.t.login.subtitulo }}</p>
     </div>
 
-    <div class="form-container">
+    <form [formGroup]="loginForm" (ngSubmit)="iniciarSessao()" class="form-container">
       
       <div class="custom-input-box">
         <ion-icon name="mail-outline"></ion-icon>
-        <ion-input type="email" placeholder="seu@email.com" [(ngModel)]="emailInput"></ion-input>
+        <ion-input type="email" [placeholder]="strings.t.login.emailPlaceholder" formControlName="email"></ion-input>
       </div>
 
       <div class="custom-input-box">
         <ion-icon name="lock-closed-outline"></ion-icon>
         
-        <ion-input [type]="mostrarSenha ? 'text' : 'password'" placeholder="Palavra-passe" [(ngModel)]="senhaInput"></ion-input>
+        <ion-input [type]="mostrarSenha ? 'text' : 'password'" [placeholder]="strings.t.login.senhaPlaceholder" formControlName="senha"></ion-input>
         
         <ion-icon 
           [name]="mostrarSenha ? 'eye-off-outline' : 'eye-outline'" 
@@ -41,17 +41,17 @@
       </div>
 
       <div class="forgot-pwd">
-        <a href="#">Esqueceu a palavra-passe?</a>
+        <a href="#">{{ strings.t.login.esqueceuSenha }}</a>
       </div>
 
-    </div>
+    </form>
 
     <ion-button class="login-btn" expand="block" (click)="iniciarSessao()">
-      ENTRAR <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      {{ strings.t.login.entrar }} <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
     </ion-button>
 
     <div class="register-link">
-      Não tem conta? <a routerLink="/registo">Criar conta</a>
+      {{ strings.t.login.naoTemConta }} <a routerLink="/registo">{{ strings.t.login.criarConta }}</a>
     </div>
 
   </div>

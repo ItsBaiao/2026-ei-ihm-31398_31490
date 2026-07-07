@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular'; // Importante para as mensagens de erro!
+import { FormBuilder, FormGroup, Validators } from '@angular/forms'; // <-- Importes do Reactive Forms
+import { StringsService } from '../services/strings.service'; // <-- Import do StringsService
 
 @Component({
   selector: 'app-login',
@@ -11,12 +13,23 @@ import { ToastController } from '@ionic/angular'; // Importante para as mensagen
 export class LoginPage implements OnInit {
 
   mostrarSenha = false;
-  emailInput: string = '';
-  senhaInput: string = ''; // Variável da password
+  loginForm!: FormGroup; // <-- Declaração do formulário reativo
 
-  constructor(private router: Router, private toastCtrl: ToastController) { }
+  // Adicionámos o FormBuilder ao construtor
+  constructor(
+    private router: Router, 
+    private toastCtrl: ToastController,
+    private fb: FormBuilder,
+    public strings: StringsService // <-- Injeção do serviço
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Inicialização do formulário com validações
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', [Validators.required]]
+    });
+  }
 
   toggleSenha() {
     this.mostrarSenha = !this.mostrarSenha;
@@ -34,10 +47,27 @@ export class LoginPage implements OnInit {
   }
 
   async iniciarSessao() {
-    if (this.emailInput.trim() === '' || this.senhaInput.trim() === '') {
-      this.mostrarErro('Preencha o email e a palavra-passe!');
+    // Validação reativa antes de avançar
+    if (this.loginForm.invalid) {
+      const controls = this.loginForm.controls;
+      
+      if (controls['email'].errors) {
+        if (controls['email'].errors['required']) {
+          this.mostrarErro('Por favor, insira o seu e-mail!');
+        } else {
+          this.mostrarErro('Por favor, insira um e-mail válido!');
+        }
+        return;
+      }
+      
+      if (controls['senha'].errors) {
+        this.mostrarErro('Por favor, insira a palavra-passe!');
+        return;
+      }
       return;
     }
+
+    const { email, senha } = this.loginForm.value;
 
     // 1. Vai buscar a LISTA de contas que criámos no Registo
     let contas = JSON.parse(localStorage.getItem('contasRegistadas') || '[]');
@@ -48,7 +78,7 @@ export class LoginPage implements OnInit {
     }
 
     // 2. Procura a conta exata (tem de bater certo o email e a password)
-    const contaEncontrada = contas.find((c: any) => c.email === this.emailInput && c.senha === this.senhaInput);
+    const contaEncontrada = contas.find((c: any) => c.email === email && c.senha === senha);
 
     if (!contaEncontrada) {
       this.mostrarErro('Email ou palavra-passe incorretos!');

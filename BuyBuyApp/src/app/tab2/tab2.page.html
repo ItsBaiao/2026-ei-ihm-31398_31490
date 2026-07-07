@@ -121,6 +121,21 @@
               <p>{{ produtoSelecionado.tamanho }} • {{ produtoSelecionado.preco }}</p>
             </div>
           </div>
+
+        <!-- Seletor de Quantidade -->
+          <div class="quantity-selector-box" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; margin: 15px 0; background: #f9f9f9; border-radius: 12px; border: 1px dashed #ddd;">
+            <span style="font-weight: 600; color: #555; font-size: 14px;">Quantidade a adicionar:</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <ion-button fill="clear" color="dark" (click)="diminuirQuantidadeModal()" style="margin: 0; --padding-start: 4px; --padding-end: 4px; height: 32px;">
+                <ion-icon name="remove-circle-outline" style="font-size: 24px; color: #666;"></ion-icon>
+              </ion-button>
+              <span style="font-size: 16px; font-weight: bold; min-width: 20px; text-align: center; color: #111;">{{ quantidadeSelecionada }}</span>
+              <ion-button fill="clear" color="dark" (click)="aumentarQuantidadeModal()" style="margin: 0; --padding-start: 4px; --padding-end: 4px; height: 32px;">
+                <ion-icon name="add-circle-outline" style="font-size: 24px; color: #666;"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
           <div class="list-option" *ngFor="let lista of listasNoCofre" (click)="gravarProdutoNaLista(lista)" style="cursor: pointer;">
             <div class="list-icon"><ion-icon [name]="lista.icone"></ion-icon></div>
             <div class="list-text">

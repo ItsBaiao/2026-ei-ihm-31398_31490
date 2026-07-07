@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title class="header-title">{{ listaAtual?.nome }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button color="dark"><ion-icon name="share-social-outline"></ion-icon></ion-button>
+      <ion-button color="dark" (click)="partilharLista()"><ion-icon name="share-social-outline"></ion-icon></ion-button>
       
       <ion-button color="dark" id="btn-opcoes-lista">
         <ion-icon name="ellipsis-vertical"></ion-icon>
@@ -55,7 +55,7 @@
   
   <div class="search-bar">
     <ion-icon name="search-outline"></ion-icon>
-    <ion-input type="text" placeholder="Procurar na lista..."></ion-input>
+    <ion-input type="text" placeholder="Procurar na lista..." [(ngModel)]="searchQuery"></ion-input>
   </div>
 
   <div class="progress-card">
@@ -78,8 +78,12 @@
       <p>Ainda não adicionaste produtos a esta lista.</p>
     </div>
 
+    <div *ngIf="listaAtual?.produtos && listaAtual!.produtos!.length > 0 && produtosFiltrados.length === 0" style="text-align: center; margin-top: 30px; color: #888;">
+      <p>Nenhum produto corresponde à pesquisa.</p>
+    </div>
+
     <ion-list lines="none" style="background: transparent;">
-      <ion-item-sliding *ngFor="let prod of listaAtual?.produtos" #slidingItem>
+      <ion-item-sliding *ngFor="let prod of produtosFiltrados" #slidingItem>
         
         <ion-item-options side="start">
           <ion-item-option color="success" (click)="riscarProduto(prod, slidingItem)">
@@ -96,12 +100,21 @@
               </div>
               <div class="product-details">
                 <h4 [ngClass]="{'strikethrough-text': prod.riscado}">{{ prod.nome }}</h4>
-                <p>{{ prod.tamanho }}</p>
+                <p>{{ prod.tamanho }} • <strong style="color: var(--ion-color-primary);">{{ prod.quantidade || 1 }}x</strong></p>
               </div>
             </div>
-            <div class="product-right">
-              <span class="price">{{ prod.preco }}</span>
+            <div class="product-right" style="display: flex; align-items: center; gap: 6px;">
+              <div class="qty-controls" style="display: flex; align-items: center; gap: 2px; background: #f2f2f2; border-radius: 20px; padding: 2px;">
+                <ion-button fill="clear" color="dark" size="small" (click)="alterarQuantidadeItem(prod, -1, $event)" style="margin: 0; height: 24px; width: 24px; --padding-start: 0; --padding-end: 0;">
+                  <ion-icon name="remove" style="font-size: 14px;"></ion-icon>
+                </ion-button>
+                <span style="font-weight: bold; font-size: 12px; min-width: 14px; text-align: center; color: #333;">{{ prod.quantidade || 1 }}</span>
+                <ion-button fill="clear" color="dark" size="small" (click)="alterarQuantidadeItem(prod, 1, $event)" style="margin: 0; height: 24px; width: 24px; --padding-start: 0; --padding-end: 0;">
+                  <ion-icon name="add" style="font-size: 14px;"></ion-icon>
+                </ion-button>
               </div>
+              <span class="price" style="margin-left: 4px; font-size: 14px;">{{ obterPrecoTotalItem(prod) }}</span>
+            </div>
           </div>
         </ion-item>
 

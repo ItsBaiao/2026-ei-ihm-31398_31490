@@ -25,6 +25,7 @@ export class Tab2Page implements OnInit {
   public isListModalOpen = false;
   public produtoSelecionado: any = null;
   public listasNoCofre: Lista[] = [];
+  public quantidadeSelecionada: number = 1;
 
   constructor(
     private produtosService: ProdutosService,
@@ -152,6 +153,7 @@ export class Tab2Page implements OnInit {
   abrirModalRapido(produto: any, event: Event) {
     event.stopPropagation();
     this.produtoSelecionado = produto;
+    this.quantidadeSelecionada = 1; // Reseta para 1 ao abrir
     this.isListModalOpen = true;
   }
 
@@ -159,13 +161,27 @@ export class Tab2Page implements OnInit {
     this.isListModalOpen = isOpen;
   }
 
+  aumentarQuantidadeModal() {
+    this.quantidadeSelecionada++;
+  }
+
+  diminuirQuantidadeModal() {
+    if (this.quantidadeSelecionada > 1) {
+      this.quantidadeSelecionada--;
+    }
+  }
+
   async gravarProdutoNaLista(lista: Lista) {
     if (this.produtoSelecionado) {
-      await this.listasService.adicionarProdutoALista(lista.nome, this.produtoSelecionado);
+      await this.listasService.adicionarProdutoALista(
+        lista.nome, 
+        this.produtoSelecionado, 
+        this.quantidadeSelecionada
+      );
       this.setModalOpen(false);
       
       const toast = await this.toastCtrl.create({
-        message: `${this.produtoSelecionado.nome} adicionado!`, 
+        message: `${this.produtoSelecionado.nome} (${this.quantidadeSelecionada}x) adicionado!`, 
         duration: 2000, 
         color: 'success', 
         position: 'bottom',              // Envia o aviso para a parte inferior
@@ -181,8 +197,12 @@ export class Tab2Page implements OnInit {
     setTimeout(async () => {
       const nomeDaNovaLista = 'Lista Rápida ' + (Math.floor(Math.random() * 1000) + 1);
       const novaLista = {
-        nome: nomeDaNovaLista, icone: 'cart-outline', cor: 'border-light', dataEdicao: 'Criada agora mesmo', totalItens: 1,
-        produtos: [{ ...this.produtoSelecionado, riscado: false, recente: true }]
+        nome: nomeDaNovaLista, 
+        icone: 'cart-outline', 
+        cor: 'border-light', 
+        dataEdicao: 'Criada agora mesmo', 
+        totalItens: this.quantidadeSelecionada,
+        produtos: [{ ...this.produtoSelecionado, quantidade: this.quantidadeSelecionada, riscado: false, recente: true }]
       };
       await this.listasService.adicionarLista(novaLista);
       this.listasNoCofre = this.listasService.minhasListas;

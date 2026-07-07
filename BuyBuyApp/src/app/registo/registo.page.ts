@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular'; // Importante para as mensagens de erro!
+import { FormBuilder, FormGroup, Validators } from '@angular/forms'; // <-- Importes do Reactive Forms
+import { StringsService } from '../services/strings.service'; // <-- Import do StringsService
 
 @Component({
   selector: 'app-registo',
@@ -11,14 +13,24 @@ import { ToastController } from '@ionic/angular'; // Importante para as mensagen
 export class RegistoPage implements OnInit {
   
   mostrarSenha = false;
-  nomeInput: string = '';
-  emailInput: string = '';
-  senhaInput: string = ''; // Variável da password
+  registoForm!: FormGroup; // <-- Declaração do formulário reativo
 
-  // Adicionámos o ToastController ao construtor
-  constructor(private router: Router, private toastCtrl: ToastController) { }
+  // Adicionámos o FormBuilder ao construtor
+  constructor(
+    private router: Router, 
+    private toastCtrl: ToastController,
+    private fb: FormBuilder,
+    public strings: StringsService // <-- Injeção do serviço
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Inicialização do formulário com validações robustas
+    this.registoForm = this.fb.group({
+      nome: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
 
   toggleSenha() {
     this.mostrarSenha = !this.mostrarSenha;
@@ -36,21 +48,46 @@ export class RegistoPage implements OnInit {
   }
 
   async criarConta() {
-    if (this.nomeInput.trim() === '' || this.emailInput.trim() === '' || this.senhaInput.trim() === '') {
-      this.mostrarErro('Por favor, preencha todos os campos!');
+    // Validação reativa antes de submeter
+    if (this.registoForm.invalid) {
+      const controls = this.registoForm.controls;
+      
+      if (controls['nome'].errors) {
+        if (controls['nome'].errors['required']) {
+          this.mostrarErro('Por favor, insira o seu nome!');
+        } else {
+          this.mostrarErro('O nome deve ter pelo menos 2 caracteres!');
+        }
+        return;
+      }
+      
+      if (controls['email'].errors) {
+        if (controls['email'].errors['required']) {
+          this.mostrarErro('Por favor, insira o seu e-mail!');
+        } else {
+          this.mostrarErro('Por favor, insira um e-mail válido!');
+        }
+        return;
+      }
+      
+      if (controls['senha'].errors) {
+        if (controls['senha'].errors['required']) {
+          this.mostrarErro('Por favor, defina uma palavra-passe!');
+        } else {
+          this.mostrarErro('A palavra-passe deve ter pelo menos 6 caracteres!');
+        }
+        return;
+      }
       return;
     }
 
-    if (!this.emailInput.includes('@') || !this.emailInput.includes('.')) {
-      this.mostrarErro('Por favor, insira um email válido!');
-      return;
-    }
+    const { nome, email, senha } = this.registoForm.value;
 
     // 1. Vai buscar a LISTA de contas (se não houver, cria uma lista vazia)
     let contas = JSON.parse(localStorage.getItem('contasRegistadas') || '[]');
 
     // 2. Verifica se alguém já usou este email
-    const emailJaExiste = contas.find((c: any) => c.email === this.emailInput);
+    const emailJaExiste = contas.find((c: any) => c.email === email);
     if (emailJaExiste) {
       this.mostrarErro('Este email já está registado na aplicação!');
       return;
@@ -58,9 +95,9 @@ export class RegistoPage implements OnInit {
 
     // 3. Cria a conta nova e adiciona à lista
     const conta = {
-      nome: this.nomeInput,
-      email: this.emailInput,
-      senha: this.senhaInput
+      nome: nome,
+      email: email,
+      senha: senha
     };
     contas.push(conta); 
     
@@ -68,9 +105,9 @@ export class RegistoPage implements OnInit {
     localStorage.setItem('contasRegistadas', JSON.stringify(contas));
 
     // Guarda a sessão de quem acabou de entrar
-    localStorage.setItem('utilizadorAtual', this.nomeInput);
-    localStorage.setItem('emailAtual', this.emailInput);
+    localStorage.setItem('utilizadorAtual', nome);
+    localStorage.setItem('emailAtual', email);
 
     this.router.navigate(['/tabs/tab1']);
   }
-}
+}

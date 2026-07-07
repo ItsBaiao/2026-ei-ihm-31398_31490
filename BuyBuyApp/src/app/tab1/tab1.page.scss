@@ -111,6 +111,13 @@ ion-toolbar {
   }
 }
 
+.list-card.selected-card {
+  background: #f0f9f4 !important;
+  border-left-width: 6px !important;
+  border-left-color: #0da33d !important;
+}
+
+
 /* --- BOTÃO FLUTUANTE (FAB) --- */
 .custom-fab {
   --background: #065f24;

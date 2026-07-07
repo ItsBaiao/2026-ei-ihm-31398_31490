@@ -12,12 +12,12 @@
   
   <div class="search-bar">
     <ion-icon name="search-outline"></ion-icon>
-    <input type="text" placeholder="Pesquisar loja ou localidade..." />
+    <ion-input type="text" placeholder="Pesquisar loja ou localidade..." [(ngModel)]="searchQuery"></ion-input>
   </div>
 
   <div class="section-title">LOJAS DISPONÍVEIS</div>
   
-  <div class="store-card" *ngFor="let loja of lojas" 
+  <div class="store-card" *ngFor="let loja of lojasFiltradas" 
        [ngClass]="{'selected': loja.id === lojaAtual?.id}" 
        (click)="selecionarLoja(loja)">
     

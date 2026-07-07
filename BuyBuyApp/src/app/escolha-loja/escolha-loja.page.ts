@@ -12,6 +12,18 @@ export class EscolhaLojaPage {
 
   public lojas: any[] = [];
   public lojaAtual: any;
+  public searchQuery: string = '';
+
+  get lojasFiltradas(): any[] {
+    if (!this.searchQuery || this.searchQuery.trim() === '') {
+      return this.lojas;
+    }
+    const query = this.searchQuery.toLowerCase().trim();
+    return this.lojas.filter(l => 
+      l.nome.toLowerCase().includes(query) || 
+      l.morada.toLowerCase().includes(query)
+    );
+  }
 
   constructor(
     private navCtrl: NavController, 

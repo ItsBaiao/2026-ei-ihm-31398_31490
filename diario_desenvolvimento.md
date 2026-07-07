@@ -39,3 +39,30 @@ Duração: 5h
 - Soluções Aplicadas: 
   1. Implementação híbrida do detetor nativo do Capacitor em conjunto com os eventos web convencionais ('window.addEventListener'), garantindo que o aviso offline dispara em qualquer cenário.
   2. Utilização do lifecycle hook 'ionViewWillEnter' do Ionic para forçar o recarregamento dos dados da memória local sempre que as páginas ficam ativas, mantendo o estado 100% sincronizado.
+
+---
+
+FASE 5: IMPLEMENTAÇÃO DE REQUISITOS ADICIONAIS (05/07)
+Duração: 1.5h
+- Tarefas Realizadas:
+  1. Refatoração completa dos formulários de Login e Registo de Template-driven Forms para Reactive Forms (`FormGroup`/`FormBuilder`), implementando validações estruturadas e em tempo real para cumprimento do Requisito Adicional 6.
+  2. Isolamento de strings de interface (Requisito Adicional 2) através de `StringsService` centralizado que consome dinamicamente um dicionário a partir do ficheiro `strings.json` para as páginas de boas-vindas, login e registo.
+- Dificuldades Encontradas: Garantir que os módulos de rotas e declarações Angular reconhecessem a nova diretiva de formulários reativos e gerir as quebras de linha (<br>) no HTML ao carregar dados dinâmicos das strings.
+- Solução Aplicada: Integração do `ReactiveFormsModule` nos imports globais em `LoginPageModule` e `RegistoPageModule` e uso do binding `[innerHTML]` para renderizar tags de formatação nativas no Angular.
+
+---
+
+FASE 6: SUPORTE A QUANTIDADES E REDE SOCIAL COM CHAT (06/07)
+Duração: 2.5h
+- Tarefas Realizadas:
+  1. Implementação de suporte a quantidades acumuladas no catálogo e carrinho, exibindo "2x" e permitindo aumentar/diminuir quantidades diretamente na lista.
+  2. Implementação de preço total dinâmico por linha (multiplicando preço unitário pela quantidade) e alerta de confirmação de eliminação quando a quantidade é reduzida a zero.
+  3. Criação da Tab 4 (Amigos & Mensagens) permitindo adicionar amigos de forma recíproca através de emails registados, e chat interativo com simulação de respostas inteligentes de bot.
+  4. Integração da funcionalidade de partilha direta de listas de compras inteiras dentro das mensagens de chat com importador automático de um clique.
+  5. Refatoração do sistema de partilha geral de listas por link codificado em Base64 com tratamento de fallback robusto para contextos inseguros (insecure contexts em conexões HTTP locais).
+- Dificuldades Encontradas:
+  1. O bloqueio do `navigator.clipboard` em conexões HTTP locais de desenvolvimento (como emulação Capacitor com live reload em rede externa) impedia o funcionamento da cópia.
+  2. Gerir mensagens e amigos de forma a que, quando dois utilizadores locais conversam, ambos tenham acesso à mesma base de dados de chat de forma bidirecional.
+- Soluções Aplicadas:
+  1. Criação de um método de fallback que utiliza um elemento `textarea` oculto no DOM para forçar a cópia, além de um modal de cópia manual de segurança.
+  2. Desenho de chaves de storage compostas e ordenadas alfabeticamente para as conversas (ex: `chat_email1_email2`), permitindo que a troca de conta revele o histórico de chat idêntico para ambos os participantes.

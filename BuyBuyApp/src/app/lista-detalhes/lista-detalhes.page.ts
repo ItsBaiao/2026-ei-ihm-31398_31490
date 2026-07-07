@@ -15,10 +15,23 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
   public listaAtual: Lista | undefined;
   public progresso: number = 0;
   public marcados: number = 0;
+  public searchQuery: string = '';
   
   public isOffline: boolean = false;
   public avisoOffline: HTMLIonToastElement | null = null;
   private networkListener: any; 
+
+  get produtosFiltrados(): any[] {
+    if (!this.listaAtual || !this.listaAtual.produtos) return [];
+    if (!this.searchQuery || this.searchQuery.trim() === '') {
+      return this.listaAtual.produtos;
+    }
+    const query = this.searchQuery.toLowerCase().trim();
+    return this.listaAtual.produtos.filter(p => 
+      p.nome.toLowerCase().includes(query) || 
+      (p.categoria && p.categoria.toLowerCase().includes(query))
+    );
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -217,5 +230,179 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
       this.marcados = this.listaAtual.produtos.filter((p: any) => p.riscado).length;
       this.progresso = Math.round((this.marcados / this.listaAtual.produtos.length) * 100);
     }
+  }
+
+  async alterarQuantidadeItem(produto: any, alteracao: number, event: Event) {
+    event.stopPropagation(); // Impede cliques indesejados nas linhas
+    const novaQuantidade = (produto.quantidade || 1) + alteracao;
+    
+    if (novaQuantidade === 0) {
+      // Cria o diálogo de confirmação (AlertController) para remover o item (Revertido para padrão)
+      const alert = await this.alertCtrl.create({
+        header: 'Remover produto',
+        message: `Deseja mesmo remover ${produto.nome} da sua lista de compras?`,
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel'
+          },
+          {
+            text: 'Remover',
+            handler: async () => {
+              if (this.listaAtual && this.listaAtual.produtos) {
+                const idx = this.listaAtual.produtos.indexOf(produto);
+                if (idx > -1) {
+                  this.listaAtual.produtos.splice(idx, 1);
+                  this.listaAtual.totalItens = this.listaAtual.produtos.reduce(
+                    (acc, p) => acc + (p.quantidade || 1), 
+                    0
+                  );
+                  this.listaAtual.dataEdicao = 'Atualizada agora mesmo';
+                  this.calcularProgresso();
+                  await this.listasService.guardarAlteracoes();
+
+                  const toast = await this.toastCtrl.create({
+                    message: `${produto.nome} removido.`,
+                    duration: 2000,
+                    color: 'dark',
+                    position: 'bottom',
+                    cssClass: 'toast-acima-do-botao'
+                  });
+                  await toast.present();
+                }
+              }
+            }
+          }
+        ]
+      });
+      await alert.present();
+
+    } else if (novaQuantidade >= 1) {
+      produto.quantidade = novaQuantidade;
+      
+      if (this.listaAtual && this.listaAtual.produtos) {
+        // Atualiza a soma total de itens na lista
+        this.listaAtual.totalItens = this.listaAtual.produtos.reduce(
+          (acc, p) => acc + (p.quantidade || 1), 
+          0
+        );
+        this.listaAtual.dataEdicao = 'Atualizada agora mesmo';
+        this.calcularProgresso();
+        await this.listasService.guardarAlteracoes();
+      }
+    }
+  }
+
+  // Função utilitária para calcular o preço total escalado pela quantidade
+  obterPrecoTotalItem(prod: any): string {
+    if (!prod || !prod.preco) return '';
+    // Converte de "€1,89" para 1.89
+    const precoLimpo = prod.preco.replace('€', '').replace(',', '.').trim();
+    const precoUnitario = parseFloat(precoLimpo);
+    if (isNaN(precoUnitario)) return prod.preco;
+
+    const total = precoUnitario * (prod.quantidade || 1);
+    // Devolve no formato "€X,XX"
+    return '€' + total.toFixed(2).replace('.', ',');
+  }
+
+  // Gera um link Base64 com os dados da lista e copia para o Clipboard (com suporte a fallback para contextos não seguros)
+  async partilharLista() {
+    if (!this.listaAtual) return;
+    
+    try {
+      const shareData = {
+        n: this.listaAtual.nome,
+        i: this.listaAtual.icone,
+        c: this.listaAtual.cor,
+        p: (this.listaAtual.produtos || []).map((p: any) => ({
+          n: p.nome,
+          pr: p.preco,
+          t: p.tamanho,
+          cat: p.categoria,
+          img: p.imagemUrl,
+          q: p.quantidade || 1
+        }))
+      };
+      
+      const jsonStr = JSON.stringify(shareData);
+      const base64Data = btoa(unescape(encodeURIComponent(jsonStr)));
+      const shareUrl = `${window.location.origin}/tabs/tab1?import=${base64Data}`;
+      
+      // Tenta copiar usando a nossa função de cópia robusta
+      const copiou = await this.copiarParaClipboard(shareUrl);
+      
+      if (copiou) {
+        const toast = await this.toastCtrl.create({
+          message: 'Link de partilha copiado! Envie-o a um amigo.',
+          duration: 3000,
+          color: 'success',
+          icon: 'share-social-outline',
+          position: 'bottom',
+          cssClass: 'toast-acima-do-botao'
+        });
+        await toast.present();
+      } else {
+        // Se a cópia em background falhar (ex: restrições do browser local), mostra para cópia manual
+        await this.mostrarAlertaLinkPartilha(shareUrl);
+      }
+    } catch (err) {
+      console.error('Erro ao partilhar lista:', err);
+      // Fallback em caso de erro extremo
+      try {
+        const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(this.listaAtual))));
+        const shareUrl = `${window.location.origin}/tabs/tab1?import=${base64Data}`;
+        await this.mostrarAlertaLinkPartilha(shareUrl);
+      } catch (e) {}
+    }
+  }
+
+  // Função interna para copiar texto para a área de transferência com fallback
+  async copiarParaClipboard(texto: string): Promise<boolean> {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(texto);
+        return true;
+      } catch (err) {
+        console.warn('Navigator clipboard falhou, tentando fallback...', err);
+      }
+    }
+    
+    // Fallback usando textarea temporário no DOM (essencial para contextos HTTP locais como Capacitor Live Reload)
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = texto;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const exito = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      if (exito) return true;
+    } catch (err) {
+      console.error('Falha no fallback de cópia:', err);
+    }
+    return false;
+  }
+
+  // Mostra um aviso com a URL caso a cópia automática seja bloqueada pelo browser/dispositivo
+  async mostrarAlertaLinkPartilha(link: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Partilhar Lista',
+      message: 'A cópia automática foi bloqueada. Por favor, copie manualmente o link abaixo para partilhar:',
+      inputs: [
+        {
+          type: 'textarea',
+          value: link,
+          attributes: {
+            readonly: true,
+            style: 'height: 100px; font-size: 12px; font-family: monospace;'
+          }
+        }
+      ],
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }
