@@ -57,6 +57,7 @@ export class Tab4Page implements OnInit {
   public nomeGrupoInput: string = '';
   public membrosSelecionados: { [email: string]: boolean } = {};
   public isInfoGrupoModalOpen: boolean = false;
+  public unreadCounts: { [chatId: string]: number } = {}; // Adicionado
   
   public isNovoChatModalOpen: boolean = false;
   public termoPesquisa: string = '';
@@ -70,6 +71,8 @@ export class Tab4Page implements OnInit {
   private chatInterval: any = null;
 
 
+  private listaInterval: any = null;
+
   ngOnInit() {
     this.listasService.init();
     this.carregarUtilizadorAtual();
@@ -77,6 +80,7 @@ export class Tab4Page implements OnInit {
 
   ngOnDestroy() {
     this.pararIntervaloChat();
+    this.pararIntervaloLista();
   }
 
   async ionViewWillEnter() {
@@ -87,6 +91,7 @@ export class Tab4Page implements OnInit {
       await this.sincronizarContas();
       await this.sincronizarAmigos();
       await this.sincronizarGrupos();
+      await this.atualizarContadoresNaoLidos();
     }
     
     if (this.emailAtual !== anteriorEmail) {
@@ -96,6 +101,8 @@ export class Tab4Page implements OnInit {
         this.iniciarIntervaloChat();
       }
     }
+
+    this.iniciarIntervaloLista();
   }
 
   carregarUtilizadorAtual() {
@@ -144,6 +151,7 @@ export class Tab4Page implements OnInit {
   iniciarIntervaloChat() {
     this.pararIntervaloChat();
     this.chatInterval = setInterval(() => {
+      this.atualizarContadoresNaoLidos();
       if (this.amigoAtivo) {
         this.carregarMensagens();
       } else if (this.grupoAtivo) {
@@ -156,6 +164,83 @@ export class Tab4Page implements OnInit {
     if (this.chatInterval) {
       clearInterval(this.chatInterval);
       this.chatInterval = null;
+    }
+  }
+
+  pararIntervaloLista() {
+    if (this.listaInterval) {
+      clearInterval(this.listaInterval);
+      this.listaInterval = null;
+    }
+  }
+
+  iniciarIntervaloLista() {
+    this.pararIntervaloLista();
+    this.listaInterval = setInterval(async () => {
+      if (!this.amigoAtivo && !this.grupoAtivo) {
+        await this.atualizarContadoresNaoLidos();
+      }
+    }, 4000);
+  }
+
+  getChatIdAmigo(amigo: Amigo): string {
+    if (!this.emailAtual || !amigo) return '';
+    const emails = [this.emailAtual.toLowerCase().trim(), amigo.email.toLowerCase().trim()].sort();
+    return `chat_${emails[0]}_${emails[1]}`;
+  }
+
+  getChatIdGrupo(grupo: Grupo): string {
+    if (!grupo) return '';
+    return `chat_group_${grupo.id}`;
+  }
+
+  async atualizarContadoresNaoLidos() {
+    if (!this.emailAtual) return;
+    try {
+      const chatIds: string[] = [];
+      this.amigos.forEach(amigo => {
+        const cid = this.getChatIdAmigo(amigo);
+        if (cid) chatIds.push(cid);
+      });
+      this.grupos.forEach(grupo => {
+        const cid = this.getChatIdGrupo(grupo);
+        if (cid) chatIds.push(cid);
+      });
+
+      if (chatIds.length === 0) return;
+
+      const msgs = await this.supabaseService.obterMensagensPorChatIds(chatIds);
+      
+      const messagesByChat: { [chatId: string]: any[] } = {};
+      msgs.forEach(row => {
+        if (!messagesByChat[row.chat_id]) {
+          messagesByChat[row.chat_id] = [];
+        }
+        messagesByChat[row.chat_id].push(row);
+      });
+
+      const newUnreadCounts: { [chatId: string]: number } = {};
+      chatIds.forEach(chatId => {
+        const chatMessages = messagesByChat[chatId] || [];
+        let lastReadIdVal = localStorage.getItem(`chat_last_read_id_${this.emailAtual.toLowerCase().trim()}_${chatId}`);
+        if (lastReadIdVal === null) {
+          const maxId = chatMessages.reduce((max, msg) => msg.id > max ? msg.id : max, 0);
+          localStorage.setItem(`chat_last_read_id_${this.emailAtual.toLowerCase().trim()}_${chatId}`, maxId.toString());
+          lastReadIdVal = maxId.toString();
+        }
+        const lastReadId = parseInt(lastReadIdVal || '0', 10);
+
+        const unreadMsgs = chatMessages.filter(msg => 
+          msg.id > lastReadId && 
+          msg.remetente.toLowerCase().trim() !== this.emailAtual.toLowerCase().trim()
+        );
+
+        newUnreadCounts[chatId] = unreadMsgs.length;
+      });
+
+      this.unreadCounts = newUnreadCounts;
+    } catch (err) {
+      console.error('Erro ao atualizar contadores não lidos:', err);
     }
   }
 
@@ -277,6 +362,13 @@ export class Tab4Page implements OnInit {
       this.mensagens = msgs;
       this.rolarParaFundo(100);
     }
+    // Guarda o ID da última mensagem lida neste chat (com escopo de e-mail)
+    if (msgs.length > 0) {
+      const maxId = msgs.reduce((max, m) => m.id > max ? m.id : max, 0);
+      localStorage.setItem(`chat_last_read_id_${this.emailAtual.toLowerCase().trim()}_${chave}`, maxId.toString());
+    } else {
+      localStorage.setItem(`chat_last_read_id_${this.emailAtual.toLowerCase().trim()}_${chave}`, '0');
+    }
   }
 
   async enviarMensagem() {
@@ -299,10 +391,10 @@ export class Tab4Page implements OnInit {
   // Permite selecionar uma das listas locais para partilhar no chat
   async abrirSeletorDeListas() {
     this.listasService.init();
-    const listas = this.listasService.minhasListas;
+    const listas = this.listasService.minhasListas.filter(l => !l.arquivada);
 
     if (listas.length === 0) {
-      this.mostrarMensagem('Não tem nenhuma lista de compras criada para partilhar.', 'warning');
+      this.mostrarMensagem('Não tem nenhuma lista de compras ativa para partilhar.', 'warning');
       return;
     }
 
@@ -413,8 +505,7 @@ export class Tab4Page implements OnInit {
       message: msg,
       duration: 3000,
       color: cor,
-      position: 'bottom',
-      cssClass: 'toast-acima-do-botao'
+      position: 'top'
     });
     await toast.present();
   }
@@ -506,6 +597,13 @@ export class Tab4Page implements OnInit {
     if (msgs.length !== this.mensagens.length) {
       this.mensagens = msgs;
       this.rolarParaFundo(100);
+    }
+    // Guarda o ID da última mensagem lida neste grupo (com escopo de e-mail)
+    if (msgs.length > 0) {
+      const maxId = msgs.reduce((max, m) => m.id > max ? m.id : max, 0);
+      localStorage.setItem(`chat_last_read_id_${this.emailAtual.toLowerCase().trim()}_${chatId}`, maxId.toString());
+    } else {
+      localStorage.setItem(`chat_last_read_id_${this.emailAtual.toLowerCase().trim()}_${chatId}`, '0');
     }
   }
 

@@ -1,99 +1,158 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar>
-    <div class="header-container">
+  <ion-toolbar color="transparent">
+    
+    <!-- Se supermercado selecionado, mostra cabeçalho com pesquisador e seletor -->
+    <div *ngIf="supermercadoAtivo">
       
-      <ion-icon 
-        *ngIf="showResults" 
-        name="arrow-back-outline" 
-        class="back-icon" 
-        (click)="voltarParaCategorias()">
-      </ion-icon>
-      
-      <div class="search-bar-wrapper" [style.margin-left]="!showResults ? '0' : '10px'">
-        <ion-icon name="search-outline" class="search-icon"></ion-icon>
-        <ion-input 
-          placeholder="Pesquisar produto..." 
-          [(ngModel)]="searchQuery" 
-          (ionInput)="onSearchChange($event)"
-          (keyup.enter)="buscarComEnter()">
-        </ion-input>
-        <ion-icon name="close-outline" class="clear-icon" *ngIf="searchQuery" (click)="voltarParaCategorias()"></ion-icon>
+      <!-- Seletor do Supermercado centralizado no topo -->
+      <div style="display: flex; align-items: center; justify-content: center; width: 100%; position: relative;">
+        <!-- Seta de voltar apenas visível quando estamos a visualizar resultados filtrados (categoria/pesquisa) -->
+        <ion-icon 
+          *ngIf="showResults" 
+          name="arrow-back-outline" 
+          class="back-icon" 
+          (click)="voltarParaCategorias()"
+          style="position: absolute; left: 16px; cursor: pointer; color: #111111; font-size: 24px; top: 12px;">
+        </ion-icon>
+
+        <!-- Nome do Supermercado Centralizado com Seta para Baixo -->
+        <div (click)="alterarSupermercado()" style="display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 12px 0;">
+          <span style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #111111;">{{ supermercadoAtivo }}</span>
+          <ion-icon name="chevron-down-outline" style="font-size: 18px; color: #111111; font-weight: bold;"></ion-icon>
+        </div>
       </div>
-      
+
+      <!-- Barra de Pesquisa de Produtos -->
+      <div class="header-container" style="padding: 0 20px 8px 20px; display: flex; align-items: center;">
+        <div class="search-bar-wrapper" style="margin-left: 0; width: 100%;">
+          <ion-icon name="search-outline" class="search-icon"></ion-icon>
+          <ion-input 
+            placeholder="Pesquisar produto no {{ supermercadoAtivo }}..." 
+            [(ngModel)]="searchQuery" 
+            (ionInput)="onSearchChange($event)"
+            (keyup.enter)="buscarComEnter()">
+          </ion-input>
+          <ion-icon name="close-outline" class="clear-icon" *ngIf="searchQuery" (click)="voltarParaCategorias()"></ion-icon>
+        </div>
+      </div>
+
     </div>
+
+    <!-- Se NÃO selecionou supermercado, mostra título centralizado Escolher Loja -->
+    <div *ngIf="!supermercadoAtivo" style="text-align: center; padding: 16px 0;">
+      <h1 style="margin: 0; font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 800; color: #111111;">Escolher Loja</h1>
+    </div>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="custom-bg">
   
-  <div class="filter-scroll" *ngIf="!showResults">
-    <div class="filter-pill" [class.active]="filtroAtivo === 'Todos'" (click)="mudarFiltroTopo('Todos')">Todos</div>
-    <div class="filter-pill" [class.active]="filtroAtivo === 'Promoção'" (click)="mudarFiltroTopo('Promoção')">Promoção</div>
-    <div class="filter-pill" [class.active]="filtroAtivo === 'Marca Própria'" (click)="mudarFiltroTopo('Marca Própria')">Marca Própria</div>
-    <div class="filter-pill" [class.active]="filtroAtivo === 'Bio'" (click)="mudarFiltroTopo('Bio')">Bio</div>
-  </div>
-
-  <div class="filter-scroll" *ngIf="showResults">
-    <div class="filter-pill" [class.active]="filtroAtivo === 'Todos'" (click)="mudarFiltroTopo('Todos')">Todos</div>
-    <div class="filter-pill" [class.active]="filtroAtivo === 'Promoção'" (click)="mudarFiltroTopo('Promoção')">Promoção</div>
-    <div class="filter-pill" [class.active]="filtroAtivo === 'Marca Própria'" (click)="mudarFiltroTopo('Marca Própria')">Marca Própria</div>
-    <div class="filter-pill" [class.active]="filtroAtivo === 'Bio'" (click)="mudarFiltroTopo('Bio')">Bio</div>
-  </div>
-
-  <div *ngIf="!showResults" class="initial-state">
+  <!-- Estado 1: Nenhum Supermercado Selecionado (Ecrã de Seleção de Loja) -->
+  <div *ngIf="!supermercadoAtivo" style="padding: 24px 20px; text-align: center; font-family: 'Outfit', sans-serif;">
+    <h2 style="font-size: 22px; font-weight: 700; color: #111; margin-bottom: 8px;">Onde vai fazer compras?</h2>
+    <p style="font-size: 14px; color: #666; margin-bottom: 30px; line-height: 1.5;">Selecione um supermercado para ver os produtos e preços disponíveis para a sua lista.</p>
     
-    <div *ngIf="pesquisasRecentes.length > 0">
-      <div class="section-title">PESQUISAS RECENTES</div>
-      <div class="recent-list">
-        <div class="recent-item" *ngFor="let pesquisa of pesquisasRecentes; let i = index" (click)="fazerPesquisa(pesquisa)" style="cursor: pointer;">
-          <div class="recent-left">
-            <ion-icon name="time-outline"></ion-icon>
-            <span>{{ pesquisa }}</span>
-          </div>
-          <ion-icon name="close-outline" class="remove-icon" (click)="removerPesquisa(i, $event)"></ion-icon>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div *ngFor="let loja of lojasDoSistema" 
+           (click)="loja.ativa ? selecionarSupermercado(loja.nome) : null" 
+           [style.border]="loja.id === lojaSelecionadaGlobal.id ? '2px solid #0da33d' : '2px solid #eee'"
+           [style.opacity]="loja.ativa ? '1' : '0.5'"
+           [style.pointer-events]="loja.ativa ? 'auto' : 'none'"
+           style="display: flex; align-items: center; gap: 16px; background: #ffffff; padding: 16px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); cursor: pointer; text-align: left; transition: transform 0.2s ease;">
+        
+        <div [style.background]="loja.ativa ? '#e8f9ed' : '#f9f9f9'" 
+             [style.color]="loja.ativa ? '#0da33d' : '#555'" 
+             style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
+          {{ loja.ativa ? '🛒' : '🏪' }}
         </div>
+        
+        <div style="flex: 1;">
+          <h4 [style.color]="loja.ativa ? '#111' : '#555'" style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700;">{{ loja.nome }}</h4>
+          <p style="margin: 0; font-size: 12px; color: #888;">{{ loja.ativa ? 'Catálogo completo com melhores preços.' : 'Consultar catálogo da loja.' }}</p>
+        </div>
+        
+        <!-- Crachá "Recomendado" se for a loja preferida global -->
+        <ion-badge *ngIf="loja.id === lojaSelecionadaGlobal.id" color="success" style="font-size: 10px; font-weight: bold; border-radius: 12px; padding: 4px 8px;">Recomendado</ion-badge>
+        
+        <!-- Crachá "Indisponível" se a loja estiver inativa -->
+        <span *ngIf="!loja.ativa" style="font-size: 11px; color: #cc3333; font-weight: 600;">Indisponível</span>
       </div>
     </div>
-
-    <div class="section-title" style="margin-top: 25px;">CATEGORIAS</div>
-    <div class="categories-grid">
-      <div class="category-card" (click)="abrirCategoria('Lacticínios')"><div class="cat-icon">🥛</div><span>Lacticínios</span></div>
-      <div class="category-card" (click)="abrirCategoria('Legumes')"><div class="cat-icon">🥦</div><span>Legumes</span></div>
-      <div class="category-card" (click)="abrirCategoria('Padaria')"><div class="cat-icon">🍞</div><span>Padaria</span></div>
-      <div class="category-card" (click)="abrirCategoria('Limpeza')"><div class="cat-icon">🧹</div><span>Limpeza</span></div>
-      <div class="category-card" (click)="abrirCategoria('Bebidas')"><div class="cat-icon">🥤</div><span>Bebidas</span></div>
-      <div class="category-card" (click)="abrirCategoria('Carnes')"><div class="cat-icon">🍖</div><span>Carnes</span></div>
-    </div>
   </div>
 
-  <div *ngIf="showResults" class="results-state">
+  <!-- Estado 2: Supermercado Selecionado (Ecrã de Produtos e Pesquisa) -->
+  <div *ngIf="supermercadoAtivo">
     
-    <div *ngIf="produtosFiltrados.length === 0" style="text-align: center; padding: 40px 20px; color: #666;">
-      <ion-icon name="search-outline" style="font-size: 48px; opacity: 0.3;"></ion-icon>
-      <h3 style="margin-top: 10px;">Nenhum produto encontrado</h3>
+    <div class="filter-scroll" *ngIf="!showResults">
+      <div class="filter-pill" [class.active]="filtroAtivo === 'Todos'" (click)="mudarFiltroTopo('Todos')">Todos</div>
+      <div class="filter-pill" [class.active]="filtroAtivo === 'Promoção'" (click)="mudarFiltroTopo('Promoção')">Promoção</div>
+      <div class="filter-pill" [class.active]="filtroAtivo === 'Marca Própria'" (click)="mudarFiltroTopo('Marca Própria')">Marca Própria</div>
+      <div class="filter-pill" [class.active]="filtroAtivo === 'Bio'" (click)="mudarFiltroTopo('Bio')">Bio</div>
     </div>
 
-    <div class="search-product-card" *ngFor="let produto of produtosFiltrados" [routerLink]="['/produto-detalhes', produto.id]" style="cursor: pointer;">
+    <div class="filter-scroll" *ngIf="showResults">
+      <div class="filter-pill" [class.active]="filtroAtivo === 'Todos'" (click)="mudarFiltroTopo('Todos')">Todos</div>
+      <div class="filter-pill" [class.active]="filtroAtivo === 'Promoção'" (click)="mudarFiltroTopo('Promoção')">Promoção</div>
+      <div class="filter-pill" [class.active]="filtroAtivo === 'Marca Própria'" (click)="mudarFiltroTopo('Marca Própria')">Marca Própria</div>
+      <div class="filter-pill" [class.active]="filtroAtivo === 'Bio'" (click)="mudarFiltroTopo('Bio')">Bio</div>
+    </div>
+
+    <div *ngIf="!showResults" class="initial-state">
       
-      <div class="prod-img" style="overflow: hidden; display: flex; justify-content: center; align-items: center; background: #f5f5f5;">
-        <img *ngIf="produto.imagemUrl" [src]="produto.imagemUrl" style="width: 100%; height: 100%; object-fit: cover;">
-        <ion-icon *ngIf="!produto.imagemUrl" name="image-outline" style="font-size: 24px; color: #ccc;"></ion-icon>
+      <div *ngIf="pesquisasRecentes.length > 0">
+        <div class="section-title">PESQUISAS RECENTES</div>
+        <div class="recent-list">
+          <div class="recent-item" *ngFor="let pesquisa of pesquisasRecentes; let i = index" (click)="fazerPesquisa(pesquisa)" style="cursor: pointer;">
+            <div class="recent-left">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>{{ pesquisa }}</span>
+            </div>
+            <ion-icon name="close-outline" class="remove-icon" (click)="removerPesquisa(i, $event)"></ion-icon>
+          </div>
+        </div>
       </div>
 
-      <div class="prod-info">
-        <h4>{{ produto.nome }}</h4>
-        <p>{{ produto.categoria }} • {{ produto.tamanho }}</p>
-        <span class="badge" [ngClass]="produto.tagClass" *ngIf="produto.tag">{{ produto.tag }}</span>
-        <div class="price-row" *ngIf="produto.precoAntigo">
-          <span class="old-price">{{ produto.precoAntigo }}</span>
-          <span class="price">{{ produto.preco }}</span>
-        </div>
-        <div class="price" *ngIf="!produto.precoAntigo" [style.margin-top]="!produto.tag ? '22px' : '0'">
-          {{ produto.preco }}
-        </div>
+      <div class="section-title" style="margin-top: 25px;">CATEGORIAS</div>
+      <div class="categories-grid">
+        <div class="category-card" (click)="abrirCategoria('Lacticínios')"><div class="cat-icon">🥛</div><span>Lacticínios</span></div>
+        <div class="category-card" (click)="abrirCategoria('Legumes')"><div class="cat-icon">🥦</div><span>Legumes</span></div>
+        <div class="category-card" (click)="abrirCategoria('Padaria')"><div class="cat-icon">🍞</div><span>Padaria</span></div>
+        <div class="category-card" (click)="abrirCategoria('Limpeza')"><div class="cat-icon">🧹</div><span>Limpeza</span></div>
+        <div class="category-card" (click)="abrirCategoria('Bebidas')"><div class="cat-icon">🥤</div><span>Bebidas</span></div>
+        <div class="category-card" (click)="abrirCategoria('Carnes')"><div class="cat-icon">🍖</div><span>Carnes</span></div>
       </div>
-      <div class="add-btn" (click)="abrirModalRapido(produto, $event)">
-        <ion-icon name="add"></ion-icon>
+    </div>
+
+    <div *ngIf="showResults" class="results-state">
+      
+      <div *ngIf="produtosFiltrados.length === 0" style="text-align: center; padding: 40px 20px; color: #666;">
+        <ion-icon name="search-outline" style="font-size: 48px; opacity: 0.3;"></ion-icon>
+        <h3 style="margin-top: 10px;">Nenhum produto encontrado</h3>
+      </div>
+
+      <div class="search-product-card" *ngFor="let produto of produtosFiltrados" [routerLink]="['/produto-detalhes', produto.id]" [queryParams]="{ listaOrigem: listaOrigem }" style="cursor: pointer;">
+        
+        <div class="prod-img" style="overflow: hidden; display: flex; justify-content: center; align-items: center; background: #f5f5f5;">
+          <img *ngIf="produto.imagemUrl" [src]="produto.imagemUrl" style="width: 100%; height: 100%; object-fit: cover;">
+          <ion-icon *ngIf="!produto.imagemUrl" name="image-outline" style="font-size: 24px; color: #ccc;"></ion-icon>
+        </div>
+
+        <div class="prod-info">
+          <h4>{{ produto.nome }}</h4>
+          <p>{{ produto.categoria }} • {{ produto.tamanho }}</p>
+          <span class="badge" [ngClass]="produto.tagClass" *ngIf="produto.tag">{{ produto.tag }}</span>
+          <div class="price-row" *ngIf="produto.precoAntigo">
+            <span class="old-price">{{ produto.precoAntigo }}</span>
+            <span class="price">{{ produto.preco }}</span>
+          </div>
+          <div class="price" *ngIf="!produto.precoAntigo" [style.margin-top]="!produto.tag ? '22px' : '0'">
+            {{ produto.preco }}
+          </div>
+        </div>
+        <div class="add-btn" (click)="abrirModalRapido(produto, $event)">
+          <ion-icon name="add"></ion-icon>
+        </div>
       </div>
     </div>
   </div>

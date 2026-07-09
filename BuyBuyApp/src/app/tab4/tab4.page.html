@@ -64,14 +64,35 @@
     </div>
 
     <div class="friends-list" *ngIf="amigos.length > 0">
-      <div class="friend-item" *ngFor="let amigo of amigos" (click)="abrirChat(amigo)" style="cursor: pointer; margin-bottom: 8px;">
-        <div class="friend-avatar">{{ amigo.iniciais }}</div>
-        <div class="friend-details">
-          <h4>{{ amigo.nome }}</h4>
-          <p>{{ amigo.email }}</p>
+      <div class="friend-item" *ngFor="let amigo of amigos" (click)="abrirChat(amigo)" 
+           [style.background]="unreadCounts[getChatIdAmigo(amigo)] > 0 ? '#f0faf2' : '#ffffff'"
+           [style.border]="unreadCounts[getChatIdAmigo(amigo)] > 0 ? '1.5px solid #0da33d' : '1px solid #eef2ef'"
+           style="cursor: pointer; margin-bottom: 8px; transition: all 0.3s ease; border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+        
+        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+          <div class="friend-avatar" [style.border-color]="unreadCounts[getChatIdAmigo(amigo)] > 0 ? '#0da33d' : 'rgba(0,0,0,0.08)'">
+            {{ amigo.iniciais }}
+          </div>
+          <div class="friend-details">
+            <h4 [style.font-weight]="unreadCounts[getChatIdAmigo(amigo)] > 0 ? '800' : '600'" style="margin: 0 0 4px 0; font-size: 15px; color: #1a1a1a;">
+              {{ amigo.nome }}
+            </h4>
+            <p *ngIf="unreadCounts[getChatIdAmigo(amigo)] > 0" style="margin: 0; font-size: 13px; font-weight: 700; color: #0da33d; display: flex; align-items: center; gap: 4px;">
+              💬 enviou {{ unreadCounts[getChatIdAmigo(amigo)] > 4 ? '4+' : unreadCounts[getChatIdAmigo(amigo)] }} mensagens
+            </p>
+            <p *ngIf="!(unreadCounts[getChatIdAmigo(amigo)] > 0)" style="margin: 0; font-size: 12px; color: #777;">
+              {{ amigo.email }}
+            </p>
+          </div>
         </div>
         
-        <div style="display: flex; align-items: center; gap: 4px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <!-- Badge Vermelho para Chats Não Lidos -->
+          <div *ngIf="unreadCounts[getChatIdAmigo(amigo)] > 0" 
+               style="background: #e53935; color: white; min-width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; padding: 0 6px; box-shadow: 0 2px 5px rgba(229,57,53,0.3);">
+            {{ unreadCounts[getChatIdAmigo(amigo)] }}
+          </div>
+
           <div class="chat-icon-btn" style="padding: 6px; color: #0da33d;">
             <ion-icon name="chatbubble-ellipses-outline" style="font-size: 20px;"></ion-icon>
           </div>
@@ -97,14 +118,38 @@
     </div>
 
     <div class="friends-list" *ngIf="grupos.length > 0">
-      <div class="friend-item" *ngFor="let grupo of grupos" (click)="abrirChatGrupo(grupo)" style="cursor: pointer; margin-bottom: 8px;">
-        <div class="friend-avatar" style="background: #f8f0fc; color: #9c27b0; border-color: rgba(156, 39, 176, 0.15);">{{ grupo.iniciais }}</div>
-        <div class="friend-details">
-          <h4>{{ grupo.nome }}</h4>
-          <p>{{ grupo.membros.length }} membros</p>
+      <div class="friend-item" *ngFor="let grupo of grupos" (click)="abrirChatGrupo(grupo)" 
+           [style.background]="unreadCounts[getChatIdGrupo(grupo)] > 0 ? '#f0faf2' : '#ffffff'"
+           [style.border]="unreadCounts[getChatIdGrupo(grupo)] > 0 ? '1.5px solid #0da33d' : '1px solid #eef2ef'"
+           style="cursor: pointer; margin-bottom: 8px; transition: all 0.3s ease; border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+        
+        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+          <div class="friend-avatar" style="background: #f8f0fc; color: #9c27b0; border-color: rgba(156, 39, 176, 0.15);">
+            {{ grupo.iniciais }}
+          </div>
+          <div class="friend-details">
+            <h4 [style.font-weight]="unreadCounts[getChatIdGrupo(grupo)] > 0 ? '800' : '600'" style="margin: 0 0 4px 0; font-size: 15px; color: #1a1a1a;">
+              {{ grupo.nome }}
+            </h4>
+            <p *ngIf="unreadCounts[getChatIdGrupo(grupo)] > 0" style="margin: 0; font-size: 13px; font-weight: 700; color: #0da33d; display: flex; align-items: center; gap: 4px;">
+              💬 enviou {{ unreadCounts[getChatIdGrupo(grupo)] > 4 ? '4+' : unreadCounts[getChatIdGrupo(grupo)] }} mensagens
+            </p>
+            <p *ngIf="!(unreadCounts[getChatIdGrupo(grupo)] > 0)" style="margin: 0; font-size: 12px; color: #777;">
+              {{ grupo.membros.length }} membros
+            </p>
+          </div>
         </div>
-        <div class="chat-icon-btn" style="color: #9c27b0; font-size: 20px; padding: 6px;">
-          <ion-icon name="people-outline"></ion-icon>
+        
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <!-- Badge Vermelho para Chats Não Lidos -->
+          <div *ngIf="unreadCounts[getChatIdGrupo(grupo)] > 0" 
+               style="background: #e53935; color: white; min-width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; padding: 0 6px; box-shadow: 0 2px 5px rgba(229,57,53,0.3);">
+            {{ unreadCounts[getChatIdGrupo(grupo)] }}
+          </div>
+
+          <div class="chat-icon-btn" style="color: #9c27b0; font-size: 20px; padding: 6px; display: flex;">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
         </div>
       </div>
     </div>

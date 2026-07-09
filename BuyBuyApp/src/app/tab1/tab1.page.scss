@@ -112,9 +112,7 @@ ion-toolbar {
 }
 
 .list-card.selected-card {
-  background: #f0f9f4 !important;
   border-left-width: 6px !important;
-  border-left-color: #0da33d !important;
 }
 
 
@@ -141,4 +139,14 @@ ion-toolbar {
   font-size: 18px;
   letter-spacing: 1px;
   box-shadow: 0 4px 6px rgba(0, 210, 106, 0.2);
+}
+
+/* --- ESTILO UNIFICADO DOS CHECKBOXES DA TAB 1 --- */
+ion-checkbox {
+  --color: var(--list-color, #222222) !important;
+  --border-color: var(--list-color, #222222) !important;
+  --checkbox-background: #ffffff !important;
+  --checkbox-background-checked: #ffffff !important;
+  --border-color-checked: var(--list-color, #222222) !important;
+  --checkmark-color: #222222 !important;
 }

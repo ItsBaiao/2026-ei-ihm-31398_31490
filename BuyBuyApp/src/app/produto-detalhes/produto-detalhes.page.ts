@@ -21,6 +21,7 @@ export class ProdutoDetalhesPage implements OnInit {
   
   public listasNoCofre: Lista[] = [];
   public quantidadeSelecionada: number = 1;
+  public listaOrigem: string | null = null; // Guardar a lista que originou a navegação
 
   constructor(
     private route: ActivatedRoute,
@@ -31,6 +32,10 @@ export class ProdutoDetalhesPage implements OnInit {
   ) { }
 
   async ngOnInit() {
+    // Subscrever aos queryParams para capturar a lista de origem
+    this.route.queryParamMap.subscribe(params => {
+      this.listaOrigem = params.get('listaOrigem');
+    });
     // Usamos o subscribe em vez do snapshot para que a página se atualize
     // automaticamente se o utilizador clicar num dos Produtos Similares!
     this.route.paramMap.subscribe(async params => {
@@ -57,7 +62,7 @@ export class ProdutoDetalhesPage implements OnInit {
     });
 
     await this.listasService.init();
-    this.listasNoCofre = this.listasService.minhasListas;
+    this.listasNoCofre = this.listasService.minhasListas.filter(l => !l.arquivada);
   }
 
   setModalOpen(isOpen: boolean) {
@@ -93,8 +98,6 @@ export class ProdutoDetalhesPage implements OnInit {
       icon: 'checkmark-circle-outline'
     });
     await toast.present();
-
-    this.navCtrl.navigateRoot('/tabs/tab1');
   }
 
   async criarListaRapida() {
@@ -120,11 +123,18 @@ export class ProdutoDetalhesPage implements OnInit {
         duration: 3000,
         color: 'success',
         icon: 'checkmark-circle',
-        position: 'bottom',
-        cssClass: 'toast-acima-das-tabs'
+        position: 'top'
       });
       await toast.present();
 
     }, 300);
+  }
+
+  voltarAtraz() {
+    if (this.listaOrigem) {
+      this.navCtrl.navigateBack('/lista-detalhes/' + this.listaOrigem);
+    } else {
+      this.navCtrl.navigateBack('/tabs/tab2');
+    }
   }
 }

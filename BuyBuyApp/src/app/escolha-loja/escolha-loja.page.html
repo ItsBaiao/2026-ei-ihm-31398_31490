@@ -19,7 +19,9 @@
   
   <div class="store-card" *ngFor="let loja of lojasFiltradas" 
        [ngClass]="{'selected': loja.id === lojaAtual?.id}" 
-       (click)="selecionarLoja(loja)">
+       (click)="selecionarLoja(loja)"
+       [style.opacity]="loja.ativa ? '1' : '0.5'"
+       [style.pointer-events]="loja.ativa ? 'auto' : 'none'">
     
     <div class="icon-circle" [ngClass]="loja.id === lojaAtual?.id ? 'selected-icon' : 'normal-icon'">
       <ion-icon [name]="loja.id === lojaAtual?.id ? 'location' : 'location-outline'"></ion-icon>
@@ -30,7 +32,10 @@
       <p>{{ loja.morada }}</p>
     </div>
     
-    <ion-icon [name]="loja.id === lojaAtual?.id ? 'checkmark-circle' : 'chevron-forward-outline'" 
+    <!-- Mostra Indisponível em vermelho para lojas inativas, ou checkmark/seta para ativa -->
+    <span *ngIf="!loja.ativa" style="font-size: 11px; color: #cc3333; font-weight: 600; margin-left: auto;">Indisponível</span>
+    
+    <ion-icon *ngIf="loja.ativa" [name]="loja.id === lojaAtual?.id ? 'checkmark-circle' : 'chevron-forward-outline'" 
               [ngClass]="loja.id === lojaAtual?.id ? 'check-icon' : 'chevron-icon'">
     </ion-icon>
   </div>

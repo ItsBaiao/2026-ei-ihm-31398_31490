@@ -23,10 +23,11 @@ export class ListasService {
   // -----------------------------------------------------
   // A NOSSA FONTE ÚNICA DE VERDADE PARA AS LOJAS
   public lojasDoSistema = [
-    { id: 'ebarato', nome: 'ÉBarato - Constituição', morada: 'Rua de Cedofeita, Porto', ativa: true },
-    { id: 'aldi', nome: 'Aldi - Viana do Castelo', morada: 'Rua de Monserrate', ativa: false },
-    { id: 'mercadona', nome: 'Mercadona - Viana do Castelo', morada: 'Estrada da Abelheira', ativa: false },
-    { id: 'continente', nome: 'Continente Bom Dia - Viana do Castelo', morada: 'R. Gen. Humberto Delgado', ativa: false }
+    { id: 'ebarato', nome: 'ÉBarato', morada: 'Catálogo de preços baixos', ativa: true },
+    { id: 'continente', nome: 'Continente', morada: 'Preços continentais', ativa: false },
+    { id: 'pingodoce', nome: 'Pingo Doce', morada: 'Preços doces', ativa: false },
+    { id: 'lidl', nome: 'Lidl', morada: 'Mais para si', ativa: false },
+    { id: 'auchan', nome: 'Auchan', morada: 'Preços baixos', ativa: false }
   ];
 
   // Guarda a loja que o utilizador tem escolhida neste momento

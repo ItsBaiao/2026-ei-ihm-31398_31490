@@ -1,25 +1,19 @@
 <ion-header class="ion-no-border">
   <ion-toolbar color="transparent">
-    <ion-title class="header-title">Perfil</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="dark" (click)="mostrarEmDesenvolvimento()">
-        <ion-icon name="notifications-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 16px 20px 8px 20px;">
+      <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #111111; font-family: 'Outfit', sans-serif;">Perfil</h1>
+    </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding custom-bg">
   
-  <div class="profile-header-section">
+  <div class="profile-header-section" style="padding-bottom: 20px;">
     <div class="avatar-circle">
       <span>{{ iniciais }}</span>
     </div>
     <h2>{{ nomeUtilizador }}</h2>
     <p>{{ emailUtilizador }}</p>
-    <ion-button fill="outline" class="edit-profile-btn" (click)="mostrarEmDesenvolvimento()">
-      Editar Perfil
-    </ion-button>
   </div>
 
   <div class="divider"></div>
@@ -30,14 +24,6 @@
       <div class="item-left">
         <div class="icon-box"><ion-icon name="storefront-outline"></ion-icon></div>
         <span>Loja Preferida</span>
-      </div>
-      <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
-    </div>
-
-    <div class="setting-item" (click)="setNotificationsOpen(true)" style="cursor: pointer;">
-      <div class="item-left">
-        <div class="icon-box"><ion-icon name="notifications-outline"></ion-icon></div>
-        <span>Notificações</span>
       </div>
       <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
     </div>
@@ -72,48 +58,6 @@
     <ion-icon name="log-out-outline"></ion-icon>
     <span>Terminar Sessão</span>
   </div>
-
-  <!-- MODAL NOTIFICAÇÕES -->
-  <ion-modal [isOpen]="isNotificationsModalOpen" (didDismiss)="setNotificationsOpen(false)">
-    <ng-template>
-      <ion-header class="ion-no-border">
-        <ion-toolbar>
-          <ion-title style="font-weight: bold;">Notificações</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="setNotificationsOpen(false)"><ion-icon name="close-outline" size="large"></ion-icon></ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="custom-bg ion-padding">
-        <ion-list lines="inset" style="background: transparent;">
-          <ion-item style="--background: transparent;">
-            <ion-label>
-              <h3>Notificações de Promoções</h3>
-              <p>Receba alertas de novos descontos na loja</p>
-            </ion-label>
-            <ion-toggle slot="end" [(ngModel)]="notificacoesPromo" color="success"></ion-toggle>
-          </ion-item>
-          <ion-item style="--background: transparent;">
-            <ion-label>
-              <h3>Lembretes de Compras</h3>
-              <p>Alertas para não se esquecer de ir às compras</p>
-            </ion-label>
-            <ion-toggle slot="end" [(ngModel)]="notificacoesLembretes" color="success"></ion-toggle>
-          </ion-item>
-          <ion-item style="--background: transparent;">
-            <ion-label>
-              <h3>Partilhas de Listas</h3>
-              <p>Saber quando um amigo edita uma lista partilhada</p>
-            </ion-label>
-            <ion-toggle slot="end" [(ngModel)]="notificacoesPartilha" color="success"></ion-toggle>
-          </ion-item>
-        </ion-list>
-        <div style="padding: 20px;">
-          <ion-button expand="block" color="success" style="--border-radius: 12px; font-weight: bold;" (click)="setNotificationsOpen(false)">GUARDAR</ion-button>
-        </div>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
 
   <!-- MODAL LISTAS ARQUIVADAS -->
   <ion-modal [isOpen]="isArchivedListsModalOpen" (didDismiss)="setArchivedListsOpen(false)">
@@ -162,18 +106,58 @@
         </ion-toolbar>
       </ion-header>
       <ion-content class="custom-bg ion-padding">
-        <div class="history-item" *ngFor="let compra of historicoCompras" style="background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-size: 13px; font-weight: bold; color: #0da33d;">{{ compra.data }}</span>
-            <span style="font-size: 15px; font-weight: bold; color: #222;">{{ compra.total }}</span>
+        
+        <!-- Encomendas do Delivery (Dinâmico) -->
+        <div *ngIf="encomendasDelivery.length > 0" style="margin-bottom: 20px;">
+          <div style="font-size: 11px; font-weight: bold; color: #777; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">Encomendas Delivery</div>
+          
+          <div class="history-item" *ngFor="let order of encomendasDelivery" style="background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-left: 4px solid #0da33d; font-family: 'Outfit', sans-serif;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 13px; font-weight: bold; color: #0da33d;">{{ order.data }}</span>
+              <span style="font-size: 15px; font-weight: bold; color: #222;">{{ order.total | number:'1.2-2' }} €</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 13px; color: #555; display: flex; align-items: center; gap: 4px;">
+                <ion-icon name="storefront-outline"></ion-icon> {{ order.loja }}
+              </span>
+              <span style="font-size: 12px; color: #888;">{{ order.itens.length }} itens</span>
+            </div>
+            <div style="font-size: 11px; color: #777; margin-bottom: 8px;">
+              📍 Morada: {{ order.morada }}
+            </div>
+            
+            <!-- Items list dropdown styled -->
+            <div style="background: #f7f9f7; padding: 8px 12px; border-radius: 8px; font-size: 12px; color: #666; margin-top: 5px;">
+              <div *ngFor="let item of order.itens" style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span>{{ item.quantidade }}x {{ item.nome }}</span>
+                <span>{{ item.preco }}</span>
+              </div>
+            </div>
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
+        </div>
+
+        <div style="font-size: 11px; font-weight: bold; color: #777; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">Compras em Loja</div>
+
+        <!-- Compras em Loja Dinâmicas -->
+        <div class="history-item" *ngFor="let compra of comprasEmLoja" style="background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-left: 4px solid #111111; font-family: 'Outfit', sans-serif;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 13px; font-weight: bold; color: #111111;">{{ compra.data }}</span>
+            <span style="font-size: 15px; font-weight: bold; color: #222;">{{ compra.total | number:'1.2-2' }} €</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <span style="font-size: 13px; color: #555; display: flex; align-items: center; gap: 4px;">
               <ion-icon name="storefront-outline"></ion-icon> {{ compra.loja }}
             </span>
-            <span style="font-size: 12px; color: #888;">{{ compra.itens }} produtos</span>
+            <span style="font-size: 12px; color: #888;">{{ compra.itens.length }} itens</span>
+          </div>
+          <div style="background: #f9f9f9; padding: 8px 12px; border-radius: 8px; font-size: 12px; color: #666; margin-top: 5px;">
+            <div *ngFor="let item of compra.itens" style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span>{{ item.quantidade }}x {{ item.nome }}</span>
+              <span>{{ item.preco }}</span>
+            </div>
           </div>
         </div>
+
       </ion-content>
     </ng-template>
   </ion-modal>

@@ -1,0 +1,472 @@
+// Cabeçalho da Toolbar e Títulos
+.toolbar-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px 8px 20px;
+  gap: 8px;
+}
+
+.back-circle-btn {
+  margin: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 38px;
+  height: 38px;
+  --background: #f2f2f2;
+  --border-radius: 50%;
+}
+
+.step-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: #111111;
+  font-family: 'Outfit', sans-serif;
+}
+
+// Content Layouts e Formulários
+.source-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-top: 20px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.source-header {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.icon-circle {
+  width: 100px;
+  height: 100px;
+  background: #e2fbe9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.source-title {
+  font-weight: bold;
+  margin-top: 20px;
+  color: #222;
+  font-size: 1.4rem;
+}
+
+.source-subtitle {
+  color: #666;
+  font-size: 13px;
+  margin: 8px 20px 0 20px;
+  line-height: 1.4;
+}
+
+.large-btn {
+  --border-radius: 12px;
+  font-weight: bold;
+  height: 50px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px;
+}
+
+// Cartões de Listas e Itens
+.list-card {
+  cursor: pointer;
+  margin-bottom: 12px;
+  border-left: 4px solid #0da33d;
+  padding: 15px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.list-card-title {
+  margin: 0 0 2px 0;
+  font-weight: bold;
+  color: #333;
+  font-size: 15px;
+}
+
+.list-card-subtitle {
+  margin: 0;
+  font-size: 11px;
+  color: #777;
+}
+
+.list-card-badge {
+  font-size: 11px;
+  background: #eef7ee;
+  color: #0da33d;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+// Listagem de Produtos
+.sticky-search {
+  position: sticky;
+  top: -10px;
+  z-index: 10;
+  background: #fcfcfc;
+  padding: 4px 0 12px 0;
+}
+
+.scrollable-list {
+  max-height: 52vh;
+  overflow-y: auto;
+}
+
+.product-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+.product-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-img-small {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.product-img-medium {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.product-name {
+  margin: 0 0 2px 0;
+  font-size: 13px;
+  font-weight: bold;
+  color: #222;
+}
+
+.product-meta {
+  margin: 0;
+  font-size: 11px;
+  color: #777;
+}
+
+.qty-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qty-num {
+  font-weight: bold;
+  font-size: 14px;
+  width: 20px;
+  text-align: center;
+}
+
+// Summary Footers
+.summary-footer {
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-footer-title {
+  font-size: 11px;
+  color: #777;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.summary-footer-price {
+  margin: 0;
+  font-weight: bold;
+  color: #0da33d;
+  font-size: 20px;
+}
+
+// Morada e Agendamento
+.address-icon-box {
+  background: #eef7ee;
+  height: 110px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #0da33d;
+  border: 1px dashed #0da33d;
+}
+
+.address-icon-label {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.input-card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  border: 1px solid #f0f0f0;
+}
+
+.input-label {
+  font-size: 11px;
+  font-weight: bold;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-subtitle {
+  font-size: 11px;
+  color: #999;
+  margin: 2px 0 8px 0;
+}
+
+.custom-input {
+  --padding-start: 10px;
+  background: #f7f7f7;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #222;
+  font-size: 13px;
+  height: 42px;
+  margin-top: 4px;
+}
+
+.flex-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.supermarket-badge {
+  font-size: 11px;
+  background: #eef7ee;
+  color: #0da33d;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.pickup-btn {
+  --border-radius: 8px;
+  font-weight: bold;
+  margin: 0;
+  height: 42px;
+  text-transform: none;
+  --color: #555555;
+  --border-color: #e0e0e0;
+  --background: #f8f9fa;
+}
+
+// Live Acompanhamento
+.tracking-header {
+  text-align: center;
+  padding: 15px 0;
+}
+
+.tracking-icon-circle {
+  width: 90px;
+  height: 90px;
+  background: #e2fbe9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.tracking-title {
+  font-weight: bold;
+  margin-top: 18px;
+  color: #222;
+  font-size: 1.4rem;
+}
+
+.tracking-time-badge {
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.timeline-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.timeline-node {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.timeline-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.driver-card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.driver-avatar {
+  background: #eef7ee;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #0da33d;
+  font-size: 18px;
+}
+
+.driver-badge {
+  font-size: 11px;
+  font-weight: bold;
+  color: #0da33d;
+  background: #e2fbe9;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.details-card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+// Receipt/Recibo Ecrã
+.receipt-header {
+  text-align: center;
+  padding: 25px 0 10px 0;
+}
+
+.receipt-checkmark-circle {
+  width: 80px;
+  height: 80px;
+  background: #e2fbe9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(13, 163, 61, 0.15);
+}
+
+.invoice-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 12px;
+}
+
+.invoice-badge {
+  background: #e2fbe9;
+  color: #0da33d;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.invoice-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: #555;
+}
+
+.invoice-products-box {
+  border-top: 1px dashed #eee;
+  margin-top: 6px;
+  padding-top: 12px;
+}
+
+.invoice-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.invoice-summary {
+  border-top: 1px solid #f2f2f2;
+  margin-top: 6px;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}

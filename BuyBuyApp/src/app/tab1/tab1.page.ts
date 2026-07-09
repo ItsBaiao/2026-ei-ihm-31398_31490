@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { ListasService, Lista } from '../services/listas.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController, ActionSheetController } from '@ionic/angular';
+import { ProdutosService } from '../services/produtos.service';
+import { DeliveryService } from '../services/delivery.service';
 
 @Component({
   selector: 'app-tab1',
@@ -17,14 +19,10 @@ export class Tab1Page {
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
   private actionSheetCtrl = inject(ActionSheetController);
-
+  
   public listasSelecionadas: Set<string> = new Set<string>();
 
-  get temListasArquivadas(): boolean {
-    return this.listasService.minhasListas.some(l => l.arquivada);
-  }
 
-  // O nosso Getter para as listas - exclui as listas arquivadas da vista principal
   get listasNoEcra(): Lista[] {
     return this.listasService.minhasListas.filter(l => !l.arquivada);
   }
@@ -32,6 +30,36 @@ export class Tab1Page {
   get todasSelecionadas(): boolean {
     const ativas = this.listasNoEcra;
     return ativas.length > 0 && ativas.every(l => this.listasSelecionadas.has(l.nome));
+  }
+
+  obterCorDeEstilo(cor: string): string {
+    if (!cor) return '#0da33d';
+    if (cor.startsWith('#')) return cor;
+    switch (cor) {
+      case 'border-dark': return '#008000';   // Verde
+      case 'border-light': return '#3b82f6';  // Azul
+      case 'border-brown': return '#f97316';  // Laranja
+      case 'border-purple': return '#a855f7'; // Roxo
+      case 'border-yellow': return '#eab308'; // Amarelo
+      case 'border-pink': return '#ec4899';   // Rosa
+      default: return '#0da33d';
+    }
+  }
+
+  obterFundoSuaveDeEstilo(cor: string): string {
+    const corReal = this.obterCorDeEstilo(cor);
+    return this.hexToRgba(corReal, 0.06);
+  }
+
+  private hexToRgba(hex: string, alpha: number): string {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
   async ionViewWillEnter() {
@@ -105,8 +133,7 @@ export class Tab1Page {
                 duration: 3000,
                 color: 'success',
                 icon: 'download-outline',
-                position: 'bottom',
-                cssClass: 'toast-acima-do-botao'
+                position: 'top'
               });
               await toast.present();
             }
@@ -120,8 +147,7 @@ export class Tab1Page {
         message: 'O link de partilha é inválido ou está corrompido.',
         duration: 3000,
         color: 'danger',
-        position: 'bottom',
-        cssClass: 'toast-acima-do-botao'
+        position: 'top'
       });
       await toast.present();
     }
@@ -150,69 +176,12 @@ export class Tab1Page {
     await alert.present();
   }
 
-  async verListasArquivadas() {
-    const listasArquivadas = this.listasService.minhasListas.filter(l => l.arquivada);
-    if (listasArquivadas.length === 0) {
-      this.mostrarToast('Não tem nenhuma lista arquivada.', 'warning');
-      return;
-    }
-
-    const botoes = listasArquivadas.map(l => ({
-      text: l.nome,
-      icon: l.icone || 'cart-outline',
-      handler: () => {
-        this.mostrarOpcoesListaArquivada(l);
-      }
-    }));
-
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Listas Arquivadas',
-      buttons: [
-        ...botoes,
-        { text: 'Cancelar', role: 'cancel', icon: 'close' }
-      ]
-    });
-    await actionSheet.present();
-  }
-
-  async mostrarOpcoesListaArquivada(lista: Lista) {
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: `Opções: ${lista.nome}`,
-      buttons: [
-        {
-          text: 'Desarquivar (Restaurar)',
-          icon: 'folder-open-outline',
-          handler: async () => {
-            lista.arquivada = false;
-            await this.listasService.guardarAlteracoes();
-            this.mostrarToast(`Lista "${lista.nome}" restaurada com sucesso!`, 'success');
-          }
-        },
-        {
-          text: 'Excluir Permanentemente',
-          icon: 'trash-outline',
-          role: 'destructive',
-          handler: () => {
-            this.confirmarExclusaoLista(lista.nome);
-          }
-        },
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          icon: 'close'
-        }
-      ]
-    });
-    await actionSheet.present();
-  }
-
   async mostrarToast(mensagem: string, cor: string) {
     const toast = await this.toastCtrl.create({
       message: mensagem,
       duration: 3000,
       color: cor,
-      position: 'bottom',
-      cssClass: 'toast-acima-do-botao'
+      position: 'top'
     });
     await toast.present();
   }

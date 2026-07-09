@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController, ActionSheetController, AlertController, NavController } from '@ionic/angular';
 import { ListasService, Lista } from '../services/listas.service';
+import { DeliveryService } from '../services/delivery.service';
 import { Network } from '@capacitor/network'; 
 
 @Component({
@@ -39,7 +40,9 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
     private toastCtrl: ToastController,
     private actionSheetCtrl: ActionSheetController,
     private alertCtrl: AlertController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private deliveryService: DeliveryService,
+    private router: Router
   ) { }
 
   async ngOnInit() {
@@ -64,28 +67,16 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
     }
   }
 
-  async iniciarCompras() {
-    if (!this.listaAtual?.produtos || this.listaAtual.produtos.length === 0) {
-      const toast = await this.toastCtrl.create({
-        message: 'Adiciona pelo menos um produto para iniciar as compras.',
-        duration: 2500,
-        color: 'warning',
-        icon: 'alert-circle-outline',
-        position: 'bottom', // <-- Alterado para baixo
-        cssClass: 'toast-acima-do-botao' // <-- Nova classe
-      });
-      await toast.present();
-    } else {
-      this.navCtrl.navigateForward(['/loja-navegacao', this.listaAtual.nome]);
-    }
-  }
-
   ngOnDestroy() {
     if (this.networkListener) {
       this.networkListener.remove();
     }
     window.removeEventListener('online', this.esconderAviso.bind(this));
     window.removeEventListener('offline', this.mostrarAvisoOffline.bind(this));
+  }
+
+  voltarParaListas() {
+    this.navCtrl.navigateBack('/tabs/tab1');
   }
 
   async editarListaCompleta() {
@@ -131,8 +122,7 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
         message: 'Todos os produtos foram removidos da lista.',
         duration: 2500,
         color: 'dark',
-        position: 'bottom', // <-- Alterado para baixo
-        cssClass: 'toast-acima-do-botao' // <-- Nova classe
+        position: 'top'
       });
       await toast.present();
     }
@@ -159,8 +149,7 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
           message: `${produto.nome} removido.`,
           duration: 2000,
           color: 'dark',
-          position: 'bottom',
-          cssClass: 'toast-acima-do-botao'
+          position: 'top'
         });
         await toast.present();
       }
@@ -185,8 +174,7 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
         duration: 2500, 
         color: 'success', 
         icon: 'wifi-outline', 
-        position: 'bottom', // <-- Alterado para baixo
-        cssClass: 'toast-acima-do-botao' // <-- Nova classe
+        position: 'top'
       });
       await toast.present();
     }
@@ -201,9 +189,8 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
       message: 'A funcionar em modo offline. As alterações estão a ser guardadas.', 
       color: 'dark', 
       icon: 'cloud-offline-outline', 
-      position: 'bottom', // <-- Alterado para baixo
-      duration: 3500,
-      cssClass: 'toast-acima-do-botao' // <-- Nova classe
+      position: 'top',
+      duration: 3500
     });
 
     this.avisoOffline.onDidDismiss().then(() => {
@@ -265,8 +252,7 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
                     message: `${produto.nome} removido.`,
                     duration: 2000,
                     color: 'dark',
-                    position: 'bottom',
-                    cssClass: 'toast-acima-do-botao'
+                    position: 'top'
                   });
                   await toast.present();
                 }
@@ -306,102 +292,64 @@ export class ListaDetalhesPage implements OnInit, OnDestroy {
     return '€' + total.toFixed(2).replace('.', ',');
   }
 
-  // Gera um link Base64 com os dados da lista e copia para o Clipboard (com suporte a fallback para contextos não seguros)
-  async partilharLista() {
-    if (!this.listaAtual) return;
-    
-    try {
-      const shareData = {
-        n: this.listaAtual.nome,
-        i: this.listaAtual.icone,
-        c: this.listaAtual.cor,
-        p: (this.listaAtual.produtos || []).map((p: any) => ({
-          n: p.nome,
-          pr: p.preco,
-          t: p.tamanho,
-          cat: p.categoria,
-          img: p.imagemUrl,
-          q: p.quantidade || 1
-        }))
-      };
-      
-      const jsonStr = JSON.stringify(shareData);
-      const base64Data = btoa(unescape(encodeURIComponent(jsonStr)));
-      const shareUrl = `${window.location.origin}/tabs/tab1?import=${base64Data}`;
-      
-      // Tenta copiar usando a nossa função de cópia robusta
-      const copiou = await this.copiarParaClipboard(shareUrl);
-      
-      if (copiou) {
-        const toast = await this.toastCtrl.create({
-          message: 'Link de partilha copiado! Envie-o a um amigo.',
-          duration: 3000,
-          color: 'success',
-          icon: 'share-social-outline',
-          position: 'bottom',
-          cssClass: 'toast-acima-do-botao'
-        });
-        await toast.present();
-      } else {
-        // Se a cópia em background falhar (ex: restrições do browser local), mostra para cópia manual
-        await this.mostrarAlertaLinkPartilha(shareUrl);
-      }
-    } catch (err) {
-      console.error('Erro ao partilhar lista:', err);
-      // Fallback em caso de erro extremo
-      try {
-        const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(this.listaAtual))));
-        const shareUrl = `${window.location.origin}/tabs/tab1?import=${base64Data}`;
-        await this.mostrarAlertaLinkPartilha(shareUrl);
-      } catch (e) {}
-    }
+  async toggleRiscado(produto: any) {
+    produto.riscado = !produto.riscado;
+    this.calcularProgresso();
+    await this.listasService.guardarAlteracoes();
   }
 
-  // Função interna para copiar texto para a área de transferência com fallback
-  async copiarParaClipboard(texto: string): Promise<boolean> {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      try {
-        await navigator.clipboard.writeText(texto);
-        return true;
-      } catch (err) {
-        console.warn('Navigator clipboard falhou, tentando fallback...', err);
-      }
-    }
-    
-    // Fallback usando textarea temporário no DOM (essencial para contextos HTTP locais como Capacitor Live Reload)
-    try {
-      const textarea = document.createElement('textarea');
-      textarea.value = texto;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      const exito = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      if (exito) return true;
-    } catch (err) {
-      console.error('Falha no fallback de cópia:', err);
-    }
-    return false;
-  }
+  async finalizarCompra() {
+    if (!this.listaAtual || !this.listaAtual.produtos || this.listaAtual.produtos.length === 0) return;
 
-  // Mostra um aviso com a URL caso a cópia automática seja bloqueada pelo browser/dispositivo
-  async mostrarAlertaLinkPartilha(link: string) {
+    // 1. Mapeia os itens
+    const itensMapeados = this.listaAtual.produtos.map(p => ({
+      nome: p.nome,
+      quantidade: p.quantidade || 1,
+      preco: p.preco || '€0,00',
+      imagemUrl: p.imagemUrl
+    }));
+
+    // 2. Calcula total
+    const total = this.listaAtual.produtos.reduce((acc, p) => {
+      const precoLimpo = p.preco ? p.preco.replace('€', '').replace(',', '.').trim() : '0';
+      const parsed = parseFloat(precoLimpo);
+      return acc + (isNaN(parsed) ? 0 : parsed * (p.quantidade || 1));
+    }, 0);
+
+    // 3. Adiciona ao histórico do DeliveryService
+    this.deliveryService.adicionarCompraConcluida(
+      this.listaAtual.nome + ' (Loja: ÉBarato)', 
+      itensMapeados, 
+      total
+    );
+
+    // 4. Limpa os produtos da lista atual
+    this.listaAtual.produtos = [];
+    this.listaAtual.totalItens = 0;
+    this.listaAtual.dataEdicao = 'Concluída agora mesmo';
+    this.calcularProgresso();
+    await this.listasService.init();
+    await this.listasService.guardarAlteracoes();
+
+    // 5. Mostra alerta de sucesso
     const alert = await this.alertCtrl.create({
-      header: 'Partilhar Lista',
-      message: 'A cópia automática foi bloqueada. Por favor, copie manualmente o link abaixo para partilhar:',
-      inputs: [
+      header: 'Compra Finalizada! 🎉',
+      message: 'Os produtos foram registados no seu histórico de compras e a lista foi limpa.',
+      buttons: [
         {
-          type: 'textarea',
-          value: link,
-          attributes: {
-            readonly: true,
-            style: 'height: 100px; font-size: 12px; font-family: monospace;'
+          text: 'Ver Histórico',
+          handler: () => {
+            this.router.navigate(['/tabs/tab3'], { queryParams: { openHistory: 'true' } });
+          }
+        },
+        {
+          text: 'Fechar',
+          role: 'cancel',
+          handler: () => {
+            this.navCtrl.navigateBack('/tabs/tab1');
           }
         }
-      ],
-      buttons: ['OK']
+      ]
     });
     await alert.present();
   }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { ProdutosService } from '../services/produtos.service';
 import { ListasService, Lista } from '../services/listas.service';
@@ -26,14 +27,23 @@ export class Tab2Page implements OnInit {
   public produtoSelecionado: any = null;
   public listasNoCofre: Lista[] = [];
   public quantidadeSelecionada: number = 1;
+  public listaOrigem: string | null = null; // Adicionado
+  public supermercadoAtivo: string | null = null; // Adicionado
 
   constructor(
+    private route: ActivatedRoute,
     private produtosService: ProdutosService,
     private listasService: ListasService,
     private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
+    this.route.queryParamMap.subscribe(params => {
+      this.listaOrigem = params.get('listaOrigem');
+    });
+
+    this.supermercadoAtivo = localStorage.getItem('supermercadoAtivo'); // Carrega do cache
+
     // Carrega o catálogo do JSON (Req 10 da Etapa 3)
     this.produtosService.getTodosProdutos().subscribe(dados => {
       this.produtosDoCatalogo = dados.produtos || dados; 
@@ -45,7 +55,7 @@ export class Tab2Page implements OnInit {
 
   async ionViewWillEnter() {
     await this.listasService.init();
-    this.listasNoCofre = this.listasService.minhasListas;
+    this.listasNoCofre = this.listasService.minhasListas.filter(l => !l.arquivada);
   }
 
   // --- LÓGICA DE PESQUISA E HISTÓRICO ---
@@ -154,7 +164,30 @@ export class Tab2Page implements OnInit {
     event.stopPropagation();
     this.produtoSelecionado = produto;
     this.quantidadeSelecionada = 1; // Reseta para 1 ao abrir
-    this.isListModalOpen = true;
+    
+    if (this.listaOrigem) {
+      this.gravarProdutoDiretoNaLista(this.listaOrigem);
+    } else {
+      this.isListModalOpen = true;
+    }
+  }
+
+  async gravarProdutoDiretoNaLista(nomeDaLista: string) {
+    if (this.produtoSelecionado) {
+      await this.listasService.adicionarProdutoALista(
+        nomeDaLista,
+        this.produtoSelecionado,
+        1
+      );
+      
+      const toast = await this.toastCtrl.create({
+        message: `${this.produtoSelecionado.nome} adicionado!`,
+        duration: 1500,
+        color: 'success',
+        position: 'top'
+      });
+      await toast.present();
+    }
   }
 
   setModalOpen(isOpen: boolean) {
@@ -184,8 +217,7 @@ export class Tab2Page implements OnInit {
         message: `${this.produtoSelecionado.nome} (${this.quantidadeSelecionada}x) adicionado!`, 
         duration: 2000, 
         color: 'success', 
-        position: 'bottom',              // Envia o aviso para a parte inferior
-        cssClass: 'toast-acima-do-botao' // Aplica a margem de 85px para saltar as tabs
+        position: 'top'
       });
       
       await toast.present();
@@ -205,16 +237,34 @@ export class Tab2Page implements OnInit {
         produtos: [{ ...this.produtoSelecionado, quantidade: this.quantidadeSelecionada, riscado: false, recente: true }]
       };
       await this.listasService.adicionarLista(novaLista);
-      this.listasNoCofre = this.listasService.minhasListas;
+      this.listasNoCofre = this.listasService.minhasListas.filter(l => !l.arquivada);
       const toast = await this.toastCtrl.create({
         message: `Criada e adicionado à ${nomeDaNovaLista}!`,
         duration: 3000,
         color: 'success',
         icon: 'checkmark-circle',
-        position: 'bottom', // <-- Mudar para bottom
-        cssClass: 'toast-acima-do-botao' // <-- Usar a nossa classe
+        position: 'top'
       });
       await toast.present();
     }, 300);
+  }
+
+  // --- MÉTODOS DE SUPERMERCADO ---
+  selecionarSupermercado(nome: string) {
+    this.supermercadoAtivo = nome;
+    localStorage.setItem('supermercadoAtivo', nome);
+  }
+
+  alterarSupermercado() {
+    this.supermercadoAtivo = null;
+    localStorage.removeItem('supermercadoAtivo');
+  }
+
+  get lojasDoSistema(): any[] {
+    return this.listasService.lojasDoSistema;
+  }
+
+  get lojaSelecionadaGlobal(): any {
+    return this.listasService.lojaSelecionadaGlobal;
   }
 }

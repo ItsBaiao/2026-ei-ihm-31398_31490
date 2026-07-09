@@ -1,82 +1,80 @@
 <ion-header class="ion-no-border">
   <ion-toolbar color="transparent">
-    <div class="custom-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 4px;">
-      
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <h2 style="margin: 0; font-size: 1.3rem; font-weight: bold; color: #111; font-family: 'Outfit', sans-serif;">As minhas listas</h2>
-        <span *ngIf="listasSelecionadas.size > 0" class="selection-count-badge" style="background: #0da33d; color: white; font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 12px; font-family: 'Outfit', sans-serif;">
-          {{ listasSelecionadas.size }}
-        </span>
-      </div>
-
-      <div style="display: flex; align-items: center; gap: 2px;">
-        <!-- Selecionar Todas / Desmarcar Todas -->
-        <ion-button fill="clear" color="dark" (click)="toggleSelecionarTodas()" style="margin: 0;" title="Selecionar Todas">
-          <ion-icon slot="icon-only" [name]="todasSelecionadas ? 'checkbox' : 'square-outline'" style="font-size: 20px; color: #0da33d;"></ion-icon>
-        </ion-button>
-
-        <!-- Arquivar Selecionadas -->
-        <ion-button fill="clear" color="success" (click)="arquivarSelecionadas()" style="margin: 0;" [disabled]="listasSelecionadas.size === 0" title="Arquivar Selecionadas">
-          <ion-icon slot="icon-only" name="archive-outline" style="font-size: 20px;"></ion-icon>
-        </ion-button>
-
-        <!-- Eliminar Selecionadas -->
-        <ion-button fill="clear" color="danger" (click)="excluirSelecionadas()" style="margin: 0;" [disabled]="listasSelecionadas.size === 0" title="Excluir Selecionadas">
-          <ion-icon slot="icon-only" name="trash-outline" style="font-size: 20px;"></ion-icon>
-        </ion-button>
-
-        <!-- Ver Listas Arquivadas -->
-        <ion-button fill="clear" color="dark" (click)="verListasArquivadas()" style="margin: 0;" *ngIf="temListasArquivadas" title="Listas Arquivadas">
-          <ion-icon slot="icon-only" name="folder-open-outline" style="font-size: 20px;"></ion-icon>
-        </ion-button>
-      </div>
-
+    <!-- Título Principal -->
+    <div class="custom-header-title" style="padding: 16px 20px 8px 20px;">
+      <h1 style="font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 800; margin: 0; color: #111111;">As minhas listas</h1>
     </div>
+
+    <!-- Criar Nova Lista (Igual ao de adicionar amigos/grupos na Tab 4) -->
+    <ion-buttons slot="end">
+      <ion-button routerLink="/nova-lista" style="--background: #f2f2f2; --border-radius: 50%; width: 38px; height: 38px; margin-right: 12px; display: flex; align-items: center; justify-content: center;">
+        <ion-icon name="add" style="font-size: 24px; color: #0da33d;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  
+
+  <!-- Barra de Ações (Apenas visível se existir pelo menos uma lista) -->
+  <div *ngIf="listasNoEcra && listasNoEcra.length > 0" style="display: flex; align-items: center; margin-bottom: 15px; font-family: 'Outfit', sans-serif; padding-left: 20px;">
+    <!-- Selecionar Todas / Desmarcar Todas -->
+    <div (click)="toggleSelecionarTodas(); $event.stopPropagation()" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+      <ion-checkbox 
+        [checked]="todasSelecionadas"
+        style="margin: 0; pointer-events: none; --list-color: #222222;">
+      </ion-checkbox>
+      <span style="font-size: 14px; font-weight: 600; color: #222222; font-family: 'Outfit', sans-serif; user-select: none;">
+        Selecionar tudo
+      </span>
+    </div>
+
+    <!-- Ações de Arquivar/Excluir (Apenas se houver seleção) com espaçamento aumentado -->
+    <div *ngIf="listasSelecionadas.size > 0" style="display: flex; gap: 16px; margin-left: 8px; border-left: 1px solid #ddd; padding-left: 16px; align-items: center;">
+      <!-- Arquivar Selecionadas -->
+      <ion-button fill="clear" color="dark" size="small" (click)="arquivarSelecionadas()" style="margin: 0; --padding-start: 4px; --padding-end: 4px; height: 32px;" title="Arquivar Selecionadas">
+        <ion-icon slot="icon-only" name="archive-outline" style="font-size: 22px; color: #222;"></ion-icon>
+      </ion-button>
+
+      <!-- Eliminar Selecionadas -->
+      <ion-button fill="clear" color="dark" size="small" (click)="excluirSelecionadas()" style="margin: 0; --padding-start: 4px; --padding-end: 4px; height: 32px;" title="Excluir Selecionadas">
+        <ion-icon slot="icon-only" name="trash-outline" style="font-size: 22px; color: #222;"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
   <div class="lists-wrapper">
     
     <div class="list-card" 
          [ngClass]="[lista.cor.startsWith('border-') ? lista.cor : '', listasSelecionadas.has(lista.nome) ? 'selected-card' : '']" 
-         [style.border-left-color]="!lista.cor.startsWith('border-') ? lista.cor : null"
+         [style.border-left-color]="obterCorDeEstilo(lista.cor)"
+         [style.background]="listasSelecionadas.has(lista.nome) ? obterFundoSuaveDeEstilo(lista.cor) : '#ffffff'"
          *ngFor="let lista of listasNoEcra" 
          (click)="cliqueNaLista(lista)" 
          style="cursor: pointer;">
          
       <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-        <!-- Checkbox sempre visível -->
+        <!-- Checkbox sempre visível com borda preta -->
         <ion-checkbox 
           [checked]="listasSelecionadas.has(lista.nome)"
           (click)="$event.stopPropagation()"
           (ionChange)="toggleSelecaoLista(lista.nome)"
-          color="success"
+          [style.--list-color]="'#222222'"
           style="margin: 0;">
         </ion-checkbox>
 
         <div class="list-info" style="flex: 1; display: flex; align-items: center; justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <ion-icon [name]="lista.icone" class="list-icon"></ion-icon>
+            <ion-icon [name]="lista.icone" class="list-icon" style="color: #222222;"></ion-icon>
             <div class="text-group">
               <h3>{{ lista.nome }}</h3>
               <p>{{ lista.dataEdicao }}</p>
             </div>
           </div>
-          <div class="item-badge">{{ lista.totalItens }} itens</div>
+          <div class="item-badge" [style.background-color]="obterCorDeEstilo(lista.cor)">{{ lista.totalItens }} itens</div>
         </div>
       </div>
 
     </div>
 
-  </div>
-
-  <!-- Botão de Criar Lista sempre visível -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button class="custom-fab" routerLink="/nova-lista">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
-</ion-content>
+  </div></ion-content>

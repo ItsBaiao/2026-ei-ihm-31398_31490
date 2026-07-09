@@ -9,7 +9,7 @@
   ion-tab-button {
     --color: #555555; 
     --color-selected: #065f24; 
-    position: relative; /* Necessário para a bolha ficar presa ao botão */
+    position: relative; 
     z-index: 1;
     
     ion-icon {
@@ -22,19 +22,73 @@
       font-weight: 600;
     }
 
-    /* --- O TRUQUE: A bolha agora aplica-se a QUALQUER botão selecionado --- */
     &.tab-selected::before {
       content: '';
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 75px;
-      height: 48px;
-      background-color: #a8f0a8; /* O verde claro da bolha */
+      width: 70px;
+      height: 44px;
+      background-color: #a8f0a8; 
       border-radius: 25px; 
-      z-index: -1; /* Fica por trás do ícone e do texto */
-      transition: all 0.3s ease; /* Dá uma animação suave ao aparecer */
+      z-index: -1; 
+      transition: all 0.3s ease; 
+    }
+  }
+
+  /* --- Botão do Meio Destacado de Forma Simples (Mantendo Nome e Retângulo com +) --- */
+  ion-tab-button.add-tab-btn {
+    --color: #0da33d !important;
+    --color-selected: #065f24 !important;
+    transform: scale(1.08); /* Ligeiramente maior para destaque simples */
+    transition: transform 0.2s ease-in-out;
+    position: relative;
+    overflow: visible;
+
+    /* Caixa retangular com o ícone mais (+) */
+    .add-rect-box {
+      width: 44px;
+      height: 28px;
+      border: 2px solid #0da33d;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+      transition: all 0.2s ease-in-out;
+
+      ion-icon {
+        font-size: 20px !important;
+        color: #0da33d !important;
+        margin: 0 !important;
+      }
+    }
+
+    ion-label {
+      font-size: 11px !important;
+      font-weight: bold !important;
+      color: #0da33d !important;
+      display: block !important;
+    }
+
+    &.tab-selected {
+      transform: scale(1.12); /* Aumenta ligeiramente mais quando ativo */
+      
+      /* Preenche o retângulo com a cor verde ao selecionar */
+      .add-rect-box {
+        background: #0da33d;
+        border-color: #0da33d;
+        
+        ion-icon {
+          color: #ffffff !important;
+        }
+      }
+    }
+
+    /* Esconde a bolha verde horizontal padrão do tab-selected */
+    &::before {
+      display: none !important;
     }
   }
 }

@@ -138,6 +138,7 @@ export class SupabaseService {
         return [];
       }
       return (data || []).map(row => ({
+        id: row.id,
         remetente: row.remetente,
         remetenteNome: row.remetente_nome,
         texto: row.texto,
@@ -231,6 +232,88 @@ export class SupabaseService {
       if (error) console.error('Erro ao excluir grupo no Supabase:', error.message);
     } catch (err) {
       console.error('Erro inesperado ao excluir grupo:', err);
+    }
+  }
+
+  async checkUnreadChatsCount(emailAtual: string): Promise<number> {
+    if (!emailAtual) return 0;
+    try {
+      // 1. Obter todos os amigos para gerar os chatIds
+      const amigos = await this.obterAmigos(emailAtual);
+      const chatIds: string[] = amigos.map(amigo => {
+        const emails = [emailAtual.toLowerCase().trim(), amigo.email.toLowerCase().trim()].sort();
+        return `chat_${emails[0]}_${emails[1]}`;
+      });
+
+      // 2. Obter todos os grupos para gerar os chatIds
+      const grupos = await this.obterGrupos(emailAtual);
+      grupos.forEach(grupo => {
+        chatIds.push(`chat_group_${grupo.id}`);
+      });
+
+      if (chatIds.length === 0) return 0;
+
+      // 3. Obter todas as mensagens recentes desses chats
+      const { data, error } = await this.supabase
+        .from('buybuy_mensagens')
+        .select('chat_id, remetente, id')
+        .in('chat_id', chatIds)
+        .order('id', { ascending: true });
+
+      if (error || !data) return 0;
+
+      // Agrupar mensagens por chat_id
+      const chatsMap: { [chatId: string]: any[] } = {};
+      data.forEach(row => {
+        if (!chatsMap[row.chat_id]) {
+          chatsMap[row.chat_id] = [];
+        }
+        chatsMap[row.chat_id].push(row);
+      });
+
+      // 4. Calcular quantos chats têm mensagens não lidas
+      let unreadChats = 0;
+      Object.keys(chatsMap).forEach(chatId => {
+        const chatMessages = chatsMap[chatId];
+        let lastReadIdVal = localStorage.getItem(`chat_last_read_id_${emailAtual.toLowerCase().trim()}_${chatId}`);
+        if (lastReadIdVal === null) {
+          const maxId = chatMessages.reduce((max, msg) => msg.id > max ? msg.id : max, 0);
+          localStorage.setItem(`chat_last_read_id_${emailAtual.toLowerCase().trim()}_${chatId}`, maxId.toString());
+          lastReadIdVal = maxId.toString();
+        }
+        const lastReadId = parseInt(lastReadIdVal || '0', 10);
+
+        const unreadMsgs = chatMessages.filter(msg => 
+          msg.id > lastReadId && 
+          msg.remetente.toLowerCase().trim() !== emailAtual.toLowerCase().trim()
+        );
+
+        if (unreadMsgs.length > 0) {
+          unreadChats++;
+        }
+      });
+
+      return unreadChats;
+    } catch (err) {
+      console.error('Erro ao verificar chats não lidos:', err);
+      return 0;
+    }
+  }
+
+  async obterMensagensPorChatIds(chatIds: string[]): Promise<any[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('buybuy_mensagens')
+        .select('chat_id, remetente, id')
+        .in('chat_id', chatIds);
+      if (error) {
+        console.error('Erro ao obter mensagens em lote do Supabase:', error.message);
+        return [];
+      }
+      return data || [];
+    } catch (err) {
+      console.error('Erro inesperado ao obter mensagens em lote:', err);
+      return [];
     }
   }
 }

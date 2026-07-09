@@ -1,0 +1,496 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
+    <div class="toolbar-header">
+      <!-- Botão Voltar para os passos intermédios (Estilo consistente de círculo) -->
+      <ion-button fill="clear" color="dark" (click)="voltarPasso()" *ngIf="deliveryStep !== 'select_source' && deliveryStep !== 'tracking'" class="back-circle-btn">
+        <ion-icon slot="icon-only" name="arrow-back-outline" style="font-size: 22px; color: #111111;"></ion-icon>
+      </ion-button>
+      
+      <h1 class="step-title">
+        <span *ngIf="deliveryStep === 'select_source'">Encomendas</span>
+        <span *ngIf="deliveryStep === 'select_list'">Escolher Lista</span>
+        <span *ngIf="deliveryStep === 'select_products'">Carrinho Expresso</span>
+        <span *ngIf="deliveryStep === 'confirm_products'">Rever Carrinho</span>
+        <span *ngIf="deliveryStep === 'address_store'">Morada e Loja</span>
+        <span *ngIf="deliveryStep === 'final_checkout'">Confirmar Pedido</span>
+        <span *ngIf="deliveryStep === 'tracking'">Acompanhar</span>
+      </h1>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding custom-bg">
+
+  <!-- STEP 1: SELECT SOURCE -->
+  <div *ngIf="deliveryStep === 'select_source'" class="source-container">
+    <div class="source-header">
+      <div class="icon-circle">
+        <ion-icon name="bicycle-outline" style="font-size: 54px; color: #0da33d;"></ion-icon>
+      </div>
+      <h2 class="source-title">Como quer fazer o pedido?</h2>
+      <p class="source-subtitle">Selecione uma lista de compras existente ou crie um carrinho expresso agora.</p>
+    </div>
+    
+    <ion-button expand="block" color="success" class="large-btn" (click)="deliveryStep = 'select_list'">
+      <ion-icon name="list-outline" slot="start"></ion-icon>
+      Usar uma Lista de Compras
+    </ion-button>
+
+    <ion-button expand="block" fill="outline" color="success" class="large-btn" (click)="deliveryStep = 'select_products'">
+      <ion-icon name="cart-outline" slot="start"></ion-icon>
+      Escolher Produtos na Hora
+    </ion-button>
+  </div>
+
+  <!-- STEP 2: SELECT LIST -->
+  <div *ngIf="deliveryStep === 'select_list'" style="font-family: 'Outfit', sans-serif;">
+    <div *ngIf="listasNoEcra.length === 0" class="empty-state">
+      <p style="color: #666; font-size: 14px;">Não tem nenhuma lista de compras ativa.</p>
+      <ion-button fill="clear" color="success" (click)="deliveryStep = 'select_products'">Criar carrinho expresso</ion-button>
+    </div>
+    
+    <div class="list-card" *ngFor="let lista of listasNoEcra" (click)="selecionarListaParaDelivery(lista)">
+      <div class="list-card-left">
+        <ion-icon [name]="lista.icone" style="font-size: 24px; color: #0da33d;"></ion-icon>
+        <div>
+          <h4 class="list-card-title">{{ lista.nome }}</h4>
+          <p class="list-card-subtitle">{{ lista.dataEdicao }}</p>
+        </div>
+      </div>
+      <span class="list-card-badge">
+        {{ lista.totalItens }} itens
+      </span>
+    </div>
+  </div>
+
+  <!-- STEP 3: SELECT PRODUCTS -->
+  <div *ngIf="deliveryStep === 'select_products'" style="font-family: 'Outfit', sans-serif;">
+    <div class="sticky-search">
+      <ion-searchbar placeholder="Pesquisar produto..." [(ngModel)]="deliverySearchQuery" class="custom-searchbar" style="padding: 0;"></ion-searchbar>
+    </div>
+
+    <div class="scrollable-list">
+      <div *ngFor="let prod of deliveryItensFiltrados" class="product-row">
+        <div class="product-row-left">
+          <img *ngIf="prod.imagemUrl" [src]="prod.imagemUrl" class="product-img-small">
+          <div>
+            <h4 class="product-name">{{ prod.nome }}</h4>
+            <p class="product-meta">{{ prod.preco }} • {{ prod.tamanho }}</p>
+          </div>
+        </div>
+        
+        <div class="qty-controls-row">
+          <ion-button fill="clear" size="small" color="success" (click)="removerProdutoDoDelivery(prod)" [disabled]="obterQuantidadeNoDelivery(prod.nome) === 0" style="margin:0;">
+            <ion-icon name="remove-circle-outline" style="font-size: 24px;"></ion-icon>
+          </ion-button>
+          <span class="qty-num">{{ obterQuantidadeNoDelivery(prod.nome) }}</span>
+          <ion-button fill="clear" size="small" color="success" (click)="adicionarProdutoAoDelivery(prod)" style="margin:0;">
+            <ion-icon name="add-circle-outline" style="font-size: 24px;"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-footer">
+      <div>
+        <span class="summary-footer-title">Total Provisório</span>
+        <h4 class="summary-footer-price">{{ deliverySubtotal | number:'1.2-2' }} €</h4>
+      </div>
+      <ion-button color="success" style="--border-radius: 10px; font-weight: bold; height: 42px;" [disabled]="deliveryProducts.length === 0" (click)="avancarParaConfirmacao()">
+        Continuar
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- STEP 3B: CONFIRM PRODUCTS -->
+  <div *ngIf="deliveryStep === 'confirm_products'" style="font-family: 'Outfit', sans-serif;">
+    <div style="margin-bottom: 15px;">
+      <p style="color: #666; font-size: 13px;">Confirme se os produtos selecionados estão corretos antes de avançar.</p>
+    </div>
+
+    <div class="scrollable-list" style="margin-bottom: 15px;">
+      <div *ngFor="let item of deliveryProducts" class="product-row">
+        <div class="product-row-left" style="flex: 1; min-width: 0;">
+          <img *ngIf="item.imagemUrl" [src]="item.imagemUrl" class="product-img-medium">
+          <div style="min-width: 0;">
+            <h4 class="product-name" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{ item.nome }}</h4>
+            <p class="product-meta">{{ item.preco }}</p>
+          </div>
+        </div>
+
+        <div class="qty-controls-row">
+          <ion-button fill="clear" size="small" color="success" (click)="removerProdutoDoDelivery(item)" style="margin:0; --padding-start:0; --padding-end:0;">
+            <ion-icon name="remove-circle-outline" style="font-size: 24px;"></ion-icon>
+          </ion-button>
+          <span class="qty-num" style="color: #111;">{{ item.quantidade }}</span>
+          <ion-button fill="clear" size="small" color="success" (click)="adicionarProdutoAoDelivery(item)" style="margin:0; --padding-start:0; --padding-end:0;">
+            <ion-icon name="add-circle-outline" style="font-size: 24px;"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-footer">
+      <div>
+        <span class="summary-footer-title">Subtotal</span>
+        <h4 class="summary-footer-price">{{ deliverySubtotal | number:'1.2-2' }} €</h4>
+      </div>
+      <ion-button color="success" style="--border-radius: 10px; font-weight: bold; height: 42px;" (click)="avancarParaMoradaLoja()">
+        Confirmar
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- STEP 4: ADDRESS & STORE -->
+  <div *ngIf="deliveryStep === 'address_store'" class="source-container">
+    <div class="address-icon-box">
+      <ion-icon name="map-outline" style="font-size: 32px;"></ion-icon>
+      <span class="address-icon-label">Selecione o local de entrega</span>
+    </div>
+
+    <!-- Supermercado (Only ÉBarato) -->
+    <div class="input-card">
+      <ion-label class="input-label">Supermercado Escolhido</ion-label>
+      <div class="flex-row-between" style="margin-top: 8px;">
+        <span style="font-weight: 800; color: #111; font-size: 15px; display: flex; align-items: center; gap: 6px;">🏪 ÉBarato</span>
+        <span class="supermarket-badge">Disponível</span>
+      </div>
+    </div>
+
+    <!-- Morada (Empty initially, writes, saved for next time) -->
+    <div class="input-card">
+      <ion-label class="input-label">Morada de Entrega</ion-label>
+      <p class="input-subtitle">Esta morada será guardada para futuras compras.</p>
+      <ion-input type="text" [(ngModel)]="deliveryAddress" placeholder="Escreva a sua morada de entrega..." class="custom-input"></ion-input>
+    </div>
+
+    <ion-button expand="block" color="success" style="--border-radius: 12px; font-weight: bold; margin-top: 15px; height: 48px;" (click)="avancarParaPagamento()">
+      Continuar para Pagamento
+    </ion-button>
+  </div>
+
+  <!-- STEP 5: FINAL CHECKOUT -->
+  <div *ngIf="deliveryStep === 'final_checkout'" class="source-container">
+    
+    <!-- Segmento de Seleção: Entrega vs Recolha (Sem ícones/emojis) -->
+    <ion-segment [(ngModel)]="checkoutMode" color="success" style="background: #f2f2f2; border-radius: 10px; padding: 3px;">
+      <ion-segment-button value="entrega" style="font-weight: bold; --border-radius: 8px;">
+        <ion-label>Entrega</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="recolha" style="font-weight: bold; --border-radius: 8px;">
+        <ion-label>Recolha</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- SECÇÃO ENTREGA: Mostrar Morada de Entrega -->
+    <div *ngIf="checkoutMode === 'entrega'" class="input-card">
+      <h4 class="input-label" style="margin-bottom: 4px;">Morada de Envio</h4>
+      <p style="margin: 0; font-size: 13px; font-weight: bold; color: #333;">📍 {{ deliveryAddress || 'Sem morada definida' }}</p>
+    </div>
+
+    <!-- SECÇÃO RECOLHA: Agendamento de Dia e Hora -->
+    <div *ngIf="checkoutMode === 'recolha'" class="input-card" style="display: flex; flex-direction: column; gap: 8px;">
+      <h4 class="input-label">Horário de Levantamento</h4>
+      <p class="input-subtitle" style="margin-bottom: 4px;">Agende o dia e hora para levantar o seu pedido na loja ÉBarato:</p>
+      
+      <!-- Botão para abrir o Agendador (Cinzento Premium) -->
+      <ion-button expand="block" fill="outline" (click)="abrirAgendador()" class="pickup-btn">
+        <ion-icon name="calendar-outline" slot="start" style="color: #666666;"></ion-icon>
+        {{ pickupTime ? formatarDataRecolha(pickupTime) : 'Agendar' }}
+      </ion-button>
+
+      <!-- Modal com Agendador Completo (Dia e Hora) com largura aumentada (350px) para melhor centralização -->
+      <ion-modal [isOpen]="isDatePickerOpen" (didDismiss)="fecharAgendador()" style="--width: 350px; --height: 480px; --border-radius: 16px;">
+        <ng-template>
+          <ion-header class="ion-no-border">
+            <ion-toolbar>
+              <ion-title style="font-weight: 800; font-family: 'Outfit', sans-serif; font-size: 16px; color: #111;">Agendar Levantamento</ion-title>
+              <ion-buttons slot="end">
+                <ion-button (click)="fecharAgendador()" style="--background: #f2f2f2; --border-radius: 50%; width: 32px; height: 32px; margin-right: 8px; display: flex; align-items: center; justify-content: center; --padding-start: 0; --padding-end: 0;">
+                  <ion-icon name="close-outline" color="dark" style="font-size: 20px;"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+
+          <ion-content class="ion-padding" style="font-family: 'Outfit', sans-serif;">
+            <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; align-items: center;">
+              <ion-datetime 
+                presentation="date-time" 
+                prefer-wheel="true" 
+                hour-cycle="h23"
+                hourCycle="h23"
+                [(ngModel)]="tempPickupTime"
+                style="font-family: 'Outfit', sans-serif; width: 100%; margin: 0 auto; --background: transparent;">
+              </ion-datetime>
+
+              <div style="padding-top: 15px; width: 100%;">
+                <ion-button expand="block" color="success" style="--border-radius: 10px; font-weight: bold; height: 44px; margin: 0;" (click)="confirmarAgendamento()">
+                  Confirmar
+                </ion-button>
+              </div>
+            </div>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+    </div>
+
+    <!-- Método de Pagamento -->
+    <div class="input-card">
+      <h4 class="input-label" style="margin-bottom: 12px;">Método de Pagamento</h4>
+      <ion-radio-group [(ngModel)]="deliveryPaymentMethod">
+        
+        <!-- MBWay -->
+        <div class="flex-row-between" style="margin-bottom: 12px;">
+          <span style="font-size: 13px; font-weight: bold; color: #333; display: flex; align-items: center; gap: 6px;">
+            📱 MBWay
+          </span>
+          <ion-radio value="mbway" color="success" style="margin:0;"></ion-radio>
+        </div>
+        <div *ngIf="deliveryPaymentMethod === 'mbway'" style="margin: 0 0 12px 0;">
+          <ion-input type="tel" placeholder="Número de Telemóvel (ex: 912345678)" [(ngModel)]="deliveryMBWayPhone" style="background: #f7f7f7; border-radius: 8px; padding-left: 10px; font-size: 13px; height: 38px; font-weight: bold;"></ion-input>
+        </div>
+
+        <!-- Cartão -->
+        <div class="flex-row-between" style="margin-bottom: 12px;">
+          <span style="font-size: 13px; font-weight: bold; color: #333; display: flex; align-items: center; gap: 6px;">
+            💳 Cartão de Crédito
+          </span>
+          <ion-radio value="card" color="success" style="margin:0;"></ion-radio>
+        </div>
+        <div *ngIf="deliveryPaymentMethod === 'card'" style="margin: 0 0 12px 0; display: flex; flex-direction: column; gap: 8px;">
+          <ion-input type="text" placeholder="Número do Cartão" [(ngModel)]="cardNumber" style="background: #f7f7f7; border-radius: 8px; padding-left: 10px; font-size: 13px; height: 38px; font-weight: bold;"></ion-input>
+          <div style="display: flex; gap: 8px;">
+            <ion-input type="text" placeholder="Validade (MM/AA)" [(ngModel)]="cardExpiry" style="background: #f7f7f7; border-radius: 8px; padding-left: 10px; font-size: 13px; height: 38px; font-weight: bold; flex: 1;"></ion-input>
+            <ion-input type="password" placeholder="CVV" [(ngModel)]="cardCvv" style="background: #f7f7f7; border-radius: 8px; padding-left: 10px; font-size: 13px; height: 38px; font-weight: bold; flex: 1;"></ion-input>
+          </div>
+        </div>
+
+        <!-- Dinheiro -->
+        <div class="flex-row-between">
+          <span style="font-size: 13px; font-weight: bold; color: #333; display: flex; align-items: center; gap: 6px;">
+            💵 Dinheiro
+          </span>
+          <ion-radio value="cash" color="success" style="margin:0;"></ion-radio>
+        </div>
+      </ion-radio-group>
+    </div>
+
+    <!-- Código Promocional -->
+    <div class="input-card">
+      <h4 class="input-label" style="margin-bottom: 6px;">Código Promocional</h4>
+      <div style="display: flex; gap: 8px;">
+        <ion-input type="text" placeholder="Ex: BUYBUYNEW" [(ngModel)]="promoCodeInput" style="background: #f7f7f7; border-radius: 8px; padding-left: 10px; font-size: 13px; height: 38px; font-weight: bold; flex: 1; text-transform: uppercase;"></ion-input>
+        <ion-button color="success" style="--border-radius: 8px; font-weight: bold; height: 38px; margin: 0;" (click)="aplicarCodigoPromo()">Aplicar</ion-button>
+      </div>
+      <div *ngIf="appliedPromoCode" style="margin-top: 8px; color: #0da33d; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+        <ion-icon name="checkmark-circle"></ion-icon> Código {{ appliedPromoCode }} applied! (30% desconto na 1ª compra)
+      </div>
+      <div *ngIf="promoCodeError" style="margin-top: 8px; color: #e74c3c; font-size: 12px; font-weight: bold;">
+        ❌ {{ promoCodeError }}
+      </div>
+    </div>
+
+    <!-- Resumo de Custos -->
+    <div class="input-card">
+      <div class="flex-row-between" style="margin-bottom: 6px; font-size: 13px; color: #777;">
+        <span>Subtotal</span>
+        <span>{{ deliverySubtotal | number:'1.2-2' }} €</span>
+      </div>
+      <div *ngIf="appliedPromoCode" class="flex-row-between" style="margin-bottom: 6px; font-size: 13px; color: #e74c3c; font-weight: bold;">
+        <span>Desconto (-30%)</span>
+        <span>-{{ deliveryDiscount | number:'1.2-2' }} €</span>
+      </div>
+      <div class="flex-row-between" style="margin-bottom: 10px; font-size: 13px; color: #777;">
+        <span>Taxa de Entrega</span>
+        <span *ngIf="checkoutMode === 'recolha'" style="color: #0da33d; font-weight: bold;">Grátis</span>
+        <span *ngIf="checkoutMode !== 'recolha'">{{ currentDeliveryFee | number:'1.2-2' }} €</span>
+      </div>
+      <div style="border-top: 1px dashed #eee; padding-top: 10px; display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: #222;">
+        <span>Total a Pagar</span>
+        <span style="color: #0da33d;">{{ deliveryTotal | number:'1.2-2' }} €</span>
+      </div>
+    </div>
+
+    <ion-button expand="block" color="success" style="--border-radius: 12px; font-weight: bold; height: 50px; margin-top: 10px;" (click)="confirmarPedidoDelivery()">
+      Confirmar Pedido ({{ deliveryTotal | number:'1.2-2' }} €)
+    </ion-button>
+  </div>
+
+  <!-- STEP 6: LIVE TRACKING SYSTEM -->
+  <div *ngIf="deliveryStep === 'tracking'" class="source-container">
+    <div class="tracking-header">
+      <div style="position: relative; display: inline-block;">
+        <div class="tracking-icon-circle">
+          <ion-icon [name]="deliveryService.activeOrder?.morada?.startsWith('Levantamento') ? 'bag-handle-outline' : 'bicycle-outline'" style="font-size: 46px; color: #0da33d;"></ion-icon>
+        </div>
+      </div>
+      <h2 class="tracking-title">
+        <span *ngIf="deliveryService.activeOrder?.estado === 'Pendente'">A aguardar confirmação...</span>
+        <span *ngIf="deliveryService.activeOrder?.estado === 'Preparação'">A recolher os produtos...</span>
+        <span *ngIf="deliveryService.activeOrder?.estado === 'A Caminho'">
+          {{ deliveryService.activeOrder?.morada?.startsWith('Levantamento') ? 'Pronto para levantamento!' : 'Estafeta a caminho!' }}
+        </span>
+      </h2>
+      <p class="tracking-time-badge">
+        <ion-icon name="time-outline" style="color: #0da33d;"></ion-icon>
+        <span>Tempo estimado: </span>
+        <span style="color: #0da33d;">{{ deliveryService.activeOrder?.minutosRestantes }} min</span>
+      </p>
+    </div>
+
+    <!-- Live Status Progress bar (Timeline com 4 Estados) -->
+    <div class="timeline-card">
+      
+      <!-- 1. Pedido Recebido -->
+      <div class="timeline-node">
+        <div [style.background]="(deliveryService.activeOrder?.estado === 'Pendente' || deliveryService.activeOrder?.estado === 'Preparação' || deliveryService.activeOrder?.estado === 'A Caminho' || deliveryService.activeOrder?.estado === 'Entregue') ? '#0da33d' : '#ccc'" class="timeline-dot">
+          <ion-icon name="checkmark" style="font-size: 14px;"></ion-icon>
+        </div>
+        <div>
+          <h4 style="margin: 0; font-size: 13px; font-weight: bold; color: #222;">Pedido Recebido</h4>
+          <p style="margin: 0; font-size: 11px; color: #777;">O supermercado ÉBarato aceitou o seu pedido.</p>
+        </div>
+      </div>
+
+      <!-- 2. Em Preparação -->
+      <div class="timeline-node">
+        <div [style.background]="(deliveryService.activeOrder?.estado === 'Preparação' || deliveryService.activeOrder?.estado === 'A Caminho' || deliveryService.activeOrder?.estado === 'Entregue') ? '#0da33d' : '#ccc'" class="timeline-dot">
+          <ion-icon [name]="deliveryService.activeOrder?.estado === 'Pendente' ? 'ellipsis-horizontal' : 'checkmark'" style="font-size: 14px;"></ion-icon>
+        </div>
+        <div>
+          <h4 style="margin: 0; font-size: 13px; font-weight: bold; color: #222;">Em Preparação</h4>
+          <p style="margin: 0; font-size: 11px; color: #777;">Os seus produtos estão a ser separados e embalados.</p>
+        </div>
+      </div>
+
+      <!-- 3. A Caminho / Pronto para Levantamento -->
+      <div class="timeline-node">
+        <div [style.background]="(deliveryService.activeOrder?.estado === 'A Caminho' || deliveryService.activeOrder?.estado === 'Entregue') ? '#0da33d' : '#ccc'" class="timeline-dot">
+          <ion-icon [name]="(deliveryService.activeOrder?.estado === 'Pendente' || deliveryService.activeOrder?.estado === 'Preparação') ? 'ellipsis-horizontal' : 'checkmark'" style="font-size: 14px;"></ion-icon>
+        </div>
+        <div>
+          <h4 style="margin: 0; font-size: 13px; font-weight: bold; color: #222;">
+            {{ deliveryService.activeOrder?.morada?.startsWith('Levantamento') ? 'Disponível para Levantamento' : 'A Caminho da Morada' }}
+          </h4>
+          <p style="margin: 0; font-size: 11px; color: #777;">
+            {{ deliveryService.activeOrder?.morada?.startsWith('Levantamento') ? 'O seu pedido já está pronto para recolha na loja.' : 'O estafeta iniciou o percurso de entrega.' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. Chegada ao Destino / Concluído -->
+      <div class="timeline-node">
+        <div [style.background]="deliveryService.activeOrder?.estado === 'Entregue' ? '#0da33d' : '#ccc'" class="timeline-dot">
+          <ion-icon [name]="deliveryService.activeOrder?.estado === 'Entregue' ? 'checkmark' : 'ellipsis-horizontal'" style="font-size: 14px;"></ion-icon>
+        </div>
+        <div>
+          <h4 style="margin: 0; font-size: 13px; font-weight: bold; color: #222;">
+            {{ deliveryService.activeOrder?.morada?.startsWith('Levantamento') ? 'Recolha Concluída' : 'Chegada ao Destino' }}
+          </h4>
+          <p style="margin: 0; font-size: 11px; color: #777;">
+            {{ deliveryService.activeOrder?.morada?.startsWith('Levantamento') ? 'O pedido foi levantado na loja ÉBarato.' : 'O estafeta chegou com as suas compras.' }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estafeta Card (Visualizar sempre para entregas, em qualquer estado do pedido. Sem botão de ligar) -->
+    <div *ngIf="!deliveryService.activeOrder?.morada?.startsWith('Levantamento')" class="driver-card">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="driver-avatar">
+          🏍️
+        </div>
+        <div>
+          <h4 style="margin: 0; font-size: 13px; font-weight: bold; color: #222;">{{ deliveryService.activeOrder?.estafeta }}</h4>
+          <p style="margin: 0; font-size: 11px; color: #777;">Contacto: {{ deliveryService.activeOrder?.estafetaTelefone }}</p>
+        </div>
+      </div>
+      <div class="driver-badge">
+        Estafeta Oficial
+      </div>
+    </div>
+
+    <!-- Details card -->
+    <div class="details-card">
+      <h4 style="margin: 0 0 8px 0; font-size: 11px; font-weight: bold; color: #777; text-transform: uppercase;">Detalhes do Pedido</h4>
+      <div style="font-size: 13px; color: #555; margin-bottom: 4px;">🏪 Loja: <b>{{ deliveryService.activeOrder?.loja }}</b></div>
+      <div style="font-size: 13px; color: #555; margin-bottom: 4px;">📍 Destino: <b>{{ deliveryService.activeOrder?.morada }}</b></div>
+      <div style="font-size: 13px; color: #555;">💰 Total do Pedido: <b>{{ deliveryService.activeOrder?.total | number:'1.2-2' }} €</b></div>
+    </div>
+
+    <!-- Cancel button -->
+    <div *ngIf="deliveryService.activeOrder?.estado !== 'A Caminho'" style="margin-top: 10px;">
+      <ion-button expand="block" fill="clear" color="danger" (click)="cancelarPedidoAtivo()">
+        Cancelar Pedido
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- STEP 7: RECEIPT / INVOICE SCREEN -->
+  <div *ngIf="deliveryStep === 'receipt'" class="source-container">
+    <div class="receipt-header">
+      <div class="receipt-checkmark-circle">
+        <ion-icon name="checkmark-circle" style="font-size: 54px; color: #0da33d;"></ion-icon>
+      </div>
+      <h2 style="font-weight: 900; margin-top: 20px; color: #111; font-size: 1.6rem;">Pedido Concluído!</h2>
+      <p style="font-size: 13px; color: #666; margin-top: 6px; padding: 0 20px;">
+        {{ deliveryService.activeOrder?.morada?.startsWith('Levantamento') 
+          ? 'O seu pedido foi recolhido com sucesso no supermercado ÉBarato.' 
+          : 'Obrigado por comprar no BuyBuy. As suas compras foram entregues com sucesso!' }}
+      </p>
+    </div>
+
+    <!-- Fatura Simplificada Card -->
+    <div class="invoice-card">
+      <div class="invoice-header">
+        <div>
+          <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #111;">Fatura Simplificada</h3>
+          <p style="margin: 3px 0 0 0; font-size: 11px; color: #999;">Nº {{ deliveryService.activeOrder?.id }}</p>
+        </div>
+        <span class="invoice-badge">PAGO</span>
+      </div>
+
+      <!-- Dados Gerais -->
+      <div class="invoice-fields">
+        <div>🏪 <b>Supermercado:</b> {{ deliveryService.activeOrder?.loja }}</div>
+        <div>📅 <b>Data:</b> {{ dataAtualFormatada() }}</div>
+        <div>📍 <b>Destino:</b> {{ deliveryService.activeOrder?.morada }}</div>
+        <div>💳 <b>Método de Pagamento:</b> {{ deliveryService.activeOrder?.pagamento }}</div>
+      </div>
+
+      <div class="invoice-products-box">
+        <h4 style="margin: 0 0 10px 0; font-size: 11px; font-weight: bold; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Produtos Adquiridos</h4>
+        <div class="invoice-products-list">
+          <div *ngFor="let item of deliveryService.activeOrder?.itens" class="flex-row-between" style="font-size: 13px;">
+            <span style="color: #444; flex: 1; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin-right: 8px;">
+              {{ item.nome }} <small style="color: #999;">(x{{ item.quantidade }})</small>
+             </span>
+             <span style="font-weight: 600; color: #333;">{{ obterSubtotalItem(item) | number:'1.2-2' }} €</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumo de Custos na Fatura -->
+      <div class="invoice-summary">
+        <div class="flex-row-between" style="color: #777;">
+          <span>Subtotal</span>
+          <span>{{ deliveryService.activeOrder?.subtotal | number:'1.2-2' }} €</span>
+        </div>
+        <div class="flex-row-between" style="color: #777;">
+          <span>Taxa de Serviço/Entrega</span>
+          <span>{{ deliveryService.activeOrder?.taxaEntrega | number:'1.2-2' }} €</span>
+        </div>
+        <div style="border-top: 1px dashed #eee; margin-top: 6px; padding-top: 8px; display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; color: #111;">
+          <span>Valor Total Pago</span>
+          <span style="color: #0da33d;">{{ deliveryService.activeOrder?.total | number:'1.2-2' }} €</span>
+        </div>
+      </div>
+    </div>
+
+    <ion-button expand="block" color="success" style="--border-radius: 12px; font-weight: bold; height: 48px; margin-top: 10px;" (click)="finalizarRecibo()">
+      Voltar ao Início
+    </ion-button>
+  </div>
+
+</ion-content>

@@ -33,10 +33,7 @@ const routes: Routes = [
     path: 'nova-lista',
     loadChildren: () => import('./nova-lista/nova-lista.module').then( m => m.NovaListaPageModule)
   },
-  {
-    path: 'loja-navegacao/:nome',
-    loadChildren: () => import('./loja-navegacao/loja-navegacao.module').then( m => m.LojaNavegacaoPageModule)
-  },
+
   {
   path: 'produto-detalhes/:id', // <-- O truque está neste /:id
   loadChildren: () => import('./produto-detalhes/produto-detalhes.module').then( m => m.ProdutoDetalhesPageModule)
